@@ -666,7 +666,7 @@ export default function AgentPlaystore() {
           --text-tertiary: #505068;
           --accent-primary: #7C6CFF;
           --accent-glow: #7C6CFF33;
-          --aa: #C9A84C; --aa-dim: #C9A84C55; --aa-bg: #C9A84C0D; --aa-border: #C9A84C28;
+          --aa: #B89A5C; --aa-dim: #B89A5C80; --aa-bg: #B89A5C14; --aa-border: #B89A5C33;
           --font-display: 'Instrument Serif', serif;
           --font-body: 'DM Sans', sans-serif;
           --sidebar-width: 224px;
@@ -780,6 +780,9 @@ export default function AgentPlaystore() {
           font-family: var(--font-body); cursor: pointer; padding: 4px 0; transition: opacity 0.15s; white-space: nowrap; flex-shrink: 0; margin-top: 4px;
         }
         .section-see-all:hover { opacity: 0.7; }
+        .section-context { display: flex; flex-direction: column; gap: 2px; margin-top: 2px; }
+        .section-context-title { font-family: var(--font-display); font-size: 34px; color: var(--text-primary); letter-spacing: -0.02em; line-height: 1.12; }
+        .section-context-sub { font-size: 11.5px; color: var(--text-tertiary); }
 
         /* ===== SHELF ===== */
         .shelf-wrapper { overflow: hidden; margin: 0 -4px; }
@@ -1010,39 +1013,39 @@ export default function AgentPlaystore() {
 
         /* ===== RESPONSIVE ===== */
         /* ALL-ACCESS TOPBAR — PROMINENT */
-        .aa-topbar { display: flex; align-items: center; gap: 7px; padding: 6px 16px; border-radius: 20px; background: linear-gradient(135deg, #C9A84C18, #C9A84C08); border: 1px solid #C9A84C40; cursor: pointer; transition: all 0.25s; white-space: nowrap; box-shadow: 0 0 12px #C9A84C12, inset 0 0 12px #C9A84C06; }
-        .aa-topbar:hover { border-color: var(--aa); background: linear-gradient(135deg, #C9A84C25, #C9A84C12); box-shadow: 0 0 20px #C9A84C20, inset 0 0 12px #C9A84C0A; }
-        .aa-topbar-diamond { color: var(--aa); font-size: 12px; filter: drop-shadow(0 0 4px #C9A84C66); }
+        .aa-topbar { display: flex; align-items: center; gap: 7px; padding: 6px 16px; border-radius: 20px; background: linear-gradient(135deg, rgba(124,108,255,0.1), rgba(184,154,92,0.12)); border: 1px solid var(--aa-border); cursor: pointer; transition: all 0.25s; white-space: nowrap; box-shadow: 0 0 12px rgba(124,108,255,0.12), inset 0 0 12px rgba(184,154,92,0.08); }
+        .aa-topbar:hover { border-color: var(--aa); background: linear-gradient(135deg, rgba(124,108,255,0.16), rgba(184,154,92,0.18)); box-shadow: 0 0 18px rgba(124,108,255,0.18), inset 0 0 12px rgba(184,154,92,0.12); }
+        .aa-topbar-diamond { color: var(--aa); font-size: 12px; filter: drop-shadow(0 0 4px var(--aa-dim)); }
         .aa-topbar-label { font-size: 12.5px; font-weight: 700; color: var(--aa); letter-spacing: .02em; }
-        .aa-topbar-sep { color: #C9A84C44; font-size: 12px; }
+        .aa-topbar-sep { color: var(--aa-border); font-size: 12px; }
         .aa-topbar-sub { font-size: 11px; color: var(--aa-dim); font-weight: 500; }
         .aa-topbar-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--aa); flex-shrink: 0; animation: aaPulse 2s ease infinite; box-shadow: 0 0 6px var(--aa); }
         @keyframes aaPulse { 0%,100% { opacity:.5; box-shadow: 0 0 4px var(--aa); } 50% { opacity:1; box-shadow: 0 0 10px var(--aa); } }
 
         /* SIDEBAR ALL-ACCESS CARD */
-        .sidebar-aa { position: relative; margin: 8px 8px 4px; padding: 14px; border-radius: 10px; background: linear-gradient(145deg, #1C1A10, #16140E); border: 1px solid #C9A84C30; cursor: pointer; transition: all 0.25s; overflow: hidden; }
-        .sidebar-aa:hover { border-color: #C9A84C55; background: linear-gradient(145deg, #221F12, #1A1710); }
-        .sidebar-aa-glow { position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: radial-gradient(circle, #C9A84C18, transparent 70%); pointer-events: none; }
+        .sidebar-aa { position: relative; margin: 8px 8px 4px; padding: 14px; border-radius: 10px; background: linear-gradient(145deg, #151525, #121221); border: 1px solid var(--aa-border); cursor: pointer; transition: all 0.25s; overflow: hidden; }
+        .sidebar-aa:hover { border-color: var(--aa); background: linear-gradient(145deg, #1B1B2B, #151525); }
+        .sidebar-aa-glow { position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: radial-gradient(circle, rgba(184,154,92,0.12), transparent 70%); pointer-events: none; }
         .sidebar-aa-collapsed { margin: 8px 6px 4px; padding: 10px 0; display: flex; justify-content: center; }
-        .sidebar-aa-icon-only { color: var(--aa); font-size: 16px; filter: drop-shadow(0 0 6px #C9A84C44); }
+        .sidebar-aa-icon-only { color: var(--aa); font-size: 16px; filter: drop-shadow(0 0 6px var(--aa-dim)); }
         .sidebar-aa-top { display: flex; align-items: center; gap: 7px; position: relative; }
-        .sidebar-aa-diamond { color: var(--aa); font-size: 14px; filter: drop-shadow(0 0 5px #C9A84C55); }
+        .sidebar-aa-diamond { color: var(--aa); font-size: 14px; filter: drop-shadow(0 0 5px var(--aa-dim)); }
         .sidebar-aa-title { font-size: 13.5px; font-weight: 700; color: var(--aa); letter-spacing: .01em; }
         .sidebar-aa-live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--aa); animation: aaPulse 2s ease infinite; box-shadow: 0 0 6px var(--aa); }
-        .sidebar-aa-desc { font-size: 11px; color: #C9A84C77; margin-top: 5px; line-height: 1.35; position: relative; }
+        .sidebar-aa-desc { font-size: 11px; color: var(--aa-dim); margin-top: 5px; line-height: 1.35; position: relative; }
         .sidebar-aa-btn { margin-top: 10px; padding: 7px 0; border-radius: 7px; background: var(--aa); color: #0A0A0F; font-size: 11.5px; font-weight: 700; text-align: center; transition: opacity .15s; position: relative; letter-spacing: .01em; }
         .sidebar-aa:hover .sidebar-aa-btn { opacity: .9; }
 
         /* HERO ALL-ACCESS CARD */
         .hero-content-wrap { display: flex; gap: 24px; align-items: stretch; position: relative; }
         .hero-left { flex: 1; }
-        .hero-aa-glow { position: absolute; top: -30px; right: 40px; width: 200px; height: 200px; background: radial-gradient(circle, #C9A84C12, transparent 70%); pointer-events: none; }
-        .hero-aa-card { position: relative; width: 240px; min-width: 240px; padding: 22px 20px; border-radius: 14px; background: linear-gradient(150deg, #1A1810 0%, #141210 50%, #12100C 100%); border: 1px solid #C9A84C30; cursor: pointer; transition: all 0.3s; overflow: hidden; display: flex; flex-direction: column; gap: 6px; }
-        .hero-aa-card:hover { border-color: #C9A84C55; transform: translateY(-2px); box-shadow: 0 8px 30px #C9A84C15; }
-        .hero-aa-card-glow { position: absolute; top: -30px; left: -30px; width: 120px; height: 120px; background: radial-gradient(circle, #C9A84C1A, transparent 70%); pointer-events: none; }
-        .hero-aa-icon { color: var(--aa); font-size: 22px; filter: drop-shadow(0 0 8px #C9A84C44); position: relative; }
+        .hero-aa-glow { position: absolute; top: -30px; right: 40px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(184,154,92,0.12), transparent 70%); pointer-events: none; }
+        .hero-aa-card { position: relative; width: 240px; min-width: 240px; padding: 22px 20px; border-radius: 14px; background: linear-gradient(150deg, #161626 0%, #131322 55%, #10101C 100%); border: 1px solid var(--aa-border); cursor: pointer; transition: all 0.3s; overflow: hidden; display: flex; flex-direction: column; gap: 6px; }
+        .hero-aa-card:hover { border-color: var(--aa); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,108,255,0.12), 0 0 20px rgba(184,154,92,0.12); }
+        .hero-aa-card-glow { position: absolute; top: -30px; left: -30px; width: 120px; height: 120px; background: radial-gradient(circle, rgba(124,108,255,0.12), transparent 70%); pointer-events: none; }
+        .hero-aa-icon { color: var(--aa); font-size: 22px; filter: drop-shadow(0 0 8px var(--aa-dim)); position: relative; }
         .hero-aa-label { font-family: var(--font-display); font-size: 20px; color: var(--aa); position: relative; letter-spacing: -.01em; }
-        .hero-aa-desc { font-size: 11.5px; color: #C9A84C77; line-height: 1.45; position: relative; flex: 1; }
+        .hero-aa-desc { font-size: 11.5px; color: var(--text-secondary); line-height: 1.45; position: relative; flex: 1; }
         .hero-aa-price { font-size: 18px; font-weight: 700; color: var(--text-primary); position: relative; margin-top: 4px; font-variant-numeric: tabular-nums; }
         .hero-aa-cta { padding: 8px 0; border-radius: 8px; background: var(--aa); color: #0A0A0F; font-size: 12px; font-weight: 700; text-align: center; position: relative; transition: opacity .15s; letter-spacing: .01em; margin-top: 4px; }
         .hero-aa-card:hover .hero-aa-cta { opacity: .9; }
@@ -1050,10 +1053,10 @@ export default function AgentPlaystore() {
         /* STICKY ALL-ACCESS BAR */
         .aa-sticky-bar { position: sticky; top: 0; z-index: 40; opacity: 0; transform: translateY(-100%); transition: all 0.35s cubic-bezier(.4,0,.2,1); pointer-events: none; }
         .aa-sticky-bar-show { opacity: 1; transform: translateY(0); pointer-events: all; }
-        .aa-sticky-inner { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 9px 20px; background: linear-gradient(135deg, #1A1810EE, #141210EE); border-bottom: 1px solid #C9A84C30; backdrop-filter: blur(16px); cursor: pointer; transition: background .2s; }
-        .aa-sticky-inner:hover { background: linear-gradient(135deg, #221F12EE, #1A1710EE); }
-        .aa-sticky-diamond { color: var(--aa); font-size: 12px; filter: drop-shadow(0 0 6px #C9A84C55); }
-        .aa-sticky-text { font-size: 12.5px; color: #C9A84C99; }
+        .aa-sticky-inner { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 9px 20px; background: linear-gradient(135deg, rgba(20,20,32,0.96), rgba(16,16,28,0.96)); border-bottom: 1px solid var(--aa-border); backdrop-filter: blur(16px); cursor: pointer; transition: background .2s; }
+        .aa-sticky-inner:hover { background: linear-gradient(135deg, rgba(26,26,40,0.96), rgba(20,20,34,0.96)); }
+        .aa-sticky-diamond { color: var(--aa); font-size: 12px; filter: drop-shadow(0 0 6px var(--aa-dim)); }
+        .aa-sticky-text { font-size: 12.5px; color: var(--text-secondary); }
         .aa-sticky-text strong { color: var(--aa); font-weight: 700; }
         .aa-sticky-price { font-size: 12.5px; font-weight: 700; color: var(--text-primary); margin-left: 4px; }
         .aa-sticky-cta { padding: 4px 14px; border-radius: 6px; background: var(--aa); color: #0A0A0F; font-size: 11px; font-weight: 700; margin-left: 8px; transition: opacity .15s; }
@@ -1062,7 +1065,7 @@ export default function AgentPlaystore() {
         .aa-badge { font-size: 9.5px; font-weight: 600; padding: 2px 7px; border-radius: 4px; background: var(--aa-bg); color: var(--aa); border: 1px solid var(--aa-border); letter-spacing: .02em; white-space: nowrap; }
         /* AA STACK RUN BUTTON */
         .aa-run { display: flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 7px; background: var(--aa-bg); border: 1px solid var(--aa-border); color: var(--aa); font-size: 11px; font-weight: 600; font-family: var(--font-body); cursor: pointer; transition: all .15s; white-space: nowrap; }
-        .aa-run:hover { background: #C9A84C18; border-color: var(--aa); }
+        .aa-run:hover { background: #B89A5C24; border-color: var(--aa); }
         .aa-run-active { background: var(--aa); color: #0A0A0F; border-color: var(--aa); }
         .aa-run-active:hover { opacity: .9; }
         .aa-run-diamond { font-size: 8px; }
@@ -1201,6 +1204,10 @@ export default function AgentPlaystore() {
               </div>
 
               {/* FEATURED */}
+              <div className="section-context">
+                <div className="section-context-title">Start imperfect. Stabilize later.</div>
+                <div className="section-context-sub">Frequently run in the first month</div>
+              </div>
               <Section sectionKey="featured">
                 <div className="featured-mixed">
                   <LargeCard agent={featured[0]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
@@ -1243,6 +1250,9 @@ export default function AgentPlaystore() {
               </Section>
 
               {/* PAIRS WELL */}
+              <div className="section-context">
+                <div className="section-context-title">Teams love how it augments their strength</div>
+              </div>
               <Section sectionKey="pairsWell">
                 <HorizontalShelf>
                   {pairings.map(([a, b], i) => <PairingCard key={i} agent1={a} agent2={b} />)}
