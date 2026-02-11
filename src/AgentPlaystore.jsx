@@ -548,74 +548,14 @@ function HorizontalShelf({ children }) {
   );
 }
 
-// --- Sidebar ---
-const SIDEBAR_ITEMS = [
-  { icon: "🏠", label: "Home", active: true },
-  { icon: "⭐", label: "Featured", active: false },
-  { icon: "🤖", label: "Agents", active: false },
-  { icon: "📦", label: "Stacks", active: false },
-  { icon: "🔗", label: "Integrations", active: false },
-  { icon: "📚", label: "Collections", active: false },
-  { icon: "🔥", label: "Trending", active: false },
-  { icon: "🆕", label: "New Arrivals", active: false },
-  { icon: "💎", label: "Premium", active: false },
-];
-
-function Sidebar({ collapsed, onToggle, aaEnabled, onAAClick }) {
-  return (
-    <aside className={`sidebar ${collapsed ? "sidebar-collapsed" : ""}`}>
-      <div className="sidebar-logo" onClick={onToggle}>
-        <span className="sidebar-logo-icon">◈</span>
-        {!collapsed && <span className="sidebar-logo-text">Agent Playstore</span>}
-      </div>
-      <nav className="sidebar-nav">
-        {SIDEBAR_ITEMS.map(item => (
-          <div key={item.label} className={`sidebar-item ${item.active ? "sidebar-item-active" : ""}`}>
-            <span className="sidebar-item-icon">{item.icon}</span>
-            {!collapsed && <span className="sidebar-item-label">{item.label}</span>}
-            {item.active && <div className="sidebar-active-indicator" />}
-          </div>
-        ))}
-      </nav>
-      {/* ALL-ACCESS SIDEBAR CARD */}
-      <div className={`sidebar-aa ${collapsed ? "sidebar-aa-collapsed" : ""}`} onClick={onAAClick}>
-        <div className="sidebar-aa-glow" />
-        {collapsed ? (
-          <div className="sidebar-aa-icon-only">◆</div>
-        ) : (
-          <>
-            <div className="sidebar-aa-top">
-              <span className="sidebar-aa-diamond">◆</span>
-              <span className="sidebar-aa-title">All-Access</span>
-              {aaEnabled && <span className="sidebar-aa-live-dot" />}
-            </div>
-            <div className="sidebar-aa-desc">
-              {aaEnabled ? "Full execution enabled" : "Unlock full execution"}
-            </div>
-            {!aaEnabled && (
-              <div className="sidebar-aa-btn">Enable All-Access</div>
-            )}
-          </>
-        )}
-      </div>
-      {!collapsed && (
-        <div className="sidebar-footer">
-          <div className="sidebar-footer-item"><span>⚙️</span> <span>Settings</span></div>
-          <div className="sidebar-footer-item"><span>📖</span> <span>Docs</span></div>
-        </div>
-      )}
-    </aside>
-  );
-}
-
 // --- Main App ---
 export default function AgentPlaystore() {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [aaPanel, setAAPanel] = useState({ open: false, stack: null });
   const [aaEnabled, setAAEnabled] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const mainRef = useRef(null);
+  const storySectionRefs = useRef([]);
   const { hoverData, onEnter, onLeave } = useCardHover();
 
   useEffect(() => {
@@ -626,25 +566,37 @@ export default function AgentPlaystore() {
     return () => el.removeEventListener("scroll", h);
   }, []);
 
+  useEffect(() => {
+    const root = mainRef.current;
+    if (!root) return;
+    const nodes = storySectionRefs.current.filter(Boolean);
+    if (!nodes.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.dataset.seen = "true";
+          }
+        });
+      },
+      { root, threshold: 0.2 }
+    );
+
+    nodes.forEach((node) => observer.observe(node));
+    return () => observer.disconnect();
+  }, []);
+
   const openAA = (stack = null) => setAAPanel({ open: true, stack });
   const closeAA = () => setAAPanel({ open: false, stack: null });
   const enableAA = () => { setAAEnabled(true); setTimeout(closeAA, 600); };
   const handleStackAA = (stack) => aaEnabled ? null : openAA(stack);
 
   const featured = AGENTS.filter(a => a.featured);
-  const trending = AGENTS.filter(a => a.trending);
   const newAgents = AGENTS.filter(a => a.new);
-  const devAgents = AGENTS.filter(a => ["Development", "DevOps"].includes(a.category));
   const dataAgents = AGENTS.filter(a => a.category === "Data");
   const productivityAgents = AGENTS.filter(a => a.category === "Productivity");
-  const freeAgents = AGENTS.filter(a => a.price === "Free");
-  const topRated = [...AGENTS].sort((a, b) => b.rating - a.rating).slice(0, 8);
   const mostPopular = [...AGENTS].sort((a, b) => parseFloat(b.users) - parseFloat(a.users)).slice(0, 8);
-  const risingStars = [...AGENTS].filter(a => parseFloat(a.users.replace("k", "")) < 10 && a.rating >= 4.5).slice(0, 6);
-  const pairings = [
-    [AGENTS[0], AGENTS[10]], [AGENTS[1], AGENTS[14]], [AGENTS[3], AGENTS[15]],
-    [AGENTS[5], AGENTS[8]], [AGENTS[7], AGENTS[23]], [AGENTS[9], AGENTS[18]],
-  ];
 
   return (
     <>
@@ -669,8 +621,6 @@ export default function AgentPlaystore() {
           --aa: #B89A5C; --aa-dim: #B89A5C80; --aa-bg: #B89A5C14; --aa-border: #B89A5C33;
           --font-display: 'Instrument Serif', serif;
           --font-body: 'DM Sans', sans-serif;
-          --sidebar-width: 224px;
-          --sidebar-collapsed: 64px;
           --topbar-height: 60px;
         }
 
@@ -679,43 +629,7 @@ export default function AgentPlaystore() {
           background: var(--bg-primary); color: var(--text-primary);
           font-family: var(--font-body); display: flex;
         }
-
-        /* ===== SIDEBAR ===== */
-        .sidebar {
-          width: var(--sidebar-width); min-width: var(--sidebar-width); height: 100vh;
-          background: var(--bg-secondary); border-right: 1px solid var(--border-subtle);
-          display: flex; flex-direction: column; transition: width 0.25s ease, min-width 0.25s ease; z-index: 100;
-        }
-        .sidebar-collapsed { width: var(--sidebar-collapsed); min-width: var(--sidebar-collapsed); }
-        .sidebar-logo {
-          display: flex; align-items: center; gap: 10px; padding: 16px 16px;
-          cursor: pointer; border-bottom: 1px solid var(--border-subtle); min-height: var(--topbar-height);
-        }
-        .sidebar-logo-icon { font-size: 22px; color: var(--accent-primary); flex-shrink: 0; }
-        .sidebar-logo-text {
-          font-family: var(--font-display); font-size: 17px; color: var(--text-primary);
-          white-space: nowrap; letter-spacing: -0.02em;
-        }
-        .sidebar-nav { flex: 1; padding: 10px 8px; display: flex; flex-direction: column; gap: 1px; overflow-y: auto; }
-        .sidebar-item {
-          display: flex; align-items: center; gap: 10px; padding: 9px 12px;
-          border-radius: 8px; cursor: pointer; transition: background 0.15s; position: relative; white-space: nowrap;
-        }
-        .sidebar-item:hover { background: var(--bg-card); }
-        .sidebar-item-active { background: #7C6CFF0D; }
-        .sidebar-item-active .sidebar-item-label { color: var(--accent-primary); font-weight: 600; }
-        .sidebar-active-indicator {
-          position: absolute; left: 0; top: 50%; transform: translateY(-50%);
-          width: 3px; height: 18px; background: var(--accent-primary); border-radius: 0 3px 3px 0;
-        }
-        .sidebar-item-icon { font-size: 15px; flex-shrink: 0; width: 22px; text-align: center; }
-        .sidebar-item-label { font-size: 13px; color: var(--text-secondary); }
-        .sidebar-footer { border-top: 1px solid var(--border-subtle); padding: 10px 8px; display: flex; flex-direction: column; gap: 1px; }
-        .sidebar-footer-item {
-          display: flex; align-items: center; gap: 10px; padding: 8px 12px;
-          border-radius: 8px; cursor: pointer; font-size: 12.5px; color: var(--text-tertiary); transition: background 0.15s, color 0.15s;
-        }
-        .sidebar-footer-item:hover { background: var(--bg-card); color: var(--text-secondary); }
+        .app-container { flex-direction: column; }
 
         /* ===== MAIN ===== */
         .main-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
@@ -724,8 +638,29 @@ export default function AgentPlaystore() {
         .topbar {
           height: var(--topbar-height); min-height: var(--topbar-height);
           border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center;
-          padding: 0 24px; gap: 14px; background: var(--bg-secondary); z-index: 50;
+          padding: 0 24px; gap: 16px; background: var(--bg-secondary); z-index: 50;
         }
+        .topbar-inner {
+          width: 100%;
+          max-width: 1500px;
+          margin: 0 auto;
+          display: flex; align-items: center; gap: 16px;
+          min-width: 0;
+        }
+        .topbar-left { display: flex; align-items: center; gap: 18px; min-width: 0; }
+        .topbar-logo { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+        .topbar-logo-icon { color: var(--accent-primary); font-size: 16px; }
+        .topbar-logo-text { font-family: var(--font-display); font-size: 16px; letter-spacing: -0.01em; }
+        .topbar-nav { display: flex; align-items: center; gap: 6px; }
+        .topbar-nav-item {
+          border: 1px solid transparent; background: transparent;
+          color: var(--text-secondary); font-size: 12.5px; cursor: pointer;
+          padding: 6px 10px; border-radius: 8px; transition: all 0.15s;
+          font-family: var(--font-body);
+        }
+        .topbar-nav-item:hover { border-color: var(--border-medium); color: var(--text-primary); background: var(--bg-card); }
+        .topbar-nav-primary { color: var(--accent-primary); border-color: #7C6CFF1A; background: #7C6CFF0D; }
+        .topbar-nav-primary:hover { border-color: var(--accent-primary); }
         .topbar-search { flex: 1; max-width: 460px; position: relative; }
         .topbar-search input {
           width: 100%; height: 36px; border-radius: 9px; border: 1px solid var(--border-medium);
@@ -735,7 +670,7 @@ export default function AgentPlaystore() {
         .topbar-search input::placeholder { color: var(--text-tertiary); }
         .topbar-search input:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 3px var(--accent-glow); }
         .topbar-search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text-tertiary); font-size: 13px; }
-        .topbar-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+        .topbar-right { display: flex; align-items: center; gap: 10px; }
         .topbar-pill {
           display: flex; align-items: center; gap: 5px; padding: 5px 12px;
           border-radius: 18px; background: var(--bg-card); border: 1px solid var(--border-subtle);
@@ -753,7 +688,13 @@ export default function AgentPlaystore() {
         .scroll-area::-webkit-scrollbar { width: 5px; }
         .scroll-area::-webkit-scrollbar-track { background: transparent; }
         .scroll-area::-webkit-scrollbar-thumb { background: var(--border-medium); border-radius: 3px; }
-        .home-content { padding: 20px 24px 140px; display: flex; flex-direction: column; gap: 32px; }
+        .home-content {
+          width: 100%;
+          max-width: 1500px;
+          margin: 0 auto;
+          padding: 20px clamp(24px, 6vw, 96px) 140px;
+          display: flex; flex-direction: column; gap: 32px;
+        }
 
         /* ===== HERO ===== */
         .hero-section {
@@ -800,6 +741,108 @@ export default function AgentPlaystore() {
           box-shadow: inset 0 8px 12px -12px rgba(0,0,0,0.75), inset 0 1px 0 rgba(255,255,255,0.02);
           display: flex; flex-direction: column; gap: 20px;
         }
+
+        /* ===== NARRATIVE SECTIONS ===== */
+        .narrative-sections { display: flex; flex-direction: column; gap: 28px; }
+        .story-section {
+          position: relative;
+          border-radius: 18px;
+          padding: 18px;
+          border: 1px solid var(--border-subtle);
+          box-shadow: inset 0 10px 16px -18px rgba(0,0,0,0.8), 0 22px 40px -36px rgba(0,0,0,0.8);
+        }
+        .story-section.story-start { background: linear-gradient(135deg, #0F101A, #0B0C14); }
+        .story-section.story-learn { background: linear-gradient(135deg, #0E1320, #0A0D16); }
+        .story-section.story-stabilize { background: linear-gradient(135deg, #0D1916, #0A0D12); }
+        .story-section.story-bespoke { background: linear-gradient(135deg, #16130D, #0E0B08); }
+        .story-grid {
+          display: grid;
+          grid-template-columns: minmax(280px, 0.34fr) minmax(0, 1fr);
+          gap: 24px;
+          align-items: start;
+        }
+        .story-narrative {
+          position: sticky;
+          top: calc(var(--topbar-height) + 12px);
+          align-self: start;
+          opacity: 0;
+          transform: translateY(18px);
+          transition: opacity 0.45s ease, transform 0.45s ease;
+        }
+        .story-section[data-seen="true"] .story-narrative { opacity: 1; transform: translateY(0); }
+        .story-shelves { display: flex; flex-direction: column; gap: 24px; }
+        .narrative-block { gap: 12px; }
+        .narrative-shelf-stack { display: flex; flex-direction: column; gap: 16px; }
+        .narrative-shelf-grid { display: grid; gap: 12px; }
+        .narrative-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .narrative-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .narrative-mini {
+          padding: 14px;
+          border-radius: 12px;
+          background: var(--bg-card);
+          border: 1px solid var(--border-medium);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+        }
+        .narrative-mini.emphasis {
+          background: linear-gradient(160deg, #17172A, #11111D);
+          border-color: #2B2B44;
+        }
+        .narrative-mini-kicker {
+          font-size: 10px; text-transform: uppercase; letter-spacing: 0.16em;
+          color: var(--text-tertiary); margin-bottom: 6px;
+        }
+        .narrative-mini-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+        .narrative-mini-body { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+        .narrative-stat-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+        .narrative-stat {
+          padding: 6px 8px; border-radius: 8px; background: #141420;
+          border: 1px solid var(--border-subtle); font-size: 11px; color: var(--text-secondary);
+        }
+        .narrative-callout {
+          padding: 14px; border-radius: 12px;
+          background: linear-gradient(135deg, rgba(124,108,255,0.12), rgba(184,154,92,0.1));
+          border: 1px solid var(--aa-border);
+          color: var(--text-secondary); font-size: 12.5px; line-height: 1.5;
+        }
+        .narrative-callout strong { color: var(--text-primary); font-weight: 600; }
+        .narrative-steps { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+        .narrative-step { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-secondary); }
+        .narrative-step-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-primary); flex-shrink: 0; }
+        .narrative-kicker {
+          font-size: 10px; text-transform: uppercase; letter-spacing: 0.18em;
+          color: var(--text-tertiary);
+        }
+        .narrative-title {
+          font-family: var(--font-display);
+          font-size: 26px;
+          line-height: 1.14;
+          letter-spacing: -0.01em;
+        }
+        .narrative-body {
+          font-size: 13px;
+          color: var(--text-secondary);
+          line-height: 1.6;
+          max-width: 520px;
+        }
+        .narrative-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+        .narrative-pill {
+          font-size: 11px; color: var(--text-secondary);
+          background: var(--bg-card); border: 1px solid var(--border-medium);
+          border-radius: 999px; padding: 4px 10px;
+        }
+        .narrative-timeline {
+          display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 8px; margin-top: 4px;
+        }
+        .narrative-chip {
+          background: var(--bg-card); border: 1px solid var(--border-medium);
+          border-radius: 10px; padding: 8px 10px;
+          font-size: 11px; color: var(--text-secondary); line-height: 1.4;
+        }
+        .narrative-chip strong { color: var(--text-primary); font-weight: 600; }
+        .narrative-list { display: flex; flex-direction: column; gap: 6px; }
+        .narrative-list-item { font-size: 12px; color: var(--text-secondary); display: flex; gap: 8px; align-items: center; }
+        .narrative-list-item::before { content: ">"; color: var(--accent-primary); }
 
         /* ===== SHELF ===== */
         .shelf-wrapper { overflow: hidden; margin: 0 -4px; }
@@ -1039,20 +1082,6 @@ export default function AgentPlaystore() {
         .aa-topbar-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--aa); flex-shrink: 0; animation: aaPulse 2s ease infinite; box-shadow: 0 0 6px var(--aa); }
         @keyframes aaPulse { 0%,100% { opacity:.5; box-shadow: 0 0 4px var(--aa); } 50% { opacity:1; box-shadow: 0 0 10px var(--aa); } }
 
-        /* SIDEBAR ALL-ACCESS CARD */
-        .sidebar-aa { position: relative; margin: 8px 8px 4px; padding: 14px; border-radius: 10px; background: linear-gradient(145deg, #151525, #121221); border: 1px solid var(--aa-border); cursor: pointer; transition: all 0.25s; overflow: hidden; }
-        .sidebar-aa:hover { border-color: var(--aa); background: linear-gradient(145deg, #1B1B2B, #151525); }
-        .sidebar-aa-glow { position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: radial-gradient(circle, rgba(184,154,92,0.12), transparent 70%); pointer-events: none; }
-        .sidebar-aa-collapsed { margin: 8px 6px 4px; padding: 10px 0; display: flex; justify-content: center; }
-        .sidebar-aa-icon-only { color: var(--aa); font-size: 16px; filter: drop-shadow(0 0 6px var(--aa-dim)); }
-        .sidebar-aa-top { display: flex; align-items: center; gap: 7px; position: relative; }
-        .sidebar-aa-diamond { color: var(--aa); font-size: 14px; filter: drop-shadow(0 0 5px var(--aa-dim)); }
-        .sidebar-aa-title { font-size: 13.5px; font-weight: 700; color: var(--aa); letter-spacing: .01em; }
-        .sidebar-aa-live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--aa); animation: aaPulse 2s ease infinite; box-shadow: 0 0 6px var(--aa); }
-        .sidebar-aa-desc { font-size: 11px; color: var(--aa-dim); margin-top: 5px; line-height: 1.35; position: relative; }
-        .sidebar-aa-btn { margin-top: 10px; padding: 7px 0; border-radius: 7px; background: var(--aa); color: #0A0A0F; font-size: 11.5px; font-weight: 700; text-align: center; transition: opacity .15s; position: relative; letter-spacing: .01em; }
-        .sidebar-aa:hover .sidebar-aa-btn { opacity: .9; }
-
         /* HERO ALL-ACCESS CARD */
         .hero-content-wrap { display: flex; gap: 24px; align-items: stretch; position: relative; }
         .hero-left { flex: 1; }
@@ -1131,6 +1160,11 @@ export default function AgentPlaystore() {
         .aa-ft-lbl { font-size: 10px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
 
         @media (max-width: 1200px) { .grid-4 { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 1100px) {
+          .topbar-nav-item:not(.topbar-nav-primary) { display: none; }
+          .story-grid { grid-template-columns: 1fr; }
+          .story-narrative { position: static; opacity: 1; transform: none; }
+        }
         @media (max-width: 900px) {
           .grid-3 { grid-template-columns: repeat(2, 1fr); }
           .grid-4 { grid-template-columns: repeat(2, 1fr); }
@@ -1139,7 +1173,13 @@ export default function AgentPlaystore() {
           .aa-panel { width: 100%; }
           .hero-content-wrap { flex-direction: column; }
           .hero-aa-card { width: 100%; min-width: unset; }
+          .story-section { padding: 14px; border-radius: 14px; }
           .shelf-container { padding: 14px; border-radius: 14px; }
+          .narrative-grid-2, .narrative-grid-3 { grid-template-columns: 1fr; }
+          .narrative-timeline { grid-template-columns: 1fr; }
+          .topbar-pill { display: none; }
+          .topbar-search { max-width: 100%; }
+          .home-content { padding: 20px 24px 140px; }
         }
 
         /* ===== ANIMATIONS ===== */
@@ -1152,25 +1192,37 @@ export default function AgentPlaystore() {
       `}</style>
 
       <div className="app-container">
-        <Sidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} aaEnabled={aaEnabled} onAAClick={() => openAA()} />
         <div className="main-area">
           <div className="topbar">
-            <div className="topbar-search">
-              <span className="topbar-search-icon">🔍</span>
-              <input type="text" placeholder="Search agents, stacks, integrations..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
-            </div>
-            <div className="topbar-right">
-              <div className="aa-topbar" onClick={() => openAA()}>
-                <span className="aa-topbar-diamond">◆</span>
-                <span className="aa-topbar-label">All-Access</span>
-                <span className="aa-topbar-sep">·</span>
-                <span className="aa-topbar-sub">{aaEnabled ? "Enabled" : "$1,000/mo"}</span>
-                {aaEnabled && <span className="aa-topbar-dot" />}
+            <div className="topbar-inner">
+              <div className="topbar-left">
+                <div className="topbar-logo">
+                  <span className="topbar-logo-icon">◈</span>
+                  <span className="topbar-logo-text">Agent Playstore</span>
+                </div>
+                <div className="topbar-nav">
+                  <button className="topbar-nav-item topbar-nav-primary">Browse Agents</button>
+                  <button className="topbar-nav-item">Stacks</button>
+                  <button className="topbar-nav-item">Integrations</button>
+                </div>
               </div>
-              <div className="topbar-pill">🏷️ Categories</div>
-              <div className="topbar-pill">🔄 Compare</div>
-              <div className="topbar-pill">📦 My Stacks</div>
-              <div className="topbar-avatar">👤</div>
+              <div className="topbar-search">
+                <span className="topbar-search-icon">🔍</span>
+                <input type="text" placeholder="Search agents, stacks, integrations..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+              </div>
+              <div className="topbar-right">
+                <div className="aa-topbar" onClick={() => openAA()}>
+                  <span className="aa-topbar-diamond">◆</span>
+                  <span className="aa-topbar-label">All-Access</span>
+                  <span className="aa-topbar-sep">·</span>
+                  <span className="aa-topbar-sub">{aaEnabled ? "Enabled" : "$1,000/mo"}</span>
+                  {aaEnabled && <span className="aa-topbar-dot" />}
+                </div>
+                <div className="topbar-pill">🏷️ Categories</div>
+                <div className="topbar-pill">🔄 Compare</div>
+                <div className="topbar-pill">📦 My Stacks</div>
+                <div className="topbar-avatar">👤</div>
+              </div>
             </div>
           </div>
 
@@ -1194,7 +1246,7 @@ export default function AgentPlaystore() {
                 <div className="hero-aa-glow" />
                 <div className="hero-content-wrap">
                   <div className="hero-left">
-                    <div className="hero-title">Start imperfect. Stabilize later.</div>
+                    <div className="hero-title">Speedrun integration of agents into your organization.</div>
                     <div className="hero-subtitle">Browse hundreds of agents, stacks, and integrations used in real workflows</div>
                     <div className="hero-actions">
                       <button className="hero-cta" onClick={() => openAA()}>Unlock All-Access</button>
@@ -1224,224 +1276,278 @@ export default function AgentPlaystore() {
                 ))}
               </div>
 
-              {/* FEATURED */}
-              <div className="shelf-stack">
-                <div className="section-context">
-                  <div className="section-context-title">Start imperfect. Stabilize later.</div>
-                  <div className="section-context-sub">Frequently run in the first month</div>
-                </div>
-                <div className="shelf-container">
-                  <Section sectionKey="featured">
-                    <div className="featured-mixed">
-                      <LargeCard agent={featured[0]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
-                      <MediumCard agent={featured[1]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
-                      <MediumCard agent={featured[2]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
+              <div className="narrative-sections">
+                <div className="story-section story-start" ref={el => (storySectionRefs.current[0] = el)} data-seen="true">
+                  <div className="story-grid">
+                    <div className="story-narrative">
+                      <div className="shelf-container narrative-block">
+                        <div className="narrative-kicker">Phase 0 - Start in production</div>
+                        <div className="narrative-title">Start imperfect. Stabilize later.</div>
+                        <div className="narrative-body">
+                          Deploy a starter stack into live workflows immediately. Real usage reveals constraints,
+                          readiness, and where automation creates value.
+                        </div>
+                        <div className="narrative-pills">
+                          <span className="narrative-pill">Starter stack subscription</span>
+                          <span className="narrative-pill">Live usage first</span>
+                          <span className="narrative-pill">Reality over plans</span>
+                        </div>
+                      </div>
                     </div>
-                  </Section>
+                    <div className="story-shelves">
+                      <div className="shelf-container">
+                        <Section sectionKey="featured">
+                          <div className="featured-mixed">
+                            <LargeCard agent={featured[0]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
+                            <MediumCard agent={featured[1]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
+                            <MediumCard agent={featured[2]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
+                          </div>
+                        </Section>
 
-                  {/* TRENDING */}
-                  <Section sectionKey="trending">
-                    <HorizontalShelf>
-                      {trending.map(a => <MediumCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
-                    </HorizontalShelf>
-                  </Section>
+                        <Section sectionKey="stacks">
+                          <HorizontalShelf>
+                            {STACKS.map(s => <StackCard key={s.id} stack={s} aaEnabled={aaEnabled} onAAClick={handleStackAA} />)}
+                          </HorizontalShelf>
+                        </Section>
+                      </div>
 
-                  {/* STACKS */}
-                  <Section sectionKey="stacks">
-                    <HorizontalShelf>
-                      {STACKS.map(s => <StackCard key={s.id} stack={s} aaEnabled={aaEnabled} onAAClick={handleStackAA} />)}
-                    </HorizontalShelf>
-                  </Section>
-                </div>
-              </div>
+                      <div className="narrative-shelf-stack">
+                        <div className="narrative-shelf-grid narrative-grid-2">
+                          <div className="narrative-mini emphasis">
+                            <div className="narrative-mini-kicker">Week 1 pack</div>
+                            <div className="narrative-mini-title">Starter stack in production.</div>
+                            <div className="narrative-mini-body">
+                              Curated agents mapped to core workflows and deployed into your environment.
+                            </div>
+                            <div className="narrative-stat-row">
+                              <div className="narrative-stat">Curated agents</div>
+                              <div className="narrative-stat">Workflow hooks</div>
+                              <div className="narrative-stat">Telemetry on</div>
+                            </div>
+                          </div>
+                          <div className="narrative-mini">
+                            <div className="narrative-mini-kicker">Deployment scope</div>
+                            <div className="narrative-mini-title">Wired to real workflows.</div>
+                            <div className="narrative-mini-body">
+                              Default integrations and permissions aligned so teams can run tasks immediately.
+                            </div>
+                            <div className="narrative-list">
+                              <div className="narrative-list-item">Operational permissions baseline</div>
+                              <div className="narrative-list-item">Run logs captured by default</div>
+                              <div className="narrative-list-item">Live usage from day one</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="narrative-callout">
+                          <strong>Design goal:</strong> working systems on day one, even if imperfect. We learn by running them.
+                        </div>
+                      </div>
 
-              {/* BANNER */}
-              <div className="highlight-banner">
-                <div className="highlight-banner-icon">🧬</div>
-                <div className="highlight-banner-text">
-                  <div className="highlight-banner-title">Stack Builder — now in beta</div>
-                  <div className="highlight-banner-desc">Drag and drop agents to create custom capability stacks. Wire them together with zero code.</div>
-                </div>
-                <button className="highlight-banner-cta">Try it →</button>
-              </div>
-
-              <div className="section-divider" />
-
-              {/* NEW ARRIVALS */}
-              <div className="shelf-container">
-                <Section sectionKey="newArrivals">
-                  <div className="grid-3">
-                    {newAgents.map(a => <MediumCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
-                  </div>
-                </Section>
-              </div>
-
-              {/* PAIRS WELL */}
-              <div className="shelf-stack">
-                <div className="section-context">
-                  <div className="section-context-title">Every individual & team forms their preferred stacks of agents with few weeks of usage</div>
-                </div>
-                <div className="shelf-container">
-                  <Section sectionKey="pairsWell">
-                    <HorizontalShelf>
-                      {pairings.map(([a, b], i) => <PairingCard key={i} agent1={a} agent2={b} />)}
-                    </HorizontalShelf>
-                  </Section>
-
-                  {/* COLLECTIONS */}
-                  <Section sectionKey="collections">
-                    <HorizontalShelf>
-                      {COLLECTIONS.map(c => <CollectionCard key={c.id} collection={c} />)}
-                    </HorizontalShelf>
-                  </Section>
-
-                  {/* FREE */}
-                  <Section sectionKey="free">
-                    <div className="grid-4">
-                      {freeAgents.slice(0, 8).map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
+                      <div className="shelf-container">
+                        <Section sectionKey="newArrivals">
+                          <div className="grid-3">
+                            {newAgents.map(a => <MediumCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
+                          </div>
+                        </Section>
+                      </div>
                     </div>
-                  </Section>
+                  </div>
                 </div>
-              </div>
 
-              <div className="section-divider" />
+                <div className="story-section story-learn" ref={el => (storySectionRefs.current[1] = el)}>
+                  <div className="story-grid">
+                    <div className="story-narrative">
+                      <div className="shelf-container narrative-block">
+                        <div className="narrative-kicker">Weeks 1-4 - Learning window</div>
+                        <div className="narrative-title">Usage teaches you what to build next.</div>
+                        <div className="narrative-body">
+                          Teams use the system daily. Friction and opportunity surface fast, and you get a real readiness map.
+                        </div>
+                        <div className="narrative-timeline">
+                          <div className="narrative-chip"><strong>Week 1</strong> Adoption signals</div>
+                          <div className="narrative-chip"><strong>Week 2</strong> Workflow friction</div>
+                          <div className="narrative-chip"><strong>Week 3</strong> Automation value</div>
+                          <div className="narrative-chip"><strong>Week 4</strong> Readiness map</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="story-shelves">
+                      <div className="narrative-shelf-stack">
+                        <div className="narrative-shelf-grid narrative-grid-2">
+                          <div className="narrative-mini">
+                            <div className="narrative-mini-kicker">Signal telemetry</div>
+                            <div className="narrative-mini-title">Where adoption concentrates.</div>
+                            <div className="narrative-mini-body">
+                              We measure frequency, handoff quality, and recovery to identify stable paths.
+                            </div>
+                            <div className="narrative-list">
+                              <div className="narrative-list-item">Adoption heatmap by team</div>
+                              <div className="narrative-list-item">Workflow friction and bottlenecks</div>
+                              <div className="narrative-list-item">Value signals from real outcomes</div>
+                            </div>
+                          </div>
+                          <div className="narrative-mini emphasis">
+                            <div className="narrative-mini-kicker">Decision triggers</div>
+                            <div className="narrative-mini-title">When to stabilize.</div>
+                            <div className="narrative-mini-body">
+                              Signals indicate which workflows deserve hardening and deeper integration.
+                            </div>
+                            <div className="narrative-steps">
+                              <div className="narrative-step"><span className="narrative-step-dot" />Adoption stays consistent</div>
+                              <div className="narrative-step"><span className="narrative-step-dot" />Errors trend downward</div>
+                              <div className="narrative-step"><span className="narrative-step-dot" />Time saved is repeatable</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="narrative-callout">
+                          <strong>Outcome:</strong> a readiness map that shows which automations to harden next.
+                        </div>
+                      </div>
 
-              <div className="shelf-container">
-                {/* INTEGRATIONS */}
-                <Section sectionKey="integrations">
-                  <HorizontalShelf>
-                    {INTEGRATIONS.map(i => <IntegrationCard key={i.id} integration={i} />)}
-                  </HorizontalShelf>
-                </Section>
+                      <div className="shelf-container">
+                        <Section sectionKey="integrations">
+                          <HorizontalShelf>
+                            {INTEGRATIONS.map(i => <IntegrationCard key={i.id} integration={i} />)}
+                          </HorizontalShelf>
+                        </Section>
 
-                {/* ALL-ACCESS REFERENCE STACKS */}
-                <Section sectionKey="allAccessStacks">
-                  <HorizontalShelf>
-                    {STACKS.filter(s => s.allAccess).map(s => <StackCard key={s.id} stack={s} aaEnabled={aaEnabled} onAAClick={handleStackAA} />)}
-                  </HorizontalShelf>
-                </Section>
-
-                {/* TOP RATED */}
-                <Section sectionKey="topRated">
-                  <HorizontalShelf>
-                    {topRated.map(a => <MediumCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
-                  </HorizontalShelf>
-                </Section>
-
-                {/* DEVELOPERS */}
-                <Section sectionKey="developers">
-                  <div className="grid-3">
-                    {devAgents.map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
+                        <Section sectionKey="popular">
+                          <div className="grid-4">
+                            {mostPopular.map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
+                          </div>
+                        </Section>
+                      </div>
+                    </div>
                   </div>
-                </Section>
-
-                {/* RISING STARS */}
-                <Section sectionKey="risingStar">
-                  <HorizontalShelf>
-                    {risingStars.map(a => <MediumCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
-                  </HorizontalShelf>
-                </Section>
-
-                {/* EDITORS PICK */}
-                <Section sectionKey="editorsPick">
-                  <div className="featured-mixed">
-                    <LargeCard agent={featured[3]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
-                    <MediumCard agent={featured[4]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
-                    <MediumCard agent={featured[5]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
-                  </div>
-                </Section>
-              </div>
-
-              <div className="shelf-container">
-                {/* DATA */}
-                <Section sectionKey="data">
-                  <HorizontalShelf>
-                    {dataAgents.map(a => <MediumCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
-                  </HorizontalShelf>
-                </Section>
-              </div>
-
-              {/* AGENT OF THE WEEK */}
-              <div className="highlight-banner" style={{ background: "linear-gradient(135deg, #1A0A2E, #2D1A3E)" }}>
-                <div className="highlight-banner-icon">🏆</div>
-                <div className="highlight-banner-text">
-                  <div className="highlight-banner-title" style={{ color: "#FDCB6E" }}>Agent of the Week: ResearchBot Pro</div>
-                  <div className="highlight-banner-desc">12.4k users trust it for deep web research. Rated 4.9 stars across 86 reviews.</div>
                 </div>
-                <button className="highlight-banner-cta" style={{ background: "#FDCB6E", color: "#000" }}>View Profile →</button>
-              </div>
 
-              <div className="shelf-container">
-                {/* PRODUCTIVITY */}
-                <Section sectionKey="productivity">
-                  <div className="grid-3">
-                    {productivityAgents.map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
+                <div className="story-section story-stabilize" ref={el => (storySectionRefs.current[2] = el)}>
+                  <div className="story-grid">
+                    <div className="story-narrative">
+                      <div className="shelf-container narrative-block">
+                        <div className="narrative-kicker">Stabilize + adapt</div>
+                        <div className="narrative-title">Evolve what works, retire what does not.</div>
+                        <div className="narrative-body">
+                          We modify agents, extend open-source components, and deepen integrations based on observed reality.
+                        </div>
+                        <div className="narrative-list">
+                          <div className="narrative-list-item">Modify and tune existing agents</div>
+                          <div className="narrative-list-item">Extend open-source tooling</div>
+                          <div className="narrative-list-item">Deepen internal integrations</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="story-shelves">
+                      <div className="shelf-container">
+                        <Section sectionKey="productivity">
+                          <div className="grid-3">
+                            {productivityAgents.map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
+                          </div>
+                        </Section>
+
+                        <Section sectionKey="data">
+                          <HorizontalShelf>
+                            {dataAgents.map(a => <MediumCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
+                          </HorizontalShelf>
+                        </Section>
+
+                        <Section sectionKey="teamStacks">
+                          <div className="grid-3">
+                            {STACKS.map(s => <StackCard key={s.id} stack={s} aaEnabled={aaEnabled} onAAClick={handleStackAA} />)}
+                          </div>
+                        </Section>
+                      </div>
+
+                      <div className="narrative-shelf-stack">
+                        <div className="narrative-shelf-grid narrative-grid-3">
+                          <div className="narrative-mini emphasis">
+                            <div className="narrative-mini-kicker">Stabilize</div>
+                            <div className="narrative-mini-title">Tune and harden.</div>
+                            <div className="narrative-mini-body">Prompt reliability, output formats, and guardrails get locked.</div>
+                          </div>
+                          <div className="narrative-mini">
+                            <div className="narrative-mini-kicker">Normalize</div>
+                            <div className="narrative-mini-title">Workflow consistency.</div>
+                            <div className="narrative-mini-body">We standardize handoffs and ensure the same outcome each run.</div>
+                          </div>
+                          <div className="narrative-mini">
+                            <div className="narrative-mini-kicker">Deepen</div>
+                            <div className="narrative-mini-title">Integration depth.</div>
+                            <div className="narrative-mini-body">Default connectors extend into org systems and data pipelines.</div>
+                          </div>
+                        </div>
+                        <div className="narrative-callout">
+                          <strong>Stabilization loop:</strong> tune agents, normalize workflows, then deepen integrations.
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </Section>
-
-                {/* MOST POPULAR */}
-                <Section sectionKey="popular">
-                  <div className="grid-4">
-                    {mostPopular.map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
-                  </div>
-                </Section>
-              </div>
-
-              <div className="section-divider" />
-
-              <div className="shelf-container">
-                {/* TEAM STACKS */}
-                <Section sectionKey="teamStacks">
-                  <div className="grid-3">
-                    {STACKS.map(s => <StackCard key={s.id} stack={s} aaEnabled={aaEnabled} onAAClick={handleStackAA} />)}
-                  </div>
-                </Section>
-
-                {/* RECENTLY UPDATED */}
-                <Section sectionKey="recentlyUpdated">
-                  <HorizontalShelf>
-                    {[AGENTS[1], AGENTS[8], AGENTS[15], AGENTS[22], AGENTS[5], AGENTS[19], AGENTS[11], AGENTS[26], AGENTS[3], AGENTS[20]].map(a => (
-                      <MediumCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />
-                    ))}
-                  </HorizontalShelf>
-                </Section>
-
-                {/* COMMUNITY PICKS */}
-                <Section sectionKey="communityPicks">
-                  <div className="grid-4">
-                    {[AGENTS[19], AGENTS[6], AGENTS[13], AGENTS[22], AGENTS[27], AGENTS[2], AGENTS[9], AGENTS[16]].map(a => (
-                      <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />
-                    ))}
-                  </div>
-                </Section>
-              </div>
-
-              {/* PUBLISH BANNER */}
-              <div className="highlight-banner" style={{ background: "linear-gradient(135deg, #0A1A2E, #0A2E1A)" }}>
-                <div className="highlight-banner-icon">🔌</div>
-                <div className="highlight-banner-text">
-                  <div className="highlight-banner-title" style={{ color: "#1DD1A1" }}>Publish your own agent</div>
-                  <div className="highlight-banner-desc">List your agent on the Playstore. Reach 128k+ users actively building with AI.</div>
                 </div>
-                <button className="highlight-banner-cta" style={{ background: "#1DD1A1", color: "#000" }}>Get Started →</button>
-              </div>
 
-              <div className="shelf-container">
-                {/* SECURITY */}
-                <Section sectionKey="security">
-                  <HorizontalShelf>
-                    {[AGENTS[9], AGENTS[18], AGENTS[14], AGENTS[4]].map(a => (
-                      <MediumCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />
-                    ))}
-                  </HorizontalShelf>
-                </Section>
+                <div className="story-section story-bespoke" ref={el => (storySectionRefs.current[3] = el)}>
+                  <div className="story-grid">
+                    <div className="story-narrative">
+                      <div className="shelf-container narrative-block">
+                        <div className="narrative-kicker">Bespoke systems</div>
+                        <div className="narrative-title">Custom agents built around how you operate.</div>
+                        <div className="narrative-body">
+                          Once usage is stable, we design bespoke workflows and agents tailored to your organization.
+                        </div>
+                        <div className="narrative-pills">
+                          <span className="narrative-pill">Custom workflows</span>
+                          <span className="narrative-pill">Production-grade</span>
+                          <span className="narrative-pill">Built on your stack</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="story-shelves">
+                      <div className="narrative-shelf-stack">
+                        <div className="narrative-shelf-grid narrative-grid-2">
+                          <div className="narrative-mini emphasis">
+                            <div className="narrative-mini-kicker">Custom build</div>
+                            <div className="narrative-mini-title">Bespoke system outputs.</div>
+                            <div className="narrative-mini-body">
+                              New agents, orchestration layers, and workflows aligned to your operating model.
+                            </div>
+                            <div className="narrative-list">
+                              <div className="narrative-list-item">Org-specific workflows</div>
+                              <div className="narrative-list-item">Custom agents and tools</div>
+                              <div className="narrative-list-item">Production-grade reliability</div>
+                            </div>
+                          </div>
+                          <div className="narrative-mini">
+                            <div className="narrative-mini-kicker">Ownership transfer</div>
+                            <div className="narrative-mini-title">Built on your stack.</div>
+                            <div className="narrative-mini-body">
+                              Systems live in your infra, with documentation and handoff for long-term control.
+                            </div>
+                            <div className="narrative-stat-row">
+                              <div className="narrative-stat">Your code</div>
+                              <div className="narrative-stat">Your models</div>
+                              <div className="narrative-stat">Your infra</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="narrative-mini">
+                          <div className="narrative-mini-kicker">Capability shift</div>
+                          <div className="narrative-mini-title">From usage to independence.</div>
+                          <div className="narrative-mini-body">
+                            The system evolves into a durable internal capability that your teams can extend.
+                          </div>
+                        </div>
+                      </div>
 
-                {/* EXPLORE */}
-                <Section sectionKey="explore">
-                  <div className="grid-4">
-                    {AGENTS.slice(0, 12).map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
+                      <div className="highlight-banner" style={{ background: "linear-gradient(135deg, #0A1A2E, #0A2E1A)" }}>
+                        <div className="highlight-banner-icon">🔌</div>
+                        <div className="highlight-banner-text">
+                          <div className="highlight-banner-title" style={{ color: "#1DD1A1" }}>Publish your own agent</div>
+                          <div className="highlight-banner-desc">List your agent on the Playstore. Reach 128k+ users actively building with AI.</div>
+                        </div>
+                        <button className="highlight-banner-cta" style={{ background: "#1DD1A1", color: "#000" }}>Get Started →</button>
+                      </div>
+                    </div>
                   </div>
-                </Section>
+                </div>
               </div>
 
             </div>
