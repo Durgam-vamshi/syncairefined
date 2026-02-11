@@ -759,16 +759,23 @@ export default function AgentPlaystore() {
         .hero-section {
           position: relative; border-radius: 14px; overflow: hidden;
           background: linear-gradient(135deg, #10101C 0%, #181830 40%, #0E1520 100%);
-          border: 1px solid var(--border-subtle); padding: 36px 32px; min-height: 170px;
+          border: 1px solid var(--border-subtle); padding: 26px 28px; min-height: 150px;
         }
         .hero-glow { position: absolute; top: -50px; right: -40px; width: 280px; height: 280px; background: radial-gradient(circle, #7C6CFF15, transparent 70%); pointer-events: none; }
         .hero-glow-2 { position: absolute; bottom: -60px; left: 18%; width: 240px; height: 240px; background: radial-gradient(circle, #E8439315, transparent 70%); pointer-events: none; }
         .hero-title { font-family: var(--font-display); font-size: 34px; line-height: 1.12; margin-bottom: 8px; position: relative; letter-spacing: -0.02em; }
         .hero-title em { font-style: italic; color: var(--accent-primary); }
-        .hero-subtitle { font-size: 14px; color: var(--text-secondary); line-height: 1.5; max-width: 500px; position: relative; }
-        .hero-stats { display: flex; gap: 26px; margin-top: 20px; position: relative; }
-        .hero-stat-value { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
-        .hero-stat-label { font-size: 10.5px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.07em; margin-top: 1px; }
+        .hero-subtitle { font-size: 13px; color: var(--text-secondary); line-height: 1.5; max-width: 520px; position: relative; }
+        .hero-actions { display: flex; gap: 10px; margin-top: 10px; position: relative; }
+        .hero-cta {
+          padding: 7px 12px; border-radius: 8px; border: 1px solid var(--aa-border);
+          background: var(--aa-bg); color: var(--aa); font-size: 12px; font-weight: 600;
+          font-family: var(--font-body); cursor: pointer; transition: all 0.15s; white-space: nowrap;
+        }
+        .hero-cta:hover { border-color: var(--aa); background: #B89A5C24; }
+        .hero-stats { display: flex; gap: 18px; margin-top: 14px; position: relative; }
+        .hero-stat-value { font-size: 16px; font-weight: 600; color: var(--text-secondary); font-variant-numeric: tabular-nums; opacity: 0.7; }
+        .hero-stat-label { font-size: 9.5px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; opacity: 0.7; }
 
         /* ===== SECTIONS ===== */
         .section { display: flex; flex-direction: column; gap: 14px; }
@@ -783,6 +790,16 @@ export default function AgentPlaystore() {
         .section-context { display: flex; flex-direction: column; gap: 2px; margin-top: 2px; }
         .section-context-title { font-family: var(--font-display); font-size: 34px; color: var(--text-primary); letter-spacing: -0.02em; line-height: 1.12; }
         .section-context-sub { font-size: 11.5px; color: var(--text-tertiary); }
+        .shelf-stack { display: flex; flex-direction: column; gap: 14px; }
+        .shelf-container {
+          position: relative;
+          padding: 18px 18px 22px;
+          border-radius: 16px;
+          background: linear-gradient(180deg, #0E0E18 0%, #0B0B12 100%);
+          border: 1px solid var(--border-subtle);
+          box-shadow: inset 0 8px 12px -12px rgba(0,0,0,0.75), inset 0 1px 0 rgba(255,255,255,0.02);
+          display: flex; flex-direction: column; gap: 20px;
+        }
 
         /* ===== SHELF ===== */
         .shelf-wrapper { overflow: hidden; margin: 0 -4px; }
@@ -1122,6 +1139,7 @@ export default function AgentPlaystore() {
           .aa-panel { width: 100%; }
           .hero-content-wrap { flex-direction: column; }
           .hero-aa-card { width: 100%; min-width: unset; }
+          .shelf-container { padding: 14px; border-radius: 14px; }
         }
 
         /* ===== ANIMATIONS ===== */
@@ -1176,8 +1194,11 @@ export default function AgentPlaystore() {
                 <div className="hero-aa-glow" />
                 <div className="hero-content-wrap">
                   <div className="hero-left">
-                    <div className="hero-title">Discover your next <em>AI capability</em></div>
-                    <div className="hero-subtitle">Browse agents, assemble stacks, and connect integrations. The modular way to build with AI.</div>
+                    <div className="hero-title">Start imperfect. Stabilize later.</div>
+                    <div className="hero-subtitle">Browse hundreds of agents, stacks, and integrations used in real workflows</div>
+                    <div className="hero-actions">
+                      <button className="hero-cta" onClick={() => openAA()}>Unlock All-Access</button>
+                    </div>
                     <div className="hero-stats">
                       <div className="hero-stat"><div className="hero-stat-value">284</div><div className="hero-stat-label">Agents</div></div>
                       <div className="hero-stat"><div className="hero-stat-value">67</div><div className="hero-stat-label">Stacks</div></div>
@@ -1189,9 +1210,9 @@ export default function AgentPlaystore() {
                     <div className="hero-aa-card-glow" />
                     <div className="hero-aa-icon">◆</div>
                     <div className="hero-aa-label">All-Access</div>
-                    <div className="hero-aa-desc">{aaEnabled ? "Full execution enabled across all reference stacks and agents." : "Execute any stack instantly. Parallel agents. Default integrations. No setup."}</div>
+                    <div className="hero-aa-desc">{aaEnabled ? "Execution permissions active across all stacks and agents." : "Run any stack with stabilized permissions. Parallel agents. Default integrations. No setup."}</div>
                     <div className="hero-aa-price">{aaEnabled ? "Active" : "$1,000 /mo"}</div>
-                    <div className="hero-aa-cta">{aaEnabled ? "◆ Enabled" : "Unlock All-Access →"}</div>
+                    <div className="hero-aa-cta">{aaEnabled ? "◆ Enabled" : "Enable run access →"}</div>
                   </div>
                 </div>
               </div>
@@ -1204,31 +1225,35 @@ export default function AgentPlaystore() {
               </div>
 
               {/* FEATURED */}
-              <div className="section-context">
-                <div className="section-context-title">Start imperfect. Stabilize later.</div>
-                <div className="section-context-sub">Frequently run in the first month</div>
-              </div>
-              <Section sectionKey="featured">
-                <div className="featured-mixed">
-                  <LargeCard agent={featured[0]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
-                  <MediumCard agent={featured[1]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
-                  <MediumCard agent={featured[2]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
+              <div className="shelf-stack">
+                <div className="section-context">
+                  <div className="section-context-title">Start imperfect. Stabilize later.</div>
+                  <div className="section-context-sub">Frequently run in the first month</div>
                 </div>
-              </Section>
+                <div className="shelf-container">
+                  <Section sectionKey="featured">
+                    <div className="featured-mixed">
+                      <LargeCard agent={featured[0]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
+                      <MediumCard agent={featured[1]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
+                      <MediumCard agent={featured[2]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
+                    </div>
+                  </Section>
 
-              {/* TRENDING */}
-              <Section sectionKey="trending">
-                <HorizontalShelf>
-                  {trending.map(a => <MediumCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
-                </HorizontalShelf>
-              </Section>
+                  {/* TRENDING */}
+                  <Section sectionKey="trending">
+                    <HorizontalShelf>
+                      {trending.map(a => <MediumCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
+                    </HorizontalShelf>
+                  </Section>
 
-              {/* STACKS */}
-              <Section sectionKey="stacks">
-                <HorizontalShelf>
-                  {STACKS.map(s => <StackCard key={s.id} stack={s} aaEnabled={aaEnabled} onAAClick={handleStackAA} />)}
-                </HorizontalShelf>
-              </Section>
+                  {/* STACKS */}
+                  <Section sectionKey="stacks">
+                    <HorizontalShelf>
+                      {STACKS.map(s => <StackCard key={s.id} stack={s} aaEnabled={aaEnabled} onAAClick={handleStackAA} />)}
+                    </HorizontalShelf>
+                  </Section>
+                </div>
+              </div>
 
               {/* BANNER */}
               <div className="highlight-banner">
@@ -1243,88 +1268,98 @@ export default function AgentPlaystore() {
               <div className="section-divider" />
 
               {/* NEW ARRIVALS */}
-              <Section sectionKey="newArrivals">
-                <div className="grid-3">
-                  {newAgents.map(a => <MediumCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
-                </div>
-              </Section>
+              <div className="shelf-container">
+                <Section sectionKey="newArrivals">
+                  <div className="grid-3">
+                    {newAgents.map(a => <MediumCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
+                  </div>
+                </Section>
+              </div>
 
               {/* PAIRS WELL */}
-              <div className="section-context">
-                <div className="section-context-title">Teams love how it augments their strength</div>
-              </div>
-              <Section sectionKey="pairsWell">
-                <HorizontalShelf>
-                  {pairings.map(([a, b], i) => <PairingCard key={i} agent1={a} agent2={b} />)}
-                </HorizontalShelf>
-              </Section>
-
-              {/* COLLECTIONS */}
-              <Section sectionKey="collections">
-                <HorizontalShelf>
-                  {COLLECTIONS.map(c => <CollectionCard key={c.id} collection={c} />)}
-                </HorizontalShelf>
-              </Section>
-
-              {/* FREE */}
-              <Section sectionKey="free">
-                <div className="grid-4">
-                  {freeAgents.slice(0, 8).map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
+              <div className="shelf-stack">
+                <div className="section-context">
+                  <div className="section-context-title">Every individual & team forms their preferred stacks of agents with few weeks of usage</div>
                 </div>
-              </Section>
+                <div className="shelf-container">
+                  <Section sectionKey="pairsWell">
+                    <HorizontalShelf>
+                      {pairings.map(([a, b], i) => <PairingCard key={i} agent1={a} agent2={b} />)}
+                    </HorizontalShelf>
+                  </Section>
+
+                  {/* COLLECTIONS */}
+                  <Section sectionKey="collections">
+                    <HorizontalShelf>
+                      {COLLECTIONS.map(c => <CollectionCard key={c.id} collection={c} />)}
+                    </HorizontalShelf>
+                  </Section>
+
+                  {/* FREE */}
+                  <Section sectionKey="free">
+                    <div className="grid-4">
+                      {freeAgents.slice(0, 8).map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
+                    </div>
+                  </Section>
+                </div>
+              </div>
 
               <div className="section-divider" />
 
-              {/* INTEGRATIONS */}
-              <Section sectionKey="integrations">
-                <HorizontalShelf>
-                  {INTEGRATIONS.map(i => <IntegrationCard key={i.id} integration={i} />)}
-                </HorizontalShelf>
-              </Section>
+              <div className="shelf-container">
+                {/* INTEGRATIONS */}
+                <Section sectionKey="integrations">
+                  <HorizontalShelf>
+                    {INTEGRATIONS.map(i => <IntegrationCard key={i.id} integration={i} />)}
+                  </HorizontalShelf>
+                </Section>
 
-              {/* ALL-ACCESS REFERENCE STACKS */}
-              <Section sectionKey="allAccessStacks">
-                <HorizontalShelf>
-                  {STACKS.filter(s => s.allAccess).map(s => <StackCard key={s.id} stack={s} aaEnabled={aaEnabled} onAAClick={handleStackAA} />)}
-                </HorizontalShelf>
-              </Section>
+                {/* ALL-ACCESS REFERENCE STACKS */}
+                <Section sectionKey="allAccessStacks">
+                  <HorizontalShelf>
+                    {STACKS.filter(s => s.allAccess).map(s => <StackCard key={s.id} stack={s} aaEnabled={aaEnabled} onAAClick={handleStackAA} />)}
+                  </HorizontalShelf>
+                </Section>
 
-              {/* TOP RATED */}
-              <Section sectionKey="topRated">
-                <HorizontalShelf>
-                  {topRated.map(a => <MediumCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
-                </HorizontalShelf>
-              </Section>
+                {/* TOP RATED */}
+                <Section sectionKey="topRated">
+                  <HorizontalShelf>
+                    {topRated.map(a => <MediumCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
+                  </HorizontalShelf>
+                </Section>
 
-              {/* DEVELOPERS */}
-              <Section sectionKey="developers">
-                <div className="grid-3">
-                  {devAgents.map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
-                </div>
-              </Section>
+                {/* DEVELOPERS */}
+                <Section sectionKey="developers">
+                  <div className="grid-3">
+                    {devAgents.map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
+                  </div>
+                </Section>
 
-              {/* RISING STARS */}
-              <Section sectionKey="risingStar">
-                <HorizontalShelf>
-                  {risingStars.map(a => <MediumCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
-                </HorizontalShelf>
-              </Section>
+                {/* RISING STARS */}
+                <Section sectionKey="risingStar">
+                  <HorizontalShelf>
+                    {risingStars.map(a => <MediumCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
+                  </HorizontalShelf>
+                </Section>
 
-              {/* EDITORS PICK */}
-              <Section sectionKey="editorsPick">
-                <div className="featured-mixed">
-                  <LargeCard agent={featured[3]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
-                  <MediumCard agent={featured[4]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
-                  <MediumCard agent={featured[5]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
-                </div>
-              </Section>
+                {/* EDITORS PICK */}
+                <Section sectionKey="editorsPick">
+                  <div className="featured-mixed">
+                    <LargeCard agent={featured[3]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
+                    <MediumCard agent={featured[4]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
+                    <MediumCard agent={featured[5]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
+                  </div>
+                </Section>
+              </div>
 
-              {/* DATA */}
-              <Section sectionKey="data">
-                <HorizontalShelf>
-                  {dataAgents.map(a => <MediumCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
-                </HorizontalShelf>
-              </Section>
+              <div className="shelf-container">
+                {/* DATA */}
+                <Section sectionKey="data">
+                  <HorizontalShelf>
+                    {dataAgents.map(a => <MediumCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
+                  </HorizontalShelf>
+                </Section>
+              </div>
 
               {/* AGENT OF THE WEEK */}
               <div className="highlight-banner" style={{ background: "linear-gradient(135deg, #1A0A2E, #2D1A3E)" }}>
@@ -1336,46 +1371,50 @@ export default function AgentPlaystore() {
                 <button className="highlight-banner-cta" style={{ background: "#FDCB6E", color: "#000" }}>View Profile →</button>
               </div>
 
-              {/* PRODUCTIVITY */}
-              <Section sectionKey="productivity">
-                <div className="grid-3">
-                  {productivityAgents.map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
-                </div>
-              </Section>
+              <div className="shelf-container">
+                {/* PRODUCTIVITY */}
+                <Section sectionKey="productivity">
+                  <div className="grid-3">
+                    {productivityAgents.map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
+                  </div>
+                </Section>
 
-              {/* MOST POPULAR */}
-              <Section sectionKey="popular">
-                <div className="grid-4">
-                  {mostPopular.map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
-                </div>
-              </Section>
+                {/* MOST POPULAR */}
+                <Section sectionKey="popular">
+                  <div className="grid-4">
+                    {mostPopular.map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
+                  </div>
+                </Section>
+              </div>
 
               <div className="section-divider" />
 
-              {/* TEAM STACKS */}
-              <Section sectionKey="teamStacks">
-                <div className="grid-3">
-                  {STACKS.map(s => <StackCard key={s.id} stack={s} aaEnabled={aaEnabled} onAAClick={handleStackAA} />)}
-                </div>
-              </Section>
+              <div className="shelf-container">
+                {/* TEAM STACKS */}
+                <Section sectionKey="teamStacks">
+                  <div className="grid-3">
+                    {STACKS.map(s => <StackCard key={s.id} stack={s} aaEnabled={aaEnabled} onAAClick={handleStackAA} />)}
+                  </div>
+                </Section>
 
-              {/* RECENTLY UPDATED */}
-              <Section sectionKey="recentlyUpdated">
-                <HorizontalShelf>
-                  {[AGENTS[1], AGENTS[8], AGENTS[15], AGENTS[22], AGENTS[5], AGENTS[19], AGENTS[11], AGENTS[26], AGENTS[3], AGENTS[20]].map(a => (
-                    <MediumCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />
-                  ))}
-                </HorizontalShelf>
-              </Section>
+                {/* RECENTLY UPDATED */}
+                <Section sectionKey="recentlyUpdated">
+                  <HorizontalShelf>
+                    {[AGENTS[1], AGENTS[8], AGENTS[15], AGENTS[22], AGENTS[5], AGENTS[19], AGENTS[11], AGENTS[26], AGENTS[3], AGENTS[20]].map(a => (
+                      <MediumCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />
+                    ))}
+                  </HorizontalShelf>
+                </Section>
 
-              {/* COMMUNITY PICKS */}
-              <Section sectionKey="communityPicks">
-                <div className="grid-4">
-                  {[AGENTS[19], AGENTS[6], AGENTS[13], AGENTS[22], AGENTS[27], AGENTS[2], AGENTS[9], AGENTS[16]].map(a => (
-                    <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />
-                  ))}
-                </div>
-              </Section>
+                {/* COMMUNITY PICKS */}
+                <Section sectionKey="communityPicks">
+                  <div className="grid-4">
+                    {[AGENTS[19], AGENTS[6], AGENTS[13], AGENTS[22], AGENTS[27], AGENTS[2], AGENTS[9], AGENTS[16]].map(a => (
+                      <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />
+                    ))}
+                  </div>
+                </Section>
+              </div>
 
               {/* PUBLISH BANNER */}
               <div className="highlight-banner" style={{ background: "linear-gradient(135deg, #0A1A2E, #0A2E1A)" }}>
@@ -1387,21 +1426,23 @@ export default function AgentPlaystore() {
                 <button className="highlight-banner-cta" style={{ background: "#1DD1A1", color: "#000" }}>Get Started →</button>
               </div>
 
-              {/* SECURITY */}
-              <Section sectionKey="security">
-                <HorizontalShelf>
-                  {[AGENTS[9], AGENTS[18], AGENTS[14], AGENTS[4]].map(a => (
-                    <MediumCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />
-                  ))}
-                </HorizontalShelf>
-              </Section>
+              <div className="shelf-container">
+                {/* SECURITY */}
+                <Section sectionKey="security">
+                  <HorizontalShelf>
+                    {[AGENTS[9], AGENTS[18], AGENTS[14], AGENTS[4]].map(a => (
+                      <MediumCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />
+                    ))}
+                  </HorizontalShelf>
+                </Section>
 
-              {/* EXPLORE */}
-              <Section sectionKey="explore">
-                <div className="grid-4">
-                  {AGENTS.slice(0, 12).map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
-                </div>
-              </Section>
+                {/* EXPLORE */}
+                <Section sectionKey="explore">
+                  <div className="grid-4">
+                    {AGENTS.slice(0, 12).map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
+                  </div>
+                </Section>
+              </div>
 
             </div>
           </div>
