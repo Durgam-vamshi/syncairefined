@@ -1404,32 +1404,6 @@ export default function AgentPlaystore() {
                       </div>
                     </div>
                     <div className="story-shelves">
-                      <div className="shelf-container">
-                        <Section sectionKey="featured">
-                          <div className="featured-mixed">
-                            <LargeCard agent={featured[0]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
-                            <MediumCard agent={featured[1]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
-                            <MediumCard agent={featured[2]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
-                          </div>
-                        </Section>
-
-                        <Section sectionKey="stacks">
-                          <HorizontalShelf>
-                            {STACKS.map(s => <StackCard key={s.id} stack={s} aaEnabled={aaEnabled} onAAClick={handleStackAA} />)}
-                          </HorizontalShelf>
-                        </Section>
-                      </div>
-
-                      <div className="shelf-container">
-                        <Section sectionKey="categories">
-                          <div className="grid-4">
-                            {CATEGORY_CARDS.map(category => (
-                              <CategoryCard key={category.key} category={category} />
-                            ))}
-                          </div>
-                        </Section>
-                      </div>
-
                       <div className="narrative-shelf-stack" style={{ "--accent": "var(--story-accent)" }}>
                         <div className="featured-mixed">
                           <div className="large-card">
@@ -1587,9 +1561,33 @@ export default function AgentPlaystore() {
                       </div>
 
                       <div className="shelf-container">
-                        <Section sectionKey="newArrivals">
-                          <div className="grid-3">
-                            {newAgents.map(a => <MediumCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
+                        <Section sectionKey="stacks">
+                          <HorizontalShelf>
+                            {STACKS.map(s => <StackCard key={s.id} stack={s} aaEnabled={aaEnabled} onAAClick={handleStackAA} />)}
+                          </HorizontalShelf>
+                        </Section>
+
+                        <Section sectionKey="integrations">
+                          <HorizontalShelf>
+                            {INTEGRATIONS.map(i => <IntegrationCard key={i.id} integration={i} />)}
+                          </HorizontalShelf>
+                        </Section>
+                      </div>
+
+                      <div className="shelf-container">
+                        <Section sectionKey="featured">
+                          <div className="featured-mixed">
+                            <LargeCard agent={featured[0]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
+                            <MediumCard agent={featured[1]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
+                            <MediumCard agent={featured[2]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
+                          </div>
+                        </Section>
+
+                        <Section sectionKey="categories">
+                          <div className="grid-4">
+                            {CATEGORY_CARDS.map(category => (
+                              <CategoryCard key={category.key} category={category} />
+                            ))}
                           </div>
                         </Section>
                       </div>
@@ -1736,15 +1734,15 @@ export default function AgentPlaystore() {
                       </div>
 
                       <div className="shelf-container">
-                        <Section sectionKey="integrations">
-                          <HorizontalShelf>
-                            {INTEGRATIONS.map(i => <IntegrationCard key={i.id} integration={i} />)}
-                          </HorizontalShelf>
-                        </Section>
-
                         <Section sectionKey="popular">
                           <div className="grid-4">
                             {mostPopular.map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
+                          </div>
+                        </Section>
+
+                        <Section sectionKey="newArrivals">
+                          <div className="grid-3">
+                            {newAgents.map(a => <MediumCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
                           </div>
                         </Section>
                       </div>
@@ -1769,26 +1767,6 @@ export default function AgentPlaystore() {
                       </div>
                     </div>
                     <div className="story-shelves">
-                      <div className="shelf-container">
-                        <Section sectionKey="productivity">
-                          <div className="grid-3">
-                            {productivityAgents.map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
-                          </div>
-                        </Section>
-
-                        <Section sectionKey="data">
-                          <HorizontalShelf>
-                            {dataAgents.map(a => <MediumCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
-                          </HorizontalShelf>
-                        </Section>
-
-                        <Section sectionKey="teamStacks">
-                          <div className="grid-3">
-                            {STACKS.map(s => <StackCard key={s.id} stack={s} aaEnabled={aaEnabled} onAAClick={handleStackAA} />)}
-                          </div>
-                        </Section>
-                      </div>
-
                       <div className="narrative-shelf-stack" style={{ "--accent": "var(--story-accent)" }}>
                         <div className="grid-3">
                           <div className="medium-card">
@@ -1937,6 +1915,26 @@ export default function AgentPlaystore() {
                             <div className="integration-card-count">Tooling embedded</div>
                           </div>
                         </div>
+                      </div>
+
+                      <div className="shelf-container">
+                        <Section sectionKey="productivity">
+                          <div className="grid-3">
+                            {productivityAgents.map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
+                          </div>
+                        </Section>
+
+                        <Section sectionKey="teamStacks">
+                          <div className="grid-3">
+                            {STACKS.map(s => <StackCard key={s.id} stack={s} aaEnabled={aaEnabled} onAAClick={handleStackAA} />)}
+                          </div>
+                        </Section>
+
+                        <Section sectionKey="data">
+                          <HorizontalShelf>
+                            {dataAgents.map(a => <MediumCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
+                          </HorizontalShelf>
+                        </Section>
                       </div>
                     </div>
                   </div>
