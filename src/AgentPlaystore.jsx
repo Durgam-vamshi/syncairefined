@@ -186,6 +186,28 @@ const INTEGRATIONS = [
   { id: 310, name: "AWS", icon: "🔶", color: "#FF9900", agents: 27 },
 ];
 
+const CATEGORY_META = [
+  { key: "All", label: "All Agents", icon: "🧭", color: "#7C6CFF", desc: "Full catalog across every workflow and team." },
+  { key: "Research", label: "Research", icon: "🔬", color: "#6C5CE7", desc: "Synthesis, citations, and signal discovery." },
+  { key: "Development", label: "Development", icon: "⚡", color: "#00B894", desc: "Build, refactor, test, and ship faster." },
+  { key: "Data", label: "Data", icon: "📊", color: "#E17055", desc: "Transform, query, and visualize data." },
+  { key: "Creative", label: "Creative", icon: "🎨", color: "#FD79A8", desc: "Generate assets, visuals, and content." },
+  { key: "Productivity", label: "Productivity", icon: "📋", color: "#FDCB6E", desc: "Automate the work that slows teams down." },
+  { key: "Security", label: "Security", icon: "🛡️", color: "#D63031", desc: "Compliance, scanning, and protection workflows." },
+  { key: "Marketing", label: "Marketing", icon: "✍️", color: "#FF9FF3", desc: "Content, campaigns, and distribution." },
+  { key: "Finance", label: "Finance", icon: "💹", color: "#2ED573", desc: "Portfolio analysis and market signals." },
+  { key: "Sales", label: "Sales", icon: "📈", color: "#FF6B6B", desc: "Prospecting, scoring, and outreach." },
+  { key: "Education", label: "Education", icon: "🎓", color: "#1DD1A1", desc: "Learning paths and knowledge checks." },
+  { key: "DevOps", label: "DevOps", icon: "☁️", color: "#5F27CD", desc: "Infra automation and ops monitoring." },
+];
+
+const CATEGORY_CARDS = CATEGORY_META.map((category) => ({
+  ...category,
+  count: category.key === "All"
+    ? AGENTS.length
+    : AGENTS.filter(agent => agent.category === category.key).length,
+}));
+
 const SECTION_META = {
   featured: { headline: "Featured Agents", rationale: "Hand-picked by the Playstore team for quality, polish, and impact." },
   trending: { headline: "Trending Now", rationale: "The agents gaining the most momentum this week — installs, stars, and chatter." },
@@ -208,6 +230,7 @@ const SECTION_META = {
   pairsWell: { headline: "Pairs Well Together", rationale: "Agents that get better when used alongside each other." },
   risingStar: { headline: "Rising Stars", rationale: "Low user count, high ratings. Early bets that could become essentials." },
   allAccessStacks: { headline: "All-Access Reference Stacks", rationale: "Pre-configured capability stacks available for immediate execution with All-Access." },
+  categories: { headline: "Browse Categories", rationale: "Jump into the parts of the catalog aligned with your workflows." },
 };
 
 // --- ALL-ACCESS PANEL ---
@@ -501,6 +524,20 @@ function IntegrationCard({ integration }) {
   );
 }
 
+function CategoryCard({ category }) {
+  return (
+    <div className="category-card">
+      <div className="category-card-top">
+        <span className="category-card-icon" style={{ background: category.color + "22", color: category.color }}>{category.icon}</span>
+        <span className="category-card-count">{category.count} agents</span>
+      </div>
+      <div className="category-card-title">{category.label}</div>
+      <div className="category-card-desc">{category.desc}</div>
+      <div className="category-card-cta">Browse →</div>
+    </div>
+  );
+}
+
 function PairingCard({ agent1, agent2 }) {
   return (
     <div className="pairing-card">
@@ -751,10 +788,10 @@ export default function AgentPlaystore() {
           border: 1px solid var(--border-subtle);
           box-shadow: inset 0 10px 16px -18px rgba(0,0,0,0.8), 0 22px 40px -36px rgba(0,0,0,0.8);
         }
-        .story-section.story-start { background: linear-gradient(135deg, #0F101A, #0B0C14); }
-        .story-section.story-learn { background: linear-gradient(135deg, #0E1320, #0A0D16); }
-        .story-section.story-stabilize { background: linear-gradient(135deg, #0D1916, #0A0D12); }
-        .story-section.story-bespoke { background: linear-gradient(135deg, #16130D, #0E0B08); }
+        .story-section.story-start { --story-accent: #7C6CFF; --story-accent-weak: #7C6CFF22; --story-accent-border: #7C6CFF44; background: linear-gradient(135deg, #0F101A, #0B0C14); }
+        .story-section.story-learn { --story-accent: #5AC8FA; --story-accent-weak: #5AC8FA22; --story-accent-border: #5AC8FA44; background: linear-gradient(135deg, #0E1320, #0A0D16); }
+        .story-section.story-stabilize { --story-accent: #1DD1A1; --story-accent-weak: #1DD1A122; --story-accent-border: #1DD1A144; background: linear-gradient(135deg, #0D1916, #0A0D12); }
+        .story-section.story-bespoke { --story-accent: #B89A5C; --story-accent-weak: #B89A5C22; --story-accent-border: #B89A5C44; background: linear-gradient(135deg, #16130D, #0E0B08); }
         .story-grid {
           display: grid;
           grid-template-columns: minmax(280px, 0.34fr) minmax(0, 1fr);
@@ -777,37 +814,91 @@ export default function AgentPlaystore() {
         .narrative-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .narrative-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
         .narrative-mini {
+          position: relative;
           padding: 14px;
           border-radius: 12px;
-          background: var(--bg-card);
+          background: linear-gradient(160deg, rgba(255,255,255,0.02), rgba(0,0,0,0.3)), var(--bg-card);
           border: 1px solid var(--border-medium);
-          box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.02), 0 10px 24px -22px rgba(0,0,0,0.8);
+          overflow: hidden;
         }
+        .narrative-mini::before {
+          content: "";
+          position: absolute;
+          inset: -40% 20% 40% -20%;
+          background: radial-gradient(circle, var(--story-accent-weak), transparent 65%);
+          opacity: 0.9;
+        }
+        .narrative-mini::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(circle at 85% 15%, rgba(255,255,255,0.04), transparent 40%);
+          opacity: 0.6;
+        }
+        .narrative-mini > * { position: relative; z-index: 1; }
         .narrative-mini.emphasis {
-          background: linear-gradient(160deg, #17172A, #11111D);
-          border-color: #2B2B44;
+          background: linear-gradient(160deg, var(--story-accent-weak), rgba(16,16,28,0.85)), var(--bg-card);
+          border-color: var(--story-accent-border);
+        }
+        .narrative-mini-top { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .narrative-mini-icon {
+          width: 28px; height: 28px; border-radius: 8px;
+          display: flex; align-items: center; justify-content: center;
+          background: var(--story-accent-weak); color: var(--story-accent);
+          font-size: 13px; box-shadow: inset 0 0 0 1px var(--story-accent-weak);
         }
         .narrative-mini-kicker {
           font-size: 10px; text-transform: uppercase; letter-spacing: 0.16em;
-          color: var(--text-tertiary); margin-bottom: 6px;
+          color: var(--text-tertiary);
         }
         .narrative-mini-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
         .narrative-mini-body { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+        .narrative-mini-visual { display: flex; align-items: flex-end; gap: 6px; height: 34px; margin-top: 10px; }
+        .narrative-mini-bar {
+          width: 7px; border-radius: 6px;
+          background: linear-gradient(180deg, var(--story-accent), rgba(0,0,0,0));
+          opacity: 0.9;
+        }
+        .narrative-orbit { display: flex; align-items: center; gap: 6px; margin-top: 10px; }
+        .narrative-orbit-dot {
+          width: 6px; height: 6px; border-radius: 50%;
+          background: var(--story-accent); box-shadow: 0 0 8px var(--story-accent);
+        }
+        .narrative-orbit-line {
+          height: 1px; flex: 1; background: linear-gradient(90deg, var(--story-accent), transparent);
+        }
         .narrative-stat-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
         .narrative-stat {
           padding: 6px 8px; border-radius: 8px; background: #141420;
           border: 1px solid var(--border-subtle); font-size: 11px; color: var(--text-secondary);
         }
         .narrative-callout {
+          display: flex; align-items: flex-start; gap: 10px;
           padding: 14px; border-radius: 12px;
-          background: linear-gradient(135deg, rgba(124,108,255,0.12), rgba(184,154,92,0.1));
-          border: 1px solid var(--aa-border);
+          background: linear-gradient(135deg, var(--story-accent-weak), rgba(16,16,28,0.65));
+          border: 1px solid var(--border-medium);
           color: var(--text-secondary); font-size: 12.5px; line-height: 1.5;
+          position: relative; overflow: hidden;
+        }
+        .narrative-callout::before {
+          content: "";
+          position: absolute;
+          inset: -60% -20% 40% 30%;
+          background: radial-gradient(circle, var(--story-accent-weak), transparent 60%);
+          opacity: 0.9;
+        }
+        .narrative-callout > * { position: relative; z-index: 1; }
+        .narrative-callout-icon {
+          width: 26px; height: 26px; border-radius: 8px;
+          display: flex; align-items: center; justify-content: center;
+          background: var(--story-accent-weak); color: var(--story-accent);
+          font-size: 12px; flex-shrink: 0;
         }
         .narrative-callout strong { color: var(--text-primary); font-weight: 600; }
         .narrative-steps { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
         .narrative-step { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-secondary); }
-        .narrative-step-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-primary); flex-shrink: 0; }
+        .narrative-step-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--story-accent); flex-shrink: 0; }
         .narrative-kicker {
           font-size: 10px; text-transform: uppercase; letter-spacing: 0.18em;
           color: var(--text-tertiary);
@@ -1029,6 +1120,24 @@ export default function AgentPlaystore() {
           cursor: pointer; transition: all 0.15s; white-space: nowrap;
         }
         .category-pill:hover { border-color: var(--accent-primary); color: var(--text-primary); background: #7C6CFF0A; }
+
+        /* ===== CATEGORY CARDS ===== */
+        .category-card {
+          padding: 14px; border-radius: 12px;
+          background: var(--bg-card); border: 1px solid var(--border-subtle);
+          display: flex; flex-direction: column; gap: 8px;
+          cursor: pointer; transition: background 0.15s, border-color 0.2s, transform 0.15s;
+        }
+        .category-card:hover { background: var(--bg-card-hover); border-color: var(--accent-primary); transform: translateY(-2px); }
+        .category-card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .category-card-icon {
+          width: 34px; height: 34px; border-radius: 10px;
+          display: flex; align-items: center; justify-content: center; font-size: 16px;
+        }
+        .category-card-count { font-size: 11px; color: var(--text-tertiary); }
+        .category-card-title { font-size: 14px; font-weight: 600; }
+        .category-card-desc { font-size: 11.5px; color: var(--text-secondary); line-height: 1.45; }
+        .category-card-cta { font-size: 11px; font-weight: 600; color: var(--accent-primary); margin-top: 2px; }
 
         /* ===== HIGHLIGHT BANNER ===== */
         .highlight-banner {
@@ -1311,35 +1420,169 @@ export default function AgentPlaystore() {
                         </Section>
                       </div>
 
-                      <div className="narrative-shelf-stack">
-                        <div className="narrative-shelf-grid narrative-grid-2">
-                          <div className="narrative-mini emphasis">
-                            <div className="narrative-mini-kicker">Week 1 pack</div>
-                            <div className="narrative-mini-title">Starter stack in production.</div>
-                            <div className="narrative-mini-body">
-                              Curated agents mapped to core workflows and deployed into your environment.
-                            </div>
-                            <div className="narrative-stat-row">
-                              <div className="narrative-stat">Curated agents</div>
-                              <div className="narrative-stat">Workflow hooks</div>
-                              <div className="narrative-stat">Telemetry on</div>
+                      <div className="shelf-container">
+                        <Section sectionKey="categories">
+                          <div className="grid-4">
+                            {CATEGORY_CARDS.map(category => (
+                              <CategoryCard key={category.key} category={category} />
+                            ))}
+                          </div>
+                        </Section>
+                      </div>
+
+                      <div className="narrative-shelf-stack" style={{ "--accent": "var(--story-accent)" }}>
+                        <div className="featured-mixed">
+                          <div className="large-card">
+                            <div className="large-card-glow" style={{ background: "radial-gradient(ellipse at 30% 20%, var(--story-accent-weak), transparent 70%)" }} />
+                            <div className="large-card-content">
+                              <div className="large-card-top">
+                                <div className="large-card-icon" style={{ background: "linear-gradient(135deg, var(--story-accent), var(--story-accent-weak))" }}>
+                                  <span>🚀</span>
+                                </div>
+                                <div className="large-card-badges">
+                                  <span className="badge-featured">PHASE 0</span>
+                                  <span className="badge-trending-lg">LIVE</span>
+                                  <span className="badge-new">RUN-FIRST</span>
+                                </div>
+                              </div>
+                              <div className="large-card-name">Starter stack in production.</div>
+                              <div className="large-card-tagline">Deploy a baseline into live workflows immediately.</div>
+                              <div className="large-card-solves">Imperfect by design: real usage shows where automation creates value.</div>
+                              <div className="large-card-capabilities">
+                                <span className="capability-chip" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>Live workflows</span>
+                                <span className="capability-chip" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>Default permissions</span>
+                                <span className="capability-chip" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>Telemetry on</span>
+                              </div>
+                              <div className="large-card-meta">
+                                <span className="large-card-category" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>START</span>
+                                <span className="large-card-rating">Week 1</span>
+                                <span className="large-card-users">Telemetry on</span>
+                                <span className="large-card-price" style={{ color: "var(--story-accent)" }}>Run-first</span>
+                              </div>
+                              <div className="large-card-author">by Syn Playbooks</div>
+                              <button className="large-card-btn" style={{ background: "var(--story-accent)" }}>Deploy baseline →</button>
                             </div>
                           </div>
-                          <div className="narrative-mini">
-                            <div className="narrative-mini-kicker">Deployment scope</div>
-                            <div className="narrative-mini-title">Wired to real workflows.</div>
-                            <div className="narrative-mini-body">
-                              Default integrations and permissions aligned so teams can run tasks immediately.
+                          <div className="medium-card">
+                            <div className="medium-card-header">
+                              <div className="medium-card-icon" style={{ background: "linear-gradient(135deg, var(--story-accent-weak), transparent)", borderColor: "var(--story-accent-border)" }}>
+                                <span>🔌</span>
+                              </div>
+                              <div className="medium-card-badges">
+                                <span className="badge-new">DAY 1</span>
+                              </div>
                             </div>
-                            <div className="narrative-list">
-                              <div className="narrative-list-item">Operational permissions baseline</div>
-                              <div className="narrative-list-item">Run logs captured by default</div>
-                              <div className="narrative-list-item">Live usage from day one</div>
+                            <div className="medium-card-name">Wired to real workflows.</div>
+                            <div className="medium-card-tagline">Default integrations and permissions aligned for immediate runs.</div>
+                            <div className="medium-card-capabilities">
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Integrations</span>
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Permissions</span>
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Run logs</span>
+                            </div>
+                            <div className="medium-card-footer">
+                              <span className="medium-card-category" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>DEPLOY</span>
+                              <span className="medium-card-rating">★ Baseline</span>
+                              <span className="medium-card-price" style={{ color: "var(--story-accent)" }}>Ready</span>
+                            </div>
+                            <div className="medium-card-author">by platform ops</div>
+                          </div>
+                          <div className="medium-card">
+                            <div className="medium-card-header">
+                              <div className="medium-card-icon" style={{ background: "linear-gradient(135deg, var(--story-accent-weak), transparent)", borderColor: "var(--story-accent-border)" }}>
+                                <span>📊</span>
+                              </div>
+                              <div className="medium-card-badges">
+                                <span className="badge-trending">📈</span>
+                              </div>
+                            </div>
+                            <div className="medium-card-name">Telemetry baseline.</div>
+                            <div className="medium-card-tagline">Usage, handoffs, and recovery captured from week one.</div>
+                            <div className="medium-card-capabilities">
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Frequency</span>
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Handoff</span>
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Recovery</span>
+                            </div>
+                            <div className="medium-card-footer">
+                              <span className="medium-card-category" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>SIGNALS</span>
+                              <span className="medium-card-rating">★ Week 1</span>
+                              <span className="medium-card-price" style={{ color: "var(--story-accent)" }}>Active</span>
+                            </div>
+                            <div className="medium-card-author">by usage logs</div>
+                          </div>
+                        </div>
+                        <div className="grid-3">
+                          <div className="compact-card">
+                            <div className="compact-card-icon" style={{ background: "var(--story-accent-weak)", borderColor: "var(--story-accent-border)" }}>
+                              <span>🧰</span>
+                            </div>
+                            <div className="compact-card-info">
+                              <div className="compact-card-name">Week 1 pack</div>
+                              <div className="compact-card-tagline">Starter agents + integrations</div>
+                              <div className="compact-card-meta">
+                                <span className="compact-card-rating">★ Live</span>
+                                <span className="compact-card-users">Baseline</span>
+                                <span className="compact-card-price" style={{ color: "var(--story-accent)" }}>Ready</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="compact-card">
+                            <div className="compact-card-icon" style={{ background: "var(--story-accent-weak)", borderColor: "var(--story-accent-border)" }}>
+                              <span>🔐</span>
+                            </div>
+                            <div className="compact-card-info">
+                              <div className="compact-card-name">Permissions baseline</div>
+                              <div className="compact-card-tagline">Roles + scopes prewired</div>
+                              <div className="compact-card-meta">
+                                <span className="compact-card-rating">★ Safe</span>
+                                <span className="compact-card-users">Scoped</span>
+                                <span className="compact-card-price" style={{ color: "var(--story-accent)" }}>Default</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="compact-card">
+                            <div className="compact-card-icon" style={{ background: "var(--story-accent-weak)", borderColor: "var(--story-accent-border)" }}>
+                              <span>🧾</span>
+                            </div>
+                            <div className="compact-card-info">
+                              <div className="compact-card-name">Run logs</div>
+                              <div className="compact-card-tagline">Every action captured</div>
+                              <div className="compact-card-meta">
+                                <span className="compact-card-rating">★ Trace</span>
+                                <span className="compact-card-users">Audit</span>
+                                <span className="compact-card-price" style={{ color: "var(--story-accent)" }}>Export</span>
+                              </div>
                             </div>
                           </div>
                         </div>
-                        <div className="narrative-callout">
-                          <strong>Design goal:</strong> working systems on day one, even if imperfect. We learn by running them.
+                        <div className="grid-4">
+                          <div className="integration-card">
+                            <div className="integration-card-icon" style={{ background: "var(--story-accent-weak)", borderColor: "var(--story-accent-border)" }}>
+                              <span>📈</span>
+                            </div>
+                            <div className="integration-card-name">Usage signals</div>
+                            <div className="integration-card-count">Live telemetry</div>
+                          </div>
+                          <div className="integration-card">
+                            <div className="integration-card-icon" style={{ background: "var(--story-accent-weak)", borderColor: "var(--story-accent-border)" }}>
+                              <span>🔁</span>
+                            </div>
+                            <div className="integration-card-name">Fallbacks</div>
+                            <div className="integration-card-count">Retries tracked</div>
+                          </div>
+                          <div className="integration-card">
+                            <div className="integration-card-icon" style={{ background: "var(--story-accent-weak)", borderColor: "var(--story-accent-border)" }}>
+                              <span>⏱️</span>
+                            </div>
+                            <div className="integration-card-name">Latency watch</div>
+                            <div className="integration-card-count">QoS alerts</div>
+                          </div>
+                          <div className="integration-card">
+                            <div className="integration-card-icon" style={{ background: "var(--story-accent-weak)", borderColor: "var(--story-accent-border)" }}>
+                              <span>🧩</span>
+                            </div>
+                            <div className="integration-card-name">Workflow hooks</div>
+                            <div className="integration-card-count">Triggers wired</div>
+                          </div>
                         </div>
                       </div>
 
@@ -1372,35 +1615,123 @@ export default function AgentPlaystore() {
                       </div>
                     </div>
                     <div className="story-shelves">
-                      <div className="narrative-shelf-stack">
-                        <div className="narrative-shelf-grid narrative-grid-2">
-                          <div className="narrative-mini">
-                            <div className="narrative-mini-kicker">Signal telemetry</div>
-                            <div className="narrative-mini-title">Where adoption concentrates.</div>
-                            <div className="narrative-mini-body">
-                              We measure frequency, handoff quality, and recovery to identify stable paths.
+                      <div className="narrative-shelf-stack" style={{ "--accent": "var(--story-accent)" }}>
+                        <div className="grid-2">
+                          <div className="stack-card">
+                            <div className="stack-card-header">
+                              <div className="stack-card-icon" style={{ background: "var(--story-accent-weak)", borderColor: "var(--story-accent-border)" }}>
+                                <span>📡</span>
+                              </div>
+                              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                <span className="stack-card-count">3 signals</span>
+                              </div>
                             </div>
-                            <div className="narrative-list">
-                              <div className="narrative-list-item">Adoption heatmap by team</div>
-                              <div className="narrative-list-item">Workflow friction and bottlenecks</div>
-                              <div className="narrative-list-item">Value signals from real outcomes</div>
+                            <div className="stack-card-name">Signal stack</div>
+                            <div className="stack-card-desc">Adoption, friction, and outcome value tracked across teams.</div>
+                            <div className="stack-card-solves">Usage reveals what to stabilize next.</div>
+                            <div className="stack-card-agents">
+                              <span className="stack-agent-pill" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>Adoption heatmap</span>
+                              <span className="stack-agent-pill" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>Friction index</span>
+                              <span className="stack-agent-pill" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>Outcome lift</span>
+                            </div>
+                            <div className="stack-card-usecases">
+                              <span className="stack-usecase">→ Week 1 adoption</span>
+                              <span className="stack-usecase">→ Week 2 friction</span>
+                              <span className="stack-usecase">→ Week 3 value</span>
+                            </div>
+                            <div className="stack-card-footer">
+                              <span className="stack-card-users">Readiness map in 30 days</span>
                             </div>
                           </div>
-                          <div className="narrative-mini emphasis">
-                            <div className="narrative-mini-kicker">Decision triggers</div>
-                            <div className="narrative-mini-title">When to stabilize.</div>
-                            <div className="narrative-mini-body">
-                              Signals indicate which workflows deserve hardening and deeper integration.
-                            </div>
-                            <div className="narrative-steps">
-                              <div className="narrative-step"><span className="narrative-step-dot" />Adoption stays consistent</div>
-                              <div className="narrative-step"><span className="narrative-step-dot" />Errors trend downward</div>
-                              <div className="narrative-step"><span className="narrative-step-dot" />Time saved is repeatable</div>
+                          <div className="collection-card">
+                            <div className="collection-card-stripe" style={{ background: "linear-gradient(135deg, var(--story-accent), var(--story-accent-weak))" }} />
+                            <div className="collection-card-body">
+                              <div className="collection-card-name">Readiness map</div>
+                              <div className="collection-card-desc">Decision-ready view of what to harden next.</div>
+                              <div className="collection-card-meta">
+                                <span>Week 4 report</span>
+                                <span className="collection-card-curator">Signals team</span>
+                              </div>
                             </div>
                           </div>
                         </div>
-                        <div className="narrative-callout">
-                          <strong>Outcome:</strong> a readiness map that shows which automations to harden next.
+                        <div className="grid-3">
+                          <div className="medium-card">
+                            <div className="medium-card-header">
+                              <div className="medium-card-icon" style={{ background: "linear-gradient(135deg, var(--story-accent-weak), transparent)", borderColor: "var(--story-accent-border)" }}>
+                                <span>🧭</span>
+                              </div>
+                              <div className="medium-card-badges">
+                                <span className="badge-trending">◎</span>
+                              </div>
+                            </div>
+                            <div className="medium-card-name">Decision triggers.</div>
+                            <div className="medium-card-tagline">Stabilize when adoption is consistent and errors trend down.</div>
+                            <div className="medium-card-capabilities">
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Consistency</span>
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Error decline</span>
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Repeatable savings</span>
+                            </div>
+                            <div className="medium-card-footer">
+                              <span className="medium-card-category" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>DECIDE</span>
+                              <span className="medium-card-rating">★ Week 4</span>
+                              <span className="medium-card-price" style={{ color: "var(--story-accent)" }}>Ready</span>
+                            </div>
+                            <div className="medium-card-author">by signal review</div>
+                          </div>
+                          <div className="compact-card">
+                            <div className="compact-card-icon" style={{ background: "var(--story-accent-weak)", borderColor: "var(--story-accent-border)" }}>
+                              <span>🧱</span>
+                            </div>
+                            <div className="compact-card-info">
+                              <div className="compact-card-name">Friction map</div>
+                              <div className="compact-card-tagline">Bottlenecks + handoffs</div>
+                              <div className="compact-card-meta">
+                                <span className="compact-card-rating">★ Week 2</span>
+                                <span className="compact-card-users">Ops pain</span>
+                                <span className="compact-card-price" style={{ color: "var(--story-accent)" }}>Hotspots</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="integration-card">
+                            <div className="integration-card-icon" style={{ background: "var(--story-accent-weak)", borderColor: "var(--story-accent-border)" }}>
+                              <span>📈</span>
+                            </div>
+                            <div className="integration-card-name">Outcome lift</div>
+                            <div className="integration-card-count">Value signals</div>
+                          </div>
+                        </div>
+                        <div className="grid-2">
+                          <div className="pairing-card" style={{ "--accent-primary": "var(--story-accent)" }}>
+                            <div className="pairing-agents">
+                              <div className="pairing-agent">
+                                <span className="pairing-icon" style={{ background: "var(--story-accent-weak)" }}>🧑‍💼</span>
+                                <span className="pairing-name">Ops Lead</span>
+                              </div>
+                              <span className="pairing-plus">+</span>
+                              <div className="pairing-agent">
+                                <span className="pairing-icon" style={{ background: "var(--story-accent-weak)" }}>🤖</span>
+                                <span className="pairing-name">Automation</span>
+                              </div>
+                            </div>
+                            <div className="pairing-why">
+                              Ops defines quality; automation shows repeatable savings.
+                            </div>
+                          </div>
+                          <div className="compact-card">
+                            <div className="compact-card-icon" style={{ background: "var(--story-accent-weak)", borderColor: "var(--story-accent-border)" }}>
+                              <span>🗺️</span>
+                            </div>
+                            <div className="compact-card-info">
+                              <div className="compact-card-name">Adoption heatmap</div>
+                              <div className="compact-card-tagline">Daily usage by team</div>
+                              <div className="compact-card-meta">
+                                <span className="compact-card-rating">★ Week 1</span>
+                                <span className="compact-card-users">Signals</span>
+                                <span className="compact-card-price" style={{ color: "var(--story-accent)" }}>Live</span>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
 
@@ -1458,26 +1789,153 @@ export default function AgentPlaystore() {
                         </Section>
                       </div>
 
-                      <div className="narrative-shelf-stack">
-                        <div className="narrative-shelf-grid narrative-grid-3">
-                          <div className="narrative-mini emphasis">
-                            <div className="narrative-mini-kicker">Stabilize</div>
-                            <div className="narrative-mini-title">Tune and harden.</div>
-                            <div className="narrative-mini-body">Prompt reliability, output formats, and guardrails get locked.</div>
+                      <div className="narrative-shelf-stack" style={{ "--accent": "var(--story-accent)" }}>
+                        <div className="grid-3">
+                          <div className="medium-card">
+                            <div className="medium-card-header">
+                              <div className="medium-card-icon" style={{ background: "linear-gradient(135deg, var(--story-accent-weak), transparent)", borderColor: "var(--story-accent-border)" }}>
+                                <span>🛠️</span>
+                              </div>
+                              <div className="medium-card-badges">
+                                <span className="badge-new">LOCKED</span>
+                              </div>
+                            </div>
+                            <div className="medium-card-name">Tune and harden.</div>
+                            <div className="medium-card-tagline">Prompt reliability, output formats, and guardrails locked.</div>
+                            <div className="medium-card-capabilities">
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>QA gates</span>
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Output schema</span>
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Guardrails</span>
+                            </div>
+                            <div className="medium-card-footer">
+                              <span className="medium-card-category" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>STABILIZE</span>
+                              <span className="medium-card-rating">★ Phase 2</span>
+                              <span className="medium-card-price" style={{ color: "var(--story-accent)" }}>Locked</span>
+                            </div>
+                            <div className="medium-card-author">by reliability ops</div>
                           </div>
-                          <div className="narrative-mini">
-                            <div className="narrative-mini-kicker">Normalize</div>
-                            <div className="narrative-mini-title">Workflow consistency.</div>
-                            <div className="narrative-mini-body">We standardize handoffs and ensure the same outcome each run.</div>
+                          <div className="medium-card">
+                            <div className="medium-card-header">
+                              <div className="medium-card-icon" style={{ background: "linear-gradient(135deg, var(--story-accent-weak), transparent)", borderColor: "var(--story-accent-border)" }}>
+                                <span>🔁</span>
+                              </div>
+                              <div className="medium-card-badges">
+                                <span className="badge-trending">↻</span>
+                              </div>
+                            </div>
+                            <div className="medium-card-name">Workflow consistency.</div>
+                            <div className="medium-card-tagline">Standardize handoffs and ensure the same outcome each run.</div>
+                            <div className="medium-card-capabilities">
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Handoff specs</span>
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Quality checks</span>
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Run templates</span>
+                            </div>
+                            <div className="medium-card-footer">
+                              <span className="medium-card-category" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>NORMALIZE</span>
+                              <span className="medium-card-rating">★ Phase 2</span>
+                              <span className="medium-card-price" style={{ color: "var(--story-accent)" }}>Repeatable</span>
+                            </div>
+                            <div className="medium-card-author">by workflow owners</div>
                           </div>
-                          <div className="narrative-mini">
-                            <div className="narrative-mini-kicker">Deepen</div>
-                            <div className="narrative-mini-title">Integration depth.</div>
-                            <div className="narrative-mini-body">Default connectors extend into org systems and data pipelines.</div>
+                          <div className="medium-card">
+                            <div className="medium-card-header">
+                              <div className="medium-card-icon" style={{ background: "linear-gradient(135deg, var(--story-accent-weak), transparent)", borderColor: "var(--story-accent-border)" }}>
+                                <span>🔗</span>
+                              </div>
+                              <div className="medium-card-badges">
+                                <span className="badge-trending">◆</span>
+                              </div>
+                            </div>
+                            <div className="medium-card-name">Integration depth.</div>
+                            <div className="medium-card-tagline">Connectors extend into org systems and data pipelines.</div>
+                            <div className="medium-card-capabilities">
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>SSO roles</span>
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Data pipelines</span>
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Ops hooks</span>
+                            </div>
+                            <div className="medium-card-footer">
+                              <span className="medium-card-category" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>DEEPEN</span>
+                              <span className="medium-card-rating">★ Phase 2</span>
+                              <span className="medium-card-price" style={{ color: "var(--story-accent)" }}>Embedded</span>
+                            </div>
+                            <div className="medium-card-author">by systems team</div>
                           </div>
                         </div>
-                        <div className="narrative-callout">
-                          <strong>Stabilization loop:</strong> tune agents, normalize workflows, then deepen integrations.
+                        <div className="grid-2">
+                          <div className="stack-card">
+                            <div className="stack-card-header">
+                              <div className="stack-card-icon" style={{ background: "var(--story-accent-weak)", borderColor: "var(--story-accent-border)" }}>
+                                <span>♻️</span>
+                              </div>
+                              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                <span className="stack-card-count">3 steps</span>
+                              </div>
+                            </div>
+                            <div className="stack-card-name">Stabilization loop</div>
+                            <div className="stack-card-desc">Tune agents, normalize workflows, then deepen integrations.</div>
+                            <div className="stack-card-solves">Repeat until systems are stable.</div>
+                            <div className="stack-card-agents">
+                              <span className="stack-agent-pill" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>Tune</span>
+                              <span className="stack-agent-pill" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>Normalize</span>
+                              <span className="stack-agent-pill" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>Deepen</span>
+                            </div>
+                            <div className="stack-card-usecases">
+                              <span className="stack-usecase">→ Guardrails</span>
+                              <span className="stack-usecase">→ Consistent outcomes</span>
+                              <span className="stack-usecase">→ Embedded tooling</span>
+                            </div>
+                            <div className="stack-card-footer">
+                              <span className="stack-card-users">Continuous hardening</span>
+                            </div>
+                          </div>
+                          <div className="collection-card">
+                            <div className="collection-card-stripe" style={{ background: "linear-gradient(135deg, var(--story-accent), var(--story-accent-weak))" }} />
+                            <div className="collection-card-body">
+                              <div className="collection-card-name">Guardrails pack</div>
+                              <div className="collection-card-desc">Prompt QA, monitoring, and rollback ready.</div>
+                              <div className="collection-card-meta">
+                                <span>Phase 2 kit</span>
+                                <span className="collection-card-curator">Platform team</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="grid-3">
+                          <div className="compact-card">
+                            <div className="compact-card-icon" style={{ background: "var(--story-accent-weak)", borderColor: "var(--story-accent-border)" }}>
+                              <span>✅</span>
+                            </div>
+                            <div className="compact-card-info">
+                              <div className="compact-card-name">Prompt QA</div>
+                              <div className="compact-card-tagline">Quality checks per run</div>
+                              <div className="compact-card-meta">
+                                <span className="compact-card-rating">★ Passed</span>
+                                <span className="compact-card-users">Checks</span>
+                                <span className="compact-card-price" style={{ color: "var(--story-accent)" }}>Ready</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="compact-card">
+                            <div className="compact-card-icon" style={{ background: "var(--story-accent-weak)", borderColor: "var(--story-accent-border)" }}>
+                              <span>📦</span>
+                            </div>
+                            <div className="compact-card-info">
+                              <div className="compact-card-name">Run templates</div>
+                              <div className="compact-card-tagline">Repeatable job specs</div>
+                              <div className="compact-card-meta">
+                                <span className="compact-card-rating">★ Stable</span>
+                                <span className="compact-card-users">Templates</span>
+                                <span className="compact-card-price" style={{ color: "var(--story-accent)" }}>Shared</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="integration-card">
+                            <div className="integration-card-icon" style={{ background: "var(--story-accent-weak)", borderColor: "var(--story-accent-border)" }}>
+                              <span>🧩</span>
+                            </div>
+                            <div className="integration-card-name">Ops hooks</div>
+                            <div className="integration-card-count">Tooling embedded</div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1501,38 +1959,156 @@ export default function AgentPlaystore() {
                       </div>
                     </div>
                     <div className="story-shelves">
-                      <div className="narrative-shelf-stack">
-                        <div className="narrative-shelf-grid narrative-grid-2">
-                          <div className="narrative-mini emphasis">
-                            <div className="narrative-mini-kicker">Custom build</div>
-                            <div className="narrative-mini-title">Bespoke system outputs.</div>
-                            <div className="narrative-mini-body">
-                              New agents, orchestration layers, and workflows aligned to your operating model.
-                            </div>
-                            <div className="narrative-list">
-                              <div className="narrative-list-item">Org-specific workflows</div>
-                              <div className="narrative-list-item">Custom agents and tools</div>
-                              <div className="narrative-list-item">Production-grade reliability</div>
+                      <div className="narrative-shelf-stack" style={{ "--accent": "var(--story-accent)" }}>
+                        <div className="featured-mixed">
+                          <div className="large-card">
+                            <div className="large-card-glow" style={{ background: "radial-gradient(ellipse at 30% 20%, var(--story-accent-weak), transparent 70%)" }} />
+                            <div className="large-card-content">
+                              <div className="large-card-top">
+                                <div className="large-card-icon" style={{ background: "linear-gradient(135deg, var(--story-accent), var(--story-accent-weak))" }}>
+                                  <span>🧱</span>
+                                </div>
+                                <div className="large-card-badges">
+                                  <span className="badge-featured">BESPOKE</span>
+                                  <span className="badge-trending-lg">CUSTOM</span>
+                                </div>
+                              </div>
+                              <div className="large-card-name">Bespoke system outputs.</div>
+                              <div className="large-card-tagline">New agents and orchestration aligned to your operating model.</div>
+                              <div className="large-card-solves">Once usage is stable, we build what only you need.</div>
+                              <div className="large-card-capabilities">
+                                <span className="capability-chip" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>Custom workflows</span>
+                                <span className="capability-chip" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>Org-specific tooling</span>
+                                <span className="capability-chip" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>Production-grade</span>
+                              </div>
+                              <div className="large-card-meta">
+                                <span className="large-card-category" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>PHASE 3</span>
+                                <span className="large-card-rating">Bespoke</span>
+                                <span className="large-card-users">Your stack</span>
+                                <span className="large-card-price" style={{ color: "var(--story-accent)" }}>Custom</span>
+                              </div>
+                              <div className="large-card-author">by Syn Labs</div>
+                              <button className="large-card-btn" style={{ background: "var(--story-accent)" }}>Build bespoke →</button>
                             </div>
                           </div>
-                          <div className="narrative-mini">
-                            <div className="narrative-mini-kicker">Ownership transfer</div>
-                            <div className="narrative-mini-title">Built on your stack.</div>
-                            <div className="narrative-mini-body">
-                              Systems live in your infra, with documentation and handoff for long-term control.
+                          <div className="medium-card">
+                            <div className="medium-card-header">
+                              <div className="medium-card-icon" style={{ background: "linear-gradient(135deg, var(--story-accent-weak), transparent)", borderColor: "var(--story-accent-border)" }}>
+                                <span>🏗️</span>
+                              </div>
+                              <div className="medium-card-badges">
+                                <span className="badge-new">OWNED</span>
+                              </div>
                             </div>
-                            <div className="narrative-stat-row">
-                              <div className="narrative-stat">Your code</div>
-                              <div className="narrative-stat">Your models</div>
-                              <div className="narrative-stat">Your infra</div>
+                            <div className="medium-card-name">Ownership transfer.</div>
+                            <div className="medium-card-tagline">Systems live in your infra with docs and handoff.</div>
+                            <div className="medium-card-capabilities">
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Your code</span>
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Your models</span>
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Your infra</span>
+                            </div>
+                            <div className="medium-card-footer">
+                              <span className="medium-card-category" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>OWNERSHIP</span>
+                              <span className="medium-card-rating">★ Handoff</span>
+                              <span className="medium-card-price" style={{ color: "var(--story-accent)" }}>Yours</span>
+                            </div>
+                            <div className="medium-card-author">by platform team</div>
+                          </div>
+                          <div className="medium-card">
+                            <div className="medium-card-header">
+                              <div className="medium-card-icon" style={{ background: "linear-gradient(135deg, var(--story-accent-weak), transparent)", borderColor: "var(--story-accent-border)" }}>
+                                <span>🌱</span>
+                              </div>
+                              <div className="medium-card-badges">
+                                <span className="badge-trending">↑</span>
+                              </div>
+                            </div>
+                            <div className="medium-card-name">Capability shift.</div>
+                            <div className="medium-card-tagline">From usage to independence across teams.</div>
+                            <div className="medium-card-capabilities">
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Internal builders</span>
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Playbooks</span>
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Extension path</span>
+                            </div>
+                            <div className="medium-card-footer">
+                              <span className="medium-card-category" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>CAPABILITY</span>
+                              <span className="medium-card-rating">★ Durable</span>
+                              <span className="medium-card-price" style={{ color: "var(--story-accent)" }}>Independent</span>
+                            </div>
+                            <div className="medium-card-author">by enablement</div>
+                          </div>
+                        </div>
+                        <div className="grid-2">
+                          <div className="collection-card">
+                            <div className="collection-card-stripe" style={{ background: "linear-gradient(135deg, var(--story-accent), var(--story-accent-weak))" }} />
+                            <div className="collection-card-body">
+                              <div className="collection-card-name">Internal platform</div>
+                              <div className="collection-card-desc">A durable capability teams can extend and maintain.</div>
+                              <div className="collection-card-meta">
+                                <span>Long-term</span>
+                                <span className="collection-card-curator">Your org</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="pairing-card" style={{ "--accent-primary": "var(--story-accent)" }}>
+                            <div className="pairing-agents">
+                              <div className="pairing-agent">
+                                <span className="pairing-icon" style={{ background: "var(--story-accent-weak)" }}>🧱</span>
+                                <span className="pairing-name">Your stack</span>
+                              </div>
+                              <span className="pairing-plus">+</span>
+                              <div className="pairing-agent">
+                                <span className="pairing-icon" style={{ background: "var(--story-accent-weak)" }}>✨</span>
+                                <span className="pairing-name">Syn systems</span>
+                              </div>
+                            </div>
+                            <div className="pairing-why">
+                              We co-build, then hand over the system.
                             </div>
                           </div>
                         </div>
-                        <div className="narrative-mini">
-                          <div className="narrative-mini-kicker">Capability shift</div>
-                          <div className="narrative-mini-title">From usage to independence.</div>
-                          <div className="narrative-mini-body">
-                            The system evolves into a durable internal capability that your teams can extend.
+                        <div className="grid-3">
+                          <div className="compact-card">
+                            <div className="compact-card-icon" style={{ background: "var(--story-accent-weak)", borderColor: "var(--story-accent-border)" }}>
+                              <span>🧩</span>
+                            </div>
+                            <div className="compact-card-info">
+                              <div className="compact-card-name">Custom workflows</div>
+                              <div className="compact-card-tagline">Built around your ops</div>
+                              <div className="compact-card-meta">
+                                <span className="compact-card-rating">★ Tailored</span>
+                                <span className="compact-card-users">Org fit</span>
+                                <span className="compact-card-price" style={{ color: "var(--story-accent)" }}>Aligned</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="compact-card">
+                            <div className="compact-card-icon" style={{ background: "var(--story-accent-weak)", borderColor: "var(--story-accent-border)" }}>
+                              <span>🛡️</span>
+                            </div>
+                            <div className="compact-card-info">
+                              <div className="compact-card-name">Production grade</div>
+                              <div className="compact-card-tagline">Hardened for scale</div>
+                              <div className="compact-card-meta">
+                                <span className="compact-card-rating">★ Reliable</span>
+                                <span className="compact-card-users">Ops-ready</span>
+                                <span className="compact-card-price" style={{ color: "var(--story-accent)" }}>Stable</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="compact-card">
+                            <div className="compact-card-icon" style={{ background: "var(--story-accent-weak)", borderColor: "var(--story-accent-border)" }}>
+                              <span>🏷️</span>
+                            </div>
+                            <div className="compact-card-info">
+                              <div className="compact-card-name">Built on your stack</div>
+                              <div className="compact-card-tagline">Your infra + models</div>
+                              <div className="compact-card-meta">
+                                <span className="compact-card-rating">★ Yours</span>
+                                <span className="compact-card-users">In-house</span>
+                                <span className="compact-card-price" style={{ color: "var(--story-accent)" }}>Owned</span>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
