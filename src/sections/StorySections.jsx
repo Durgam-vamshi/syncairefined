@@ -7,6 +7,7 @@ export function StorySections({ onEnter, onLeave, aaEnabled, onStackAA, storySec
   const experimentalAgents = AGENTS.filter(a => a.new).slice(0, 3);
   const mostPopular = [...AGENTS].sort((a, b) => parseFloat(b.users) - parseFloat(a.users)).slice(0, 3);
   const enterpriseReadyAgents = [...AGENTS].filter(a => a.rating >= 4.7).slice(0, 3);
+  const stabilizeAgents = AGENTS.filter(a => ["Security", "DevOps", "Data"].includes(a.category)).slice(0, 6);
   const liveUsageEvents = useMemo(() => ([
     "[DEPLOYED] ResearchBot Pro",
     "[ACTIVE] 45 users",
@@ -99,7 +100,7 @@ export function StorySections({ onEnter, onLeave, aaEnabled, onStackAA, storySec
           </div>
           <div className="story-shelves">
             <div className="narrative-shelf-stack">
-              <div className="grid-2">
+              <div className="grid-2 elevated-visuals">
                 <div className="medium-card">
                   <div className="medium-card-header">
                     <div className="medium-card-icon">
@@ -183,7 +184,7 @@ export function StorySections({ onEnter, onLeave, aaEnabled, onStackAA, storySec
           <div className="story-shelves">
             <div className="narrative-shelf-stack">
               <div className="text-banner">Experimental shelf: beta tools in the wild.</div>
-              <div className="grid-3">
+              <div className="grid-3 elevated-shelf">
                 {experimentalAgents.map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
               </div>
               <div className="text-banner">Stack viewer: cycle through ops, dev, creative, sales.</div>
@@ -206,7 +207,7 @@ export function StorySections({ onEnter, onLeave, aaEnabled, onStackAA, storySec
                   <StackCard stack={activeStack} aaEnabled={aaEnabled} onAAClick={onStackAA} />
                 )}
               </div>
-              <div className="grid-2">
+              <div className="grid-2 elevated-shelf elevated-visuals">
                 <div className="stack-card">
                   <div className="stack-card-header">
                     <div className="stack-card-icon">
@@ -311,6 +312,10 @@ export function StorySections({ onEnter, onLeave, aaEnabled, onStackAA, storySec
               <div className="text-banner">Only what survives guardrails graduates.</div>
               <div className="grid-3">
                 {enterpriseReadyAgents.map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
+              </div>
+              <div className="text-banner">Stabilization shelf: hardened candidates in queue.</div>
+              <div className="grid-3 elevated-shelf">
+                {stabilizeAgents.map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
               </div>
             </div>
           </div>
