@@ -1,13 +1,83 @@
-import { AGENTS, STACKS, INTEGRATIONS, CATEGORY_CARDS } from "../data";
-import { HorizontalShelf, Section } from "../components";
-import { CategoryCard, CompactCard, IntegrationCard, LargeCard, MediumCard, StackCard } from "../components/cards";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { AGENTS, STACKS } from "../data";
+import { CompactCard, StackCard } from "../components/cards";
 
 export function StorySections({ onEnter, onLeave, aaEnabled, onStackAA, storySectionRefs }) {
-  const featured = AGENTS.filter(a => a.featured);
-  const newAgents = AGENTS.filter(a => a.new);
-  const dataAgents = AGENTS.filter(a => a.category === "Data");
-  const productivityAgents = AGENTS.filter(a => a.category === "Productivity");
-  const mostPopular = [...AGENTS].sort((a, b) => parseFloat(b.users) - parseFloat(a.users)).slice(0, 8);
+  const stackExample = STACKS.find(s => s.name === "Full-Stack Dev Kit") || STACKS[0];
+  const experimentalAgents = AGENTS.filter(a => a.new).slice(0, 3);
+  const mostPopular = [...AGENTS].sort((a, b) => parseFloat(b.users) - parseFloat(a.users)).slice(0, 3);
+  const enterpriseReadyAgents = [...AGENTS].filter(a => a.rating >= 4.7).slice(0, 3);
+  const liveUsageEvents = useMemo(() => ([
+    "[DEPLOYED] ResearchBot Pro",
+    "[ACTIVE] 45 users",
+    "[FLAGGED] DataForge",
+    "[OPTIMIZED] Scheduler AI",
+    "[DEPLOYED] CodeWeaver",
+    "[QUEUED] TestPilot",
+    "[ACTIVE] MailCraft",
+    "[FLAGGED] InfraWatch",
+    "[DEPLOYED] ContentEngine",
+    "[ACTIVE] MeetingMind",
+    "[OPTIMIZED] QueryMaster",
+    "[QUEUED] SecuritySentinel",
+  ]), []);
+  const crateAgents = useMemo(() => {
+    const prioritized = AGENTS.filter(a => a.new || a.trending);
+    const seen = new Set();
+    const combined = [...prioritized, ...AGENTS].filter((agent) => {
+      if (seen.has(agent.id)) return false;
+      seen.add(agent.id);
+      return true;
+    });
+    return combined.slice(0, 20);
+  }, []);
+  const stackTabs = useMemo(() => {
+    const findStack = (name) => STACKS.find(s => s.name === name);
+    return [
+      { key: "OPS", label: "OPS", stack: findStack("Data Pipeline") || findStack("Security Suite") },
+      { key: "DEV", label: "DEV", stack: findStack("Full-Stack Dev Kit") },
+      { key: "CREATIVE", label: "CREATIVE", stack: findStack("Content Studio") },
+      { key: "SALES", label: "SALES", stack: findStack("Sales Machine") },
+    ].filter(tab => tab.stack);
+  }, []);
+  const [activeStackTab, setActiveStackTab] = useState(0);
+  const activeStack = stackTabs[activeStackTab]?.stack;
+  useEffect(() => {
+    if (!stackTabs.length) return undefined;
+    const intervalId = setInterval(() => {
+      setActiveStackTab(prev => (prev + 1) % stackTabs.length);
+    }, 4000);
+    return () => clearInterval(intervalId);
+  }, [stackTabs.length]);
+
+  const crateRef = useRef(null);
+  const crateDragging = useRef(false);
+  const crateStartX = useRef(0);
+  const crateScrollLeft = useRef(0);
+  const handleCratePointerDown = (event) => {
+    if (!crateRef.current) return;
+    crateDragging.current = true;
+    crateStartX.current = event.clientX;
+    crateScrollLeft.current = crateRef.current.scrollLeft;
+    crateRef.current.classList.add("is-dragging");
+    if (crateRef.current.setPointerCapture) {
+      crateRef.current.setPointerCapture(event.pointerId);
+    }
+  };
+  const handleCratePointerMove = (event) => {
+    if (!crateDragging.current || !crateRef.current) return;
+    event.preventDefault();
+    const walk = event.clientX - crateStartX.current;
+    crateRef.current.scrollLeft = crateScrollLeft.current - walk;
+  };
+  const handleCratePointerEnd = (event) => {
+    if (!crateRef.current || !crateDragging.current) return;
+    crateDragging.current = false;
+    crateRef.current.classList.remove("is-dragging");
+    if (crateRef.current.releasePointerCapture) {
+      crateRef.current.releasePointerCapture(event.pointerId);
+    }
+  };
 
   return (
     <div className="narrative-sections">
@@ -29,192 +99,61 @@ export function StorySections({ onEnter, onLeave, aaEnabled, onStackAA, storySec
           </div>
           <div className="story-shelves">
             <div className="narrative-shelf-stack">
-              <div className="featured-mixed">
-                <div className="large-card">
-                  <div className="large-card-glow" />
-                  <div className="large-card-content">
-                    <div className="large-card-top">
-                      <div className="large-card-icon">
-                        <span>🚀</span>
-                      </div>
-                      <div className="large-card-badges">
-                        <span className="badge-featured">FEATURED</span>
-                        <span className="badge-trending-lg">TRENDING</span>
-                        <span className="badge-new">IN USE</span>
-                      </div>
-                    </div>
-                    <div className="large-card-name">Featured & Trending.</div>
-                    <div className="large-card-tagline">The most popular agents currently in use.</div>
-                    <div className="large-card-solves">Proof of adoption when access is immediate and teams discover what actually fits.</div>
-                    <div className="large-card-capabilities">
-                      <span className="capability-chip">Highest installs</span>
-                      <span className="capability-chip">Most reused</span>
-                      <span className="capability-chip">Proven outcomes</span>
-                    </div>
-                    <div className="large-card-meta">
-                      <span className="large-card-category">TOP PICKS</span>
-                      <span className="large-card-rating">High adoption</span>
-                      <span className="large-card-users">Live usage</span>
-                      <span className="large-card-price">Active</span>
-                    </div>
-                    <div className="large-card-author">by adoption signals</div>
-                    <button className="large-card-btn">Browse top picks →</button>
-                  </div>
-                </div>
+              <div className="grid-2">
                 <div className="medium-card">
                   <div className="medium-card-header">
                     <div className="medium-card-icon">
-                      <span>🧾</span>
+                      <span>◆</span>
                     </div>
                     <div className="medium-card-badges">
-                      <span className="badge-new">OPS</span>
+                      <span className="badge-featured">ALL-ACCESS</span>
                     </div>
                   </div>
-                  <div className="medium-card-name">Operations Stack.</div>
-                  <div className="medium-card-tagline">Invoice Parser, Logistics Coordinator, Shift Scheduler.</div>
+                  <div className="medium-card-name">All-Access Pass.</div>
+                  <div className="medium-card-tagline">Your key to the full agent library from day one.</div>
                   <div className="medium-card-capabilities">
-                    <span className="capability-dot">Finance</span>
-                    <span className="capability-dot">Logistics</span>
-                    <span className="capability-dot">Scheduling</span>
+                    <span className="capability-dot">Full catalog</span>
+                    <span className="capability-dot">Immediate use</span>
+                    <span className="capability-dot">Usage window</span>
                   </div>
                   <div className="medium-card-footer">
-                    <span className="medium-card-category">OPERATIONS</span>
-                    <span className="medium-card-rating">★ In use</span>
-                    <span className="medium-card-price">Active</span>
+                    <span className="medium-card-category">ACCESS</span>
+                    <span className="medium-card-rating">◆ Key</span>
+                    <span className="medium-card-price">$1,000/mo</span>
                   </div>
-                  <div className="medium-card-author">by ops teams</div>
+                  <div className="medium-card-author">enterprise subscription</div>
                 </div>
-                <div className="medium-card">
-                  <div className="medium-card-header">
-                    <div className="medium-card-icon">
-                      <span>🎨</span>
-                    </div>
-                    <div className="medium-card-badges">
-                      <span className="badge-trending">◆</span>
-                    </div>
-                  </div>
-                  <div className="medium-card-name">Creative Suite.</div>
-                  <div className="medium-card-tagline">Asset Generator, Brand Voice Tuner, Layout Assistant.</div>
-                  <div className="medium-card-capabilities">
-                    <span className="capability-dot">Assets</span>
-                    <span className="capability-dot">Brand voice</span>
-                    <span className="capability-dot">Layouts</span>
-                  </div>
-                  <div className="medium-card-footer">
-                    <span className="medium-card-category">CREATIVE</span>
-                    <span className="medium-card-rating">★ In use</span>
-                    <span className="medium-card-price">Active</span>
-                  </div>
-                  <div className="medium-card-author">by creative teams</div>
-                </div>
+                {stackExample && (
+                  <StackCard stack={stackExample} aaEnabled={aaEnabled} onAAClick={onStackAA} />
+                )}
               </div>
-              <div className="grid-3">
-                <div className="compact-card">
-                  <div className="compact-card-icon">
-                    <span>🧰</span>
-                  </div>
-                  <div className="compact-card-info">
-                    <div className="compact-card-name">Library access</div>
-                    <div className="compact-card-tagline">Every agent available day one</div>
-                    <div className="compact-card-meta">
-                      <span className="compact-card-rating">★ Immediate</span>
-                      <span className="compact-card-users">Full catalog</span>
-                      <span className="compact-card-price">Unlocked</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="compact-card">
-                  <div className="compact-card-icon">
-                    <span>🔐</span>
-                  </div>
-                  <div className="compact-card-info">
-                    <div className="compact-card-name">Default access</div>
-                    <div className="compact-card-tagline">Roles and scopes prewired</div>
-                    <div className="compact-card-meta">
-                      <span className="compact-card-rating">★ Safe</span>
-                      <span className="compact-card-users">Scoped</span>
-                      <span className="compact-card-price">Ready</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="compact-card">
-                  <div className="compact-card-icon">
-                    <span>🧾</span>
-                  </div>
-                  <div className="compact-card-info">
-                    <div className="compact-card-name">Usage trace</div>
-                    <div className="compact-card-tagline">Every action is visible</div>
-                    <div className="compact-card-meta">
-                      <span className="compact-card-rating">★ Trace</span>
-                      <span className="compact-card-users">Signals</span>
-                      <span className="compact-card-price">Live</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="text-banner">100+ agents available on Day 1.</div>
-              <div className="grid-4">
-                <div className="integration-card">
-                  <div className="integration-card-icon">
-                    <span>📈</span>
-                  </div>
-                  <div className="integration-card-name">Finance ops</div>
-                  <div className="integration-card-count">Invoice flows</div>
-                </div>
-                <div className="integration-card">
-                  <div className="integration-card-icon">
-                    <span>🔁</span>
-                  </div>
-                  <div className="integration-card-name">Logistics</div>
-                  <div className="integration-card-count">Routing & handoff</div>
-                </div>
-                <div className="integration-card">
-                  <div className="integration-card-icon">
-                    <span>⏱️</span>
-                  </div>
-                  <div className="integration-card-name">Scheduling</div>
-                  <div className="integration-card-count">Shift coverage</div>
-                </div>
-                <div className="integration-card">
-                  <div className="integration-card-icon">
-                    <span>🧩</span>
-                  </div>
-                  <div className="integration-card-name">Creative ops</div>
-                  <div className="integration-card-count">Asset pipelines</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="shelf-container">
-              <Section sectionKey="stacks">
-                <HorizontalShelf>
-                  {STACKS.map(s => <StackCard key={s.id} stack={s} aaEnabled={aaEnabled} onAAClick={onStackAA} />)}
-                </HorizontalShelf>
-              </Section>
-
-              <Section sectionKey="integrations">
-                <HorizontalShelf>
-                  {INTEGRATIONS.map(i => <IntegrationCard key={i.id} integration={i} />)}
-                </HorizontalShelf>
-              </Section>
-            </div>
-
-            <div className="shelf-container">
-              <Section sectionKey="featured">
-                <div className="featured-mixed">
-                  <LargeCard agent={featured[0]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
-                  <MediumCard agent={featured[1]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
-                  <MediumCard agent={featured[2]} onHoverEnter={onEnter} onHoverLeave={onLeave} />
-                </div>
-              </Section>
-
-              <Section sectionKey="categories">
-                <div className="grid-4">
-                  {CATEGORY_CARDS.map(category => (
-                    <CategoryCard key={category.key} category={category} />
+              <div className="live-ticker" aria-label="Live usage ticker">
+                <div className="live-ticker-track">
+                  {liveUsageEvents.concat(liveUsageEvents).map((event, index) => (
+                    <span key={`${event}-${index}`} className="live-ticker-item">{event}</span>
                   ))}
                 </div>
-              </Section>
+              </div>
+              <div className="text-banner">Warehouse crate: drag to browse new arrivals.</div>
+              <div
+                className="crate-scroll"
+                ref={crateRef}
+                onPointerDown={handleCratePointerDown}
+                onPointerMove={handleCratePointerMove}
+                onPointerUp={handleCratePointerEnd}
+                onPointerLeave={handleCratePointerEnd}
+                onPointerCancel={handleCratePointerEnd}
+              >
+                <div className="crate-grid">
+                  {crateAgents.map(agent => (
+                    <div key={agent.id} className="crate-card">
+                      <div className="crate-card-kicker">[AGNT-{String(agent.id).padStart(3, "0")}]</div>
+                      <div className="crate-card-name">{agent.name}</div>
+                      <div className="crate-card-meta">{agent.category} | {agent.price}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -225,7 +164,7 @@ export function StorySections({ onEnter, onLeave, aaEnabled, onStackAA, storySec
           <div className="story-narrative">
             <div className="shelf-container narrative-block">
               <div className="narrative-kicker">Friction as Signal</div>
-              <div className="narrative-title">Start Imperfect. Stabilize Later.</div>
+              <div className="narrative-title">Start Imperfect. Optimize Later.</div>
               <div className="narrative-body">
                 We provide 100+ agents because we expect you to ignore most of them. The friction you feel is data. The agents your team doesn't use tell us as much as the ones they do.
               </div>
@@ -243,6 +182,30 @@ export function StorySections({ onEnter, onLeave, aaEnabled, onStackAA, storySec
           </div>
           <div className="story-shelves">
             <div className="narrative-shelf-stack">
+              <div className="text-banner">Experimental shelf: beta tools in the wild.</div>
+              <div className="grid-3">
+                {experimentalAgents.map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
+              </div>
+              <div className="text-banner">Stack viewer: cycle through ops, dev, creative, sales.</div>
+              <div className="stack-tabs" role="tablist" aria-label="Stack tabs">
+                {stackTabs.map((tab, index) => (
+                  <button
+                    key={tab.key}
+                    type="button"
+                    className={`stack-tab ${index === activeStackTab ? "is-active" : ""}`}
+                    onClick={() => setActiveStackTab(index)}
+                    role="tab"
+                    aria-selected={index === activeStackTab}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+              <div className="stack-tab-panel">
+                {activeStack && (
+                  <StackCard stack={activeStack} aaEnabled={aaEnabled} onAAClick={onStackAA} />
+                )}
+              </div>
               <div className="grid-2">
                 <div className="stack-card">
                   <div className="stack-card-header">
@@ -282,99 +245,10 @@ export function StorySections({ onEnter, onLeave, aaEnabled, onStackAA, storySec
                   </div>
                 </div>
               </div>
-              <div className="text-banner">Stop guessing. Watch what they use.</div>
+              <div className="text-banner">We watched 500 deployments. These 3 agents survived.</div>
               <div className="grid-3">
-                <div className="medium-card">
-                  <div className="medium-card-header">
-                    <div className="medium-card-icon">
-                      <span>★</span>
-                    </div>
-                    <div className="medium-card-badges">
-                      <span className="badge-trending">★</span>
-                    </div>
-                  </div>
-                  <div className="medium-card-name">Community Favorites.</div>
-                  <div className="medium-card-tagline">Agents with the highest engagement and repeat use.</div>
-                  <div className="medium-card-capabilities">
-                    <span className="capability-dot">Engagement</span>
-                    <span className="capability-dot">Retention</span>
-                    <span className="capability-dot">Outcomes</span>
-                  </div>
-                  <div className="medium-card-footer">
-                    <span className="medium-card-category">FAVORITES</span>
-                    <span className="medium-card-rating">★ High</span>
-                    <span className="medium-card-price">Active</span>
-                  </div>
-                  <div className="medium-card-author">by community signals</div>
-                </div>
-                <div className="compact-card">
-                  <div className="compact-card-icon">
-                    <span>🧪</span>
-                  </div>
-                  <div className="compact-card-info">
-                    <div className="compact-card-name">Experimental shelf</div>
-                    <div className="compact-card-tagline">Beta agents testing new workflows</div>
-                    <div className="compact-card-meta">
-                      <span className="compact-card-rating">★ Beta</span>
-                      <span className="compact-card-users">In trials</span>
-                      <span className="compact-card-price">Exploring</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="integration-card">
-                  <div className="integration-card-icon">
-                    <span>📊</span>
-                  </div>
-                  <div className="integration-card-name">Adoption signals</div>
-                  <div className="integration-card-count">Engagement score</div>
-                </div>
+                {mostPopular.map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
               </div>
-              <div className="grid-2">
-                <div className="pairing-card">
-                  <div className="pairing-agents">
-                    <div className="pairing-agent">
-                      <span className="pairing-icon">🧑‍💼</span>
-                      <span className="pairing-name">Team Lead</span>
-                    </div>
-                    <span className="pairing-plus">+</span>
-                    <div className="pairing-agent">
-                      <span className="pairing-icon">📈</span>
-                      <span className="pairing-name">Usage Signals</span>
-                    </div>
-                  </div>
-                  <div className="pairing-why">
-                    People show intent; signals reveal what to harden next.
-                  </div>
-                </div>
-                <div className="compact-card">
-                  <div className="compact-card-icon">
-                    <span>🗺️</span>
-                  </div>
-                  <div className="compact-card-info">
-                    <div className="compact-card-name">Adoption heatmap</div>
-                    <div className="compact-card-tagline">Daily usage by team</div>
-                    <div className="compact-card-meta">
-                      <span className="compact-card-rating">★ Live</span>
-                      <span className="compact-card-users">Signals</span>
-                      <span className="compact-card-price">Live</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="shelf-container">
-              <Section sectionKey="popular">
-                <div className="grid-4">
-                  {mostPopular.map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
-                </div>
-              </Section>
-
-              <Section sectionKey="newArrivals">
-                <div className="grid-3">
-                  {newAgents.map(a => <MediumCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
-                </div>
-              </Section>
             </div>
           </div>
         </div>
@@ -398,19 +272,7 @@ export function StorySections({ onEnter, onLeave, aaEnabled, onStackAA, storySec
           </div>
           <div className="story-shelves">
             <div className="narrative-shelf-stack">
-              <div className="narrative-mini emphasis">
-                <div className="narrative-mini-top">
-                  <div className="narrative-mini-icon">◆</div>
-                  <div className="narrative-mini-kicker">Comparison</div>
-                </div>
-                <div className="narrative-mini-title">Phase 1: Broad Access vs Phase 2: Deep Integration</div>
-                <div className="narrative-mini-body">The first phase is the learning window. The second phase is optional hardening for proven use cases.</div>
-                <div className="narrative-stat-row">
-                  <span className="narrative-stat"><strong>Phase 1</strong> Broad Access</span>
-                  <span className="narrative-stat"><strong>Phase 2</strong> Deep Integration</span>
-                </div>
-              </div>
-              <div className="grid-3">
+              <div className="grid-2">
                 <div className="medium-card">
                   <div className="medium-card-header">
                     <div className="medium-card-icon">
@@ -434,80 +296,6 @@ export function StorySections({ onEnter, onLeave, aaEnabled, onStackAA, storySec
                   </div>
                   <div className="medium-card-author">by reliability ops</div>
                 </div>
-                <div className="medium-card">
-                  <div className="medium-card-header">
-                    <div className="medium-card-icon">
-                      <span>🔁</span>
-                    </div>
-                    <div className="medium-card-badges">
-                      <span className="badge-trending">↻</span>
-                    </div>
-                  </div>
-                  <div className="medium-card-name">Workflow consistency.</div>
-                  <div className="medium-card-tagline">Standardize handoffs and ensure the same outcome each run.</div>
-                  <div className="medium-card-capabilities">
-                    <span className="capability-dot">Handoff specs</span>
-                    <span className="capability-dot">Quality checks</span>
-                    <span className="capability-dot">Run templates</span>
-                  </div>
-                  <div className="medium-card-footer">
-                    <span className="medium-card-category">NORMALIZE</span>
-                    <span className="medium-card-rating">★ Phase 2</span>
-                    <span className="medium-card-price">Repeatable</span>
-                  </div>
-                  <div className="medium-card-author">by workflow owners</div>
-                </div>
-                <div className="medium-card">
-                  <div className="medium-card-header">
-                    <div className="medium-card-icon">
-                      <span>🔗</span>
-                    </div>
-                    <div className="medium-card-badges">
-                      <span className="badge-trending">◆</span>
-                    </div>
-                  </div>
-                  <div className="medium-card-name">Integration depth.</div>
-                  <div className="medium-card-tagline">Connectors extend into org systems and data pipelines.</div>
-                  <div className="medium-card-capabilities">
-                    <span className="capability-dot">SSO roles</span>
-                    <span className="capability-dot">Data pipelines</span>
-                    <span className="capability-dot">Ops hooks</span>
-                  </div>
-                  <div className="medium-card-footer">
-                    <span className="medium-card-category">DEEPEN</span>
-                    <span className="medium-card-rating">★ Phase 2</span>
-                    <span className="medium-card-price">Embedded</span>
-                  </div>
-                  <div className="medium-card-author">by systems team</div>
-                </div>
-              </div>
-              <div className="grid-2">
-                <div className="stack-card">
-                  <div className="stack-card-header">
-                    <div className="stack-card-icon">
-                      <span>♻️</span>
-                    </div>
-                    <div className="stack-card-meta">
-                      <span className="stack-card-count">3 steps</span>
-                    </div>
-                  </div>
-                  <div className="stack-card-name">Stabilization loop</div>
-                  <div className="stack-card-desc">Tune agents, normalize workflows, then deepen integrations.</div>
-                  <div className="stack-card-solves">Repeat until systems are stable.</div>
-                  <div className="stack-card-agents">
-                    <span className="stack-agent-pill">Tune</span>
-                    <span className="stack-agent-pill">Normalize</span>
-                    <span className="stack-agent-pill">Deepen</span>
-                  </div>
-                  <div className="stack-card-usecases">
-                    <span className="stack-usecase">→ Guardrails</span>
-                    <span className="stack-usecase">→ Consistent outcomes</span>
-                    <span className="stack-usecase">→ Embedded tooling</span>
-                  </div>
-                  <div className="stack-card-footer">
-                    <span className="stack-card-users">Continuous hardening</span>
-                  </div>
-                </div>
                 <div className="collection-card">
                   <div className="collection-card-stripe" />
                   <div className="collection-card-body">
@@ -520,64 +308,10 @@ export function StorySections({ onEnter, onLeave, aaEnabled, onStackAA, storySec
                   </div>
                 </div>
               </div>
-              <div className="text-banner">You don't build custom agents until the data says you must.</div>
+              <div className="text-banner">Only what survives guardrails graduates.</div>
               <div className="grid-3">
-                <div className="compact-card">
-                  <div className="compact-card-icon">
-                    <span>✅</span>
-                  </div>
-                  <div className="compact-card-info">
-                    <div className="compact-card-name">Prompt QA</div>
-                    <div className="compact-card-tagline">Quality checks per run</div>
-                    <div className="compact-card-meta">
-                      <span className="compact-card-rating">★ Passed</span>
-                      <span className="compact-card-users">Checks</span>
-                      <span className="compact-card-price">Ready</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="compact-card">
-                  <div className="compact-card-icon">
-                    <span>📦</span>
-                  </div>
-                  <div className="compact-card-info">
-                    <div className="compact-card-name">Run templates</div>
-                    <div className="compact-card-tagline">Repeatable job specs</div>
-                    <div className="compact-card-meta">
-                      <span className="compact-card-rating">★ Stable</span>
-                      <span className="compact-card-users">Templates</span>
-                      <span className="compact-card-price">Shared</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="integration-card">
-                  <div className="integration-card-icon">
-                    <span>🧩</span>
-                  </div>
-                  <div className="integration-card-name">Ops hooks</div>
-                  <div className="integration-card-count">Tooling embedded</div>
-                </div>
+                {enterpriseReadyAgents.map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
               </div>
-            </div>
-
-            <div className="shelf-container">
-              <Section sectionKey="productivity">
-                <div className="grid-3">
-                  {productivityAgents.map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
-                </div>
-              </Section>
-
-              <Section sectionKey="integrations">
-                <HorizontalShelf>
-                  {INTEGRATIONS.map(i => <IntegrationCard key={i.id} integration={i} />)}
-                </HorizontalShelf>
-              </Section>
-
-              <Section sectionKey="data">
-                <HorizontalShelf>
-                  {dataAgents.map(a => <MediumCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
-                </HorizontalShelf>
-              </Section>
             </div>
           </div>
         </div>
@@ -658,99 +392,25 @@ export function StorySections({ onEnter, onLeave, aaEnabled, onStackAA, storySec
                 <div className="medium-card">
                   <div className="medium-card-header">
                     <div className="medium-card-icon">
-                      <span>🌱</span>
+                      <span>◆</span>
                     </div>
                     <div className="medium-card-badges">
-                      <span className="badge-trending">↑</span>
+                      <span className="badge-trending">◆</span>
                     </div>
                   </div>
-                  <div className="medium-card-name">Capability shift.</div>
-                  <div className="medium-card-tagline">From usage to independence across teams.</div>
+                  <div className="medium-card-name">Internal capability.</div>
+                  <div className="medium-card-tagline">A platform your teams extend without us.</div>
                   <div className="medium-card-capabilities">
                     <span className="capability-dot">Internal builders</span>
                     <span className="capability-dot">Playbooks</span>
-                    <span className="capability-dot">Extension path</span>
+                    <span className="capability-dot">Long-term</span>
                   </div>
                   <div className="medium-card-footer">
-                    <span className="medium-card-category">CAPABILITY</span>
+                    <span className="medium-card-category">OUTCOME</span>
                     <span className="medium-card-rating">★ Durable</span>
-                    <span className="medium-card-price">Independent</span>
+                    <span className="medium-card-price">Owned</span>
                   </div>
-                  <div className="medium-card-author">by enablement</div>
-                </div>
-              </div>
-              <div className="text-banner">Marketing found the Copy Agent. HR found the Policy Agent. We just provided the platform.</div>
-              <div className="grid-2">
-                <div className="collection-card">
-                  <div className="collection-card-stripe" />
-                  <div className="collection-card-body">
-                    <div className="collection-card-name">Internal platform</div>
-                    <div className="collection-card-desc">A durable capability teams can extend and maintain.</div>
-                    <div className="collection-card-meta">
-                      <span>Long-term</span>
-                      <span className="collection-card-curator">Your org</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="pairing-card">
-                  <div className="pairing-agents">
-                    <div className="pairing-agent">
-                      <span className="pairing-icon">🧱</span>
-                      <span className="pairing-name">Your stack</span>
-                    </div>
-                    <span className="pairing-plus">+</span>
-                    <div className="pairing-agent">
-                      <span className="pairing-icon">✨</span>
-                      <span className="pairing-name">Syn systems</span>
-                    </div>
-                  </div>
-                  <div className="pairing-why">
-                    We co-build, then hand over the system.
-                  </div>
-                </div>
-              </div>
-              <div className="grid-3">
-                <div className="compact-card">
-                  <div className="compact-card-icon">
-                    <span>🧩</span>
-                  </div>
-                  <div className="compact-card-info">
-                    <div className="compact-card-name">Custom workflows</div>
-                    <div className="compact-card-tagline">Built around your ops</div>
-                    <div className="compact-card-meta">
-                      <span className="compact-card-rating">★ Tailored</span>
-                      <span className="compact-card-users">Org fit</span>
-                      <span className="compact-card-price">Aligned</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="compact-card">
-                  <div className="compact-card-icon">
-                    <span>🛡️</span>
-                  </div>
-                  <div className="compact-card-info">
-                    <div className="compact-card-name">Production grade</div>
-                    <div className="compact-card-tagline">Hardened for scale</div>
-                    <div className="compact-card-meta">
-                      <span className="compact-card-rating">★ Reliable</span>
-                      <span className="compact-card-users">Ops-ready</span>
-                      <span className="compact-card-price">Stable</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="compact-card">
-                  <div className="compact-card-icon">
-                    <span>🏷️</span>
-                  </div>
-                  <div className="compact-card-info">
-                    <div className="compact-card-name">Built on your stack</div>
-                    <div className="compact-card-tagline">Your infra + models</div>
-                    <div className="compact-card-meta">
-                      <span className="compact-card-rating">★ Yours</span>
-                      <span className="compact-card-users">In-house</span>
-                      <span className="compact-card-price">Owned</span>
-                    </div>
-                  </div>
+                  <div className="medium-card-author">by your teams</div>
                 </div>
               </div>
             </div>
