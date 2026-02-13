@@ -209,10 +209,10 @@ const CATEGORY_CARDS = CATEGORY_META.map((category) => ({
 }));
 
 const SECTION_META = {
-  featured: { headline: "Featured Agents", rationale: "Hand-picked by the Playstore team for quality, polish, and impact." },
+  featured: { headline: "Featured & Trending", rationale: "The most popular agents currently in use." },
   trending: { headline: "Trending Now", rationale: "The agents gaining the most momentum this week — installs, stars, and chatter." },
   stacks: { headline: "Popular Stacks", rationale: "Pre-assembled agent combinations that teams actually use together." },
-  newArrivals: { headline: "New Arrivals", rationale: "Just landed. Fresh capabilities that haven't been discovered yet." },
+  newArrivals: { headline: "Experimental", rationale: "Beta agents designed to test specific workflows." },
   collections: { headline: "Curated Collections", rationale: "Themed bundles assembled by editors and the community around real workflows." },
   free: { headline: "Free to Use", rationale: "Fully functional agents with no subscription. Start building now." },
   integrations: { headline: "Connect Your Tools", rationale: "Find agents that plug into the tools already running your workflow." },
@@ -220,8 +220,8 @@ const SECTION_META = {
   developers: { headline: "For Developers", rationale: "Code generation, testing, debugging, and deployment — the builder's shelf." },
   editorsPick: { headline: "Editor's Pick", rationale: "Agents that surprised us this month — unexpected quality in unexpected categories." },
   data: { headline: "Data & Analytics", rationale: "Parse, transform, query, and visualize. The full data lifecycle in agent form." },
-  productivity: { headline: "Productivity & Workflow", rationale: "Automate the tasks that eat your day — email, scheduling, meetings, Slack." },
-  popular: { headline: "Most Popular", rationale: "Highest active user counts across the platform. What everyone else is using." },
+  productivity: { headline: "Enterprise Ready", rationale: "Agents that commonly graduate to custom development." },
+  popular: { headline: "Community Favorites", rationale: "Agents with high engagement scores." },
   teamStacks: { headline: "Stacks for Teams", rationale: "Multi-agent setups designed for collaborative, cross-functional workflows." },
   recentlyUpdated: { headline: "Recently Updated", rationale: "Fresh releases shipped this week — new features, fixes, and improvements." },
   communityPicks: { headline: "Community Picks", rationale: "Top-voted by Playstore users. The crowd's favorites, not ours." },
@@ -380,7 +380,7 @@ function CompactCard({ agent, onHoverEnter, onHoverLeave }) {
         <div className="compact-card-meta">
           <span className="compact-card-rating">★ {agent.rating}</span>
           <span className="compact-card-users">{agent.users}</span>
-          <span className="compact-card-price" style={{ color: agent.price === "Free" ? "#1DD1A1" : "#A29BFE" }}>{agent.price}</span>
+          <span className="compact-card-price" style={{ color: agent.price === "Free" ? "var(--accent-cool)" : "var(--text-tertiary)" }}>{agent.price}</span>
         </div>
       </div>
       {agent.new && <span className="badge-new">NEW</span>}
@@ -412,7 +412,7 @@ function MediumCard({ agent, onHoverEnter, onHoverLeave }) {
       <div className="medium-card-footer">
         <span className="medium-card-category" style={{ background: agent.color + "18", color: agent.color }}>{agent.category}</span>
         <span className="medium-card-rating">★ {agent.rating}</span>
-        <span className="medium-card-price" style={{ color: agent.price === "Free" ? "#1DD1A1" : "#A29BFE" }}>{agent.price}</span>
+        <span className="medium-card-price" style={{ color: agent.price === "Free" ? "var(--accent-cool)" : "var(--text-tertiary)" }}>{agent.price}</span>
       </div>
       <div className="medium-card-author">by {agent.author}</div>
     </div>
@@ -447,7 +447,7 @@ function LargeCard({ agent, onHoverEnter, onHoverLeave }) {
           <span className="large-card-category" style={{ background: agent.color + "18", color: agent.color, borderColor: agent.color + "35" }}>{agent.category}</span>
           <span className="large-card-rating">★ {agent.rating}</span>
           <span className="large-card-users">{agent.users} users</span>
-          <span className="large-card-price" style={{ color: agent.price === "Free" ? "#1DD1A1" : "#A29BFE" }}>{agent.price}</span>
+          <span className="large-card-price" style={{ color: agent.price === "Free" ? "var(--accent-cool)" : "var(--text-tertiary)" }}>{agent.price}</span>
         </div>
         <div className="large-card-author">by {agent.author}</div>
         <button className="large-card-btn" style={{ background: agent.color }}>Explore Agent →</button>
@@ -593,14 +593,32 @@ export default function AgentPlaystore() {
   const [scrolled, setScrolled] = useState(false);
   const mainRef = useRef(null);
   const storySectionRefs = useRef([]);
+  const scrollRafRef = useRef(null);
+  const scrolledRef = useRef(false);
   const { hoverData, onEnter, onLeave } = useCardHover();
 
   useEffect(() => {
     const el = mainRef.current;
     if (!el) return;
-    const h = () => setScrolled(el.scrollTop > 320);
-    el.addEventListener("scroll", h);
-    return () => el.removeEventListener("scroll", h);
+    const h = () => {
+      if (scrollRafRef.current !== null) return;
+      scrollRafRef.current = requestAnimationFrame(() => {
+        scrollRafRef.current = null;
+        const next = el.scrollTop > 320;
+        if (scrolledRef.current !== next) {
+          scrolledRef.current = next;
+          setScrolled(next);
+        }
+      });
+    };
+    el.addEventListener("scroll", h, { passive: true });
+    return () => {
+      el.removeEventListener("scroll", h);
+      if (scrollRafRef.current !== null) {
+        cancelAnimationFrame(scrollRafRef.current);
+        scrollRafRef.current = null;
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -638,35 +656,77 @@ export default function AgentPlaystore() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Instrument+Serif:ital@0;1&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg-primary); }
+        h1, h2, h3 { color: #ffffff; }
+        ::selection { background: rgba(255, 255, 255, 0.18); color: #ffffff; }
 
         :root {
-          --bg-primary: #09090E;
-          --bg-secondary: #0E0E16;
-          --bg-card: #141420;
-          --bg-card-hover: #1A1A2A;
-          --bg-elevated: #1C1C2C;
-          --border-subtle: #1E1E30;
-          --border-medium: #28283D;
-          --text-primary: #E6E6F0;
-          --text-secondary: #8585A0;
-          --text-tertiary: #505068;
-          --accent-primary: #7C6CFF;
-          --accent-glow: #7C6CFF33;
-          --aa: #B89A5C; --aa-dim: #B89A5C80; --aa-bg: #B89A5C14; --aa-border: #B89A5C33;
-          --font-display: 'Instrument Serif', serif;
-          --font-body: 'DM Sans', sans-serif;
-          --topbar-height: 60px;
+          --bg-primary: #050505;
+          --bg-secondary: #0b0b0b;
+          --bg-card: rgba(18, 18, 18, 0.72);
+          --bg-card-hover: rgba(24, 24, 24, 0.82);
+          --bg-elevated: rgba(22, 22, 22, 0.8);
+          --border-subtle: rgba(255, 255, 255, 0.08);
+          --border-medium: rgba(255, 255, 255, 0.18);
+          --text-primary: #ffffff;
+          --text-secondary: #a1a1aa;
+          --text-tertiary: rgba(255, 255, 255, 0.55);
+          --accent-primary: #f5f5f5;
+          --accent-glow: rgba(255, 255, 255, 0.25);
+          --accent-warm: #d4d4d8;
+          --accent-cool: #bdbdbd;
+          --accent-danger: #e5e7eb;
+          --glass-bg: rgba(18, 18, 18, 0.74);
+          --glass-bg-strong: rgba(24, 24, 24, 0.86);
+          --glass-border: linear-gradient(135deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.04));
+          --glass-border-soft: linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.03));
+          --glass-highlight: rgba(255, 255, 255, 0.12);
+          --aa: #ffffff;
+          --aa-dim: rgba(255, 255, 255, 0.6);
+          --aa-bg: rgba(255, 255, 255, 0.06);
+          --aa-border: rgba(255, 255, 255, 0.3);
+          --font-display: 'Space Grotesk', sans-serif;
+          --font-body: 'Sora', sans-serif;
+          --font-mono: 'Space Mono', monospace;
+          --topbar-height: 64px;
         }
 
-        #root, .app-container {
+        #root {
           width: 100vw; height: 100vh; overflow: hidden;
-          background: var(--bg-primary); color: var(--text-primary);
-          font-family: var(--font-body); display: flex;
+          background: var(--bg-primary);
+          color: var(--text-primary);
+          font-family: var(--font-body);
+          display: flex;
         }
-        .app-container { flex-direction: column; }
+        .app-container {
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          position: relative;
+          background: transparent;
+        }
+        .app-container::before,
+        .app-container::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          opacity: 0.3;
+          pointer-events: none;
+          z-index: 0;
+        }
+        .app-container::before {
+          background: radial-gradient(circle at 20% -15%, rgba(255, 255, 255, 0.08), transparent 60%);
+        }
+        .app-container::after {
+          background: radial-gradient(circle at 85% 0%, rgba(255, 255, 255, 0.06), transparent 55%);
+          opacity: 0.4;
+        }
+        .app-container > * { position: relative; z-index: 1; }
 
         /* ===== MAIN ===== */
         .main-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
@@ -674,8 +734,23 @@ export default function AgentPlaystore() {
         /* ===== TOPBAR ===== */
         .topbar {
           height: var(--topbar-height); min-height: var(--topbar-height);
-          border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center;
-          padding: 0 24px; gap: 16px; background: var(--bg-secondary); z-index: 50;
+          border-bottom: 1px solid var(--border-subtle);
+          display: flex; align-items: center;
+          padding: 0 24px; gap: 16px;
+          background: rgba(5, 5, 5, 0.8);
+          backdrop-filter: blur(14px);
+          position: relative;
+          z-index: 50;
+        }
+        .topbar::before {
+          content: "";
+          position: absolute;
+          inset: -60px 0 -40px 0;
+          background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.18), transparent 70%);
+          filter: blur(24px);
+          opacity: 0.55;
+          pointer-events: none;
+          z-index: 0;
         }
         .topbar-inner {
           width: 100%;
@@ -683,48 +758,96 @@ export default function AgentPlaystore() {
           margin: 0 auto;
           display: flex; align-items: center; gap: 16px;
           min-width: 0;
+          position: relative;
+          z-index: 1;
         }
         .topbar-left { display: flex; align-items: center; gap: 18px; min-width: 0; }
         .topbar-logo { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
         .topbar-logo-icon { color: var(--accent-primary); font-size: 16px; }
-        .topbar-logo-text { font-family: var(--font-display); font-size: 16px; letter-spacing: -0.01em; }
+        .topbar-logo-text { font-family: var(--font-display); font-size: 16px; letter-spacing: -0.02em; font-weight: 600; color: var(--text-primary); }
         .topbar-nav { display: flex; align-items: center; gap: 6px; }
         .topbar-nav-item {
-          border: 1px solid transparent; background: transparent;
+          border: 1px solid transparent;
+          background: transparent;
           color: var(--text-secondary); font-size: 12.5px; cursor: pointer;
           padding: 6px 10px; border-radius: 8px; transition: all 0.15s;
-          font-family: var(--font-body);
+          font-family: var(--font-body); font-weight: 500; letter-spacing: -0.01em;
         }
-        .topbar-nav-item:hover { border-color: var(--border-medium); color: var(--text-primary); background: var(--bg-card); }
-        .topbar-nav-primary { color: var(--accent-primary); border-color: #7C6CFF1A; background: #7C6CFF0D; }
+        .topbar-nav-item:hover { border-color: var(--border-subtle); color: var(--text-primary); background: rgba(255,255,255,0.08); }
+        .topbar-nav-primary {
+          color: #050505;
+          border-color: transparent;
+          background: linear-gradient(135deg, var(--accent-primary), var(--accent-cool));
+          box-shadow: 0 8px 20px rgba(255, 255, 255, 0.18);
+        }
         .topbar-nav-primary:hover { border-color: var(--accent-primary); }
         .topbar-search { flex: 1; max-width: 460px; position: relative; }
         .topbar-search input {
-          width: 100%; height: 36px; border-radius: 9px; border: 1px solid var(--border-medium);
-          background: var(--bg-card); color: var(--text-primary); padding: 0 14px 0 34px;
-          font-size: 13px; font-family: var(--font-body); outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+          width: 100%; height: 38px; border-radius: 10px; border: 1px solid var(--border-subtle);
+          background: rgba(18,18,18,0.78);
+          color: var(--text-primary); padding: 0 14px 0 34px;
+          font-size: 12.5px; font-family: var(--font-body); outline: none; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
         }
         .topbar-search input::placeholder { color: var(--text-tertiary); }
-        .topbar-search input:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 3px var(--accent-glow); }
-        .topbar-search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text-tertiary); font-size: 13px; }
+        .topbar-search input:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 3px var(--accent-glow); background: rgba(24,24,24,0.92); }
+        .topbar-search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-tertiary); font-size: 13px; }
         .topbar-right { display: flex; align-items: center; gap: 10px; }
         .topbar-pill {
           display: flex; align-items: center; gap: 5px; padding: 5px 12px;
-          border-radius: 18px; background: var(--bg-card); border: 1px solid var(--border-subtle);
+          border-radius: 10px; background: rgba(18,18,18,0.78); border: 1px solid var(--border-subtle);
           font-size: 12px; color: var(--text-secondary); cursor: pointer; transition: all 0.15s; white-space: nowrap;
+          letter-spacing: -0.01em;
         }
-        .topbar-pill:hover { border-color: var(--accent-primary); color: var(--text-primary); }
+        .topbar-pill:hover { border-color: var(--border-medium); color: var(--text-primary); background: rgba(255,255,255,0.1); }
         .topbar-avatar {
           width: 30px; height: 30px; border-radius: 50%;
-          background: linear-gradient(135deg, var(--accent-primary), #E84393);
+          background: rgba(18,18,18,0.85);
+          border: 1px solid var(--border-subtle);
           display: flex; align-items: center; justify-content: center; font-size: 13px; cursor: pointer;
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
         }
 
         /* ===== SCROLL ===== */
-        .scroll-area { flex: 1; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; }
+        .scroll-area { flex: 1; overflow-y: auto; overflow-x: hidden; scroll-behavior: auto; }
         .scroll-area::-webkit-scrollbar { width: 5px; }
         .scroll-area::-webkit-scrollbar-track { background: transparent; }
-        .scroll-area::-webkit-scrollbar-thumb { background: var(--border-medium); border-radius: 3px; }
+        .scroll-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+        .scroll-area :is(
+          .hero-section,
+          .closing-section,
+          .hero-aa-card,
+          .shelf-container,
+          .story-section,
+          .narrative-mini,
+          .narrative-callout,
+          .compact-card,
+          .medium-card,
+          .large-card,
+          .stack-card,
+          .collection-card,
+          .integration-card,
+          .pairing-card,
+          .category-card,
+          .highlight-banner
+        ) {
+          backdrop-filter: none;
+          -webkit-backdrop-filter: none;
+          box-shadow: inset 0 1px 0 var(--glass-highlight), 0 16px 32px rgba(0,0,0,0.35);
+        }
+        .scroll-area :is(
+          .compact-card:hover,
+          .medium-card:hover,
+          .large-card:hover,
+          .stack-card:hover,
+          .collection-card:hover,
+          .integration-card:hover,
+          .pairing-card:hover,
+          .category-card:hover,
+          .hero-aa-card:hover
+        ) {
+          box-shadow: inset 0 1px 0 var(--glass-highlight), 0 20px 38px rgba(0,0,0,0.42);
+        }
         .home-content {
           width: 100%;
           max-width: 1500px;
@@ -736,46 +859,175 @@ export default function AgentPlaystore() {
         /* ===== HERO ===== */
         .hero-section {
           position: relative; border-radius: 14px; overflow: hidden;
-          background: linear-gradient(135deg, #10101C 0%, #181830 40%, #0E1520 100%);
-          border: 1px solid var(--border-subtle); padding: 26px 28px; min-height: 150px;
+          background: linear-gradient(180deg, var(--glass-bg-strong), var(--glass-bg)) padding-box,
+            var(--glass-border) border-box;
+          border: 1px solid transparent; padding: 28px 32px; min-height: 150px;
+          box-shadow: inset 0 1px 0 var(--glass-highlight), 0 24px 60px rgba(0,0,0,0.45);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          isolation: isolate;
         }
-        .hero-glow { position: absolute; top: -50px; right: -40px; width: 280px; height: 280px; background: radial-gradient(circle, #7C6CFF15, transparent 70%); pointer-events: none; }
-        .hero-glow-2 { position: absolute; bottom: -60px; left: 18%; width: 240px; height: 240px; background: radial-gradient(circle, #E8439315, transparent 70%); pointer-events: none; }
-        .hero-title { font-family: var(--font-display); font-size: 34px; line-height: 1.12; margin-bottom: 8px; position: relative; letter-spacing: -0.02em; }
-        .hero-title em { font-style: italic; color: var(--accent-primary); }
-        .hero-subtitle { font-size: 13px; color: var(--text-secondary); line-height: 1.5; max-width: 520px; position: relative; }
+        .hero-section::before {
+          content: "";
+          position: absolute;
+          top: -220px; left: -140px;
+          width: 520px; height: 520px;
+          background: radial-gradient(circle, rgba(255, 255, 255, 0.16), transparent 65%);
+          opacity: 0.55;
+          filter: blur(8px);
+          pointer-events: none;
+          z-index: 0;
+        }
+        .hero-glow,
+        .hero-glow-2,
+        .hero-aa-glow {
+          opacity: 0.35;
+          filter: blur(10px);
+          z-index: 0;
+        }
+        .hero-glow { position: absolute; top: -80px; right: -40px; width: 260px; height: 260px; background: radial-gradient(circle, rgba(255, 255, 255, 0.18), transparent 70%); pointer-events: none; }
+        .hero-glow-2 { position: absolute; bottom: -90px; left: 18%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(255, 255, 255, 0.12), transparent 70%); pointer-events: none; }
+        .hero-title { font-family: var(--font-display); font-size: 40px; line-height: 1.04; margin-bottom: 10px; position: relative; letter-spacing: -0.03em; font-weight: 600; color: var(--text-primary); text-shadow: 0 0 18px rgba(255, 255, 255, 0.12); }
+        .hero-title em { font-style: normal; color: var(--accent-primary); }
+        .hero-subtitle { font-size: 14px; color: var(--text-secondary); line-height: 1.6; max-width: 520px; position: relative; }
+        .hero-narrative { font-size: 12.5px; color: var(--text-secondary); line-height: 1.6; max-width: 560px; margin-top: 8px; position: relative; }
         .hero-actions { display: flex; gap: 10px; margin-top: 10px; position: relative; }
         .hero-cta {
-          padding: 7px 12px; border-radius: 8px; border: 1px solid var(--aa-border);
-          background: var(--aa-bg); color: var(--aa); font-size: 12px; font-weight: 600;
+          padding: 8px 14px; border-radius: 10px; border: 1px solid transparent;
+          background: linear-gradient(135deg, var(--accent-primary), var(--accent-cool));
+          color: #050505; font-size: 12.5px; font-weight: 600;
           font-family: var(--font-body); cursor: pointer; transition: all 0.15s; white-space: nowrap;
+          box-shadow: 0 10px 24px rgba(255, 255, 255, 0.16);
         }
-        .hero-cta:hover { border-color: var(--aa); background: #B89A5C24; }
+        .hero-cta:hover { opacity: 0.9; }
+        .hero-cta-secondary {
+          background: transparent;
+          border: 1px solid var(--border-subtle);
+          color: var(--text-primary);
+          box-shadow: none;
+        }
+        .hero-cta-secondary:hover { background: rgba(255,255,255,0.08); opacity: 1; }
         .hero-stats { display: flex; gap: 18px; margin-top: 14px; position: relative; }
-        .hero-stat-value { font-size: 16px; font-weight: 600; color: var(--text-secondary); font-variant-numeric: tabular-nums; opacity: 0.7; }
-        .hero-stat-label { font-size: 9.5px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; opacity: 0.7; }
+        .hero-stat-value { font-size: 17px; font-weight: 600; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+        .hero-stat-label { font-size: 9.5px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.12em; margin-top: 2px; opacity: 0.8; font-weight: 600; }
+
+        /* ===== CLOSING ===== */
+        .closing-section {
+          position: relative; border-radius: 16px; overflow: hidden;
+          padding: 26px 32px;
+          background: linear-gradient(180deg, var(--glass-bg-strong), var(--glass-bg)) padding-box,
+            var(--glass-border) border-box;
+          border: 1px solid transparent;
+          box-shadow: inset 0 1px 0 var(--glass-highlight), 0 24px 60px rgba(0,0,0,0.45);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          isolation: isolate;
+        }
+        .closing-section::before {
+          content: "";
+          position: absolute;
+          top: -180px; right: -80px;
+          width: 420px; height: 420px;
+          background: radial-gradient(circle, rgba(255, 255, 255, 0.16), transparent 70%);
+          opacity: 0.5;
+          filter: blur(10px);
+          pointer-events: none;
+        }
+        .closing-content { display: flex; align-items: center; justify-content: space-between; gap: 20px; position: relative; z-index: 1; }
+        .closing-left { max-width: 520px; }
+        .closing-title { font-family: var(--font-display); font-size: 30px; letter-spacing: -0.02em; color: var(--text-primary); font-weight: 600; text-shadow: 0 0 12px rgba(255,255,255,0.12); }
+        .closing-subtitle { font-size: 13px; color: var(--text-secondary); margin-top: 6px; line-height: 1.5; }
+        .closing-right { display: flex; gap: 12px; flex-wrap: wrap; }
+        .closing-btn {
+          display: inline-flex; align-items: center; justify-content: center;
+          padding: 9px 16px; border-radius: 10px; border: 1px solid transparent;
+          background: linear-gradient(135deg, var(--accent-primary), var(--accent-cool));
+          color: #050505; font-size: 12.5px; font-weight: 600;
+          font-family: var(--font-body); cursor: pointer; transition: opacity 0.15s; white-space: nowrap;
+          box-shadow: 0 10px 24px rgba(255,255,255,0.16);
+        }
+        .closing-btn:hover { opacity: 0.9; }
+        .closing-btn-secondary {
+          background: transparent;
+          border: 1px solid var(--border-subtle);
+          color: var(--text-primary);
+          box-shadow: none;
+        }
+        .closing-btn-secondary:hover { background: rgba(255,255,255,0.08); opacity: 1; }
+        .hero-stat-label,
+        .narrative-kicker,
+        .narrative-chip,
+        .section-context-sub,
+        .hover-detail-label,
+        .aa-sec-lbl,
+        .stack-card-count,
+        .category-card-count {
+          font-family: var(--font-body);
+        }
 
         /* ===== SECTIONS ===== */
         .section { display: flex; flex-direction: column; gap: 14px; }
         .section-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
-        .section-title { font-family: var(--font-display); font-size: 21px; letter-spacing: -0.01em; line-height: 1.2; }
-        .section-rationale { font-size: 12.5px; color: var(--text-tertiary); margin-top: 3px; line-height: 1.4; max-width: 560px; }
+        .section-title { font-family: var(--font-display); font-size: 21px; letter-spacing: -0.02em; line-height: 1.2; font-weight: 600; color: var(--text-primary); text-shadow: 0 0 12px rgba(255,255,255,0.12); }
+        .section-rationale { font-size: 12.5px; color: var(--text-secondary); margin-top: 3px; line-height: 1.4; max-width: 560px; }
         .section-see-all {
           background: none; border: none; color: var(--accent-primary); font-size: 12px;
-          font-family: var(--font-body); cursor: pointer; padding: 4px 0; transition: opacity 0.15s; white-space: nowrap; flex-shrink: 0; margin-top: 4px;
+          font-family: var(--font-body); font-weight: 600; cursor: pointer; padding: 4px 0; transition: opacity 0.15s; white-space: nowrap; flex-shrink: 0; margin-top: 4px;
+          letter-spacing: 0.02em;
         }
         .section-see-all:hover { opacity: 0.7; }
         .section-context { display: flex; flex-direction: column; gap: 2px; margin-top: 2px; }
-        .section-context-title { font-family: var(--font-display); font-size: 34px; color: var(--text-primary); letter-spacing: -0.02em; line-height: 1.12; }
-        .section-context-sub { font-size: 11.5px; color: var(--text-tertiary); }
+        .section-context-title { font-family: var(--font-display); font-size: 34px; color: var(--text-primary); letter-spacing: -0.02em; line-height: 1.12; font-weight: 600; }
+        .section-context-sub { font-size: 11px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.2em; font-weight: 600; }
+        .hero-subtitle,
+        .section-rationale,
+        .medium-card-tagline,
+        .large-card-tagline,
+        .large-card-solves,
+        .stack-card-desc,
+        .stack-card-solves,
+        .collection-card-desc,
+        .pairing-why,
+        .category-card-desc,
+        .hover-detail-solves,
+        .hover-detail-usecase,
+        .narrative-body,
+        .narrative-mini-body,
+        .narrative-callout,
+        .narrative-step,
+        .narrative-list-item,
+        .narrative-chip,
+        .narrative-pill,
+        .narrative-stat,
+        .hero-stat-label,
+        .aa-cap-d,
+        .aa-cost-note,
+        .aa-en-msg,
+        .hero-aa-desc,
+        .highlight-banner-desc,
+        .aa-sticky-text,
+        .compact-card-tagline,
+        .stack-usecase,
+        .stack-card-users,
+        .medium-card-author,
+        .large-card-author,
+        .collection-card-meta,
+        .integration-card-count,
+        .category-card-count,
+        .hover-detail-author {
+          font-weight: 300;
+        }
         .shelf-stack { display: flex; flex-direction: column; gap: 14px; }
         .shelf-container {
           position: relative;
           padding: 18px 18px 22px;
-          border-radius: 16px;
-          background: linear-gradient(180deg, #0E0E18 0%, #0B0B12 100%);
-          border: 1px solid var(--border-subtle);
-          box-shadow: inset 0 8px 12px -12px rgba(0,0,0,0.75), inset 0 1px 0 rgba(255,255,255,0.02);
+          border-radius: 14px;
+          background: linear-gradient(180deg, var(--glass-bg-strong), var(--glass-bg)) padding-box,
+            var(--glass-border) border-box;
+          border: 1px solid transparent;
+          box-shadow: inset 0 1px 0 var(--glass-highlight), 0 24px 50px rgba(0,0,0,0.45);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
           display: flex; flex-direction: column; gap: 20px;
         }
 
@@ -783,15 +1035,19 @@ export default function AgentPlaystore() {
         .narrative-sections { display: flex; flex-direction: column; gap: 28px; }
         .story-section {
           position: relative;
-          border-radius: 18px;
+          border-radius: 14px;
           padding: 18px;
-          border: 1px solid var(--border-subtle);
-          box-shadow: inset 0 10px 16px -18px rgba(0,0,0,0.8), 0 22px 40px -36px rgba(0,0,0,0.8);
+          border: 1px solid transparent;
+          box-shadow: inset 0 1px 0 var(--glass-highlight), 0 24px 50px rgba(0,0,0,0.45);
+          background: linear-gradient(180deg, var(--glass-bg-strong), var(--glass-bg)) padding-box,
+            var(--glass-border) border-box;
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
         }
-        .story-section.story-start { --story-accent: #7C6CFF; --story-accent-weak: #7C6CFF22; --story-accent-border: #7C6CFF44; background: linear-gradient(135deg, #0F101A, #0B0C14); }
-        .story-section.story-learn { --story-accent: #5AC8FA; --story-accent-weak: #5AC8FA22; --story-accent-border: #5AC8FA44; background: linear-gradient(135deg, #0E1320, #0A0D16); }
-        .story-section.story-stabilize { --story-accent: #1DD1A1; --story-accent-weak: #1DD1A122; --story-accent-border: #1DD1A144; background: linear-gradient(135deg, #0D1916, #0A0D12); }
-        .story-section.story-bespoke { --story-accent: #B89A5C; --story-accent-weak: #B89A5C22; --story-accent-border: #B89A5C44; background: linear-gradient(135deg, #16130D, #0E0B08); }
+        .story-section.story-start { --story-accent: #f5f5f5; --story-accent-weak: rgba(255, 255, 255, 0.12); --story-accent-border: rgba(255, 255, 255, 0.35); border-top: 1px solid var(--story-accent); }
+        .story-section.story-learn { --story-accent: #d4d4d8; --story-accent-weak: rgba(212, 212, 216, 0.12); --story-accent-border: rgba(212, 212, 216, 0.35); border-top: 1px solid var(--story-accent); }
+        .story-section.story-stabilize { --story-accent: #a1a1aa; --story-accent-weak: rgba(161, 161, 170, 0.14); --story-accent-border: rgba(161, 161, 170, 0.35); border-top: 1px solid var(--story-accent); }
+        .story-section.story-bespoke { --story-accent: #e5e7eb; --story-accent-weak: rgba(229, 231, 235, 0.12); --story-accent-border: rgba(229, 231, 235, 0.35); border-top: 1px solid var(--story-accent); }
         .story-grid {
           display: grid;
           grid-template-columns: minmax(280px, 0.34fr) minmax(0, 1fr);
@@ -817,9 +1073,12 @@ export default function AgentPlaystore() {
           position: relative;
           padding: 14px;
           border-radius: 12px;
-          background: linear-gradient(160deg, rgba(255,255,255,0.02), rgba(0,0,0,0.3)), var(--bg-card);
-          border: 1px solid var(--border-medium);
-          box-shadow: inset 0 1px 0 rgba(255,255,255,0.02), 0 10px 24px -22px rgba(0,0,0,0.8);
+          background: linear-gradient(180deg, var(--glass-bg-strong), var(--glass-bg)) padding-box,
+            var(--glass-border) border-box;
+          border: 1px solid transparent;
+          box-shadow: inset 0 1px 0 var(--glass-highlight), 0 20px 40px rgba(0,0,0,0.45);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
           overflow: hidden;
         }
         .narrative-mini::before {
@@ -827,57 +1086,60 @@ export default function AgentPlaystore() {
           position: absolute;
           inset: -40% 20% 40% -20%;
           background: radial-gradient(circle, var(--story-accent-weak), transparent 65%);
-          opacity: 0.9;
+          opacity: 0.6;
         }
         .narrative-mini::after {
           content: "";
           position: absolute;
           inset: 0;
-          background: radial-gradient(circle at 85% 15%, rgba(255,255,255,0.04), transparent 40%);
-          opacity: 0.6;
+          background: radial-gradient(circle at 85% 15%, rgba(255,255,255,0.08), transparent 45%);
+          opacity: 0.4;
         }
         .narrative-mini > * { position: relative; z-index: 1; }
         .narrative-mini.emphasis {
-          background: linear-gradient(160deg, var(--story-accent-weak), rgba(16,16,28,0.85)), var(--bg-card);
-          border-color: var(--story-accent-border);
+          background: linear-gradient(180deg, var(--glass-bg-strong), var(--glass-bg)) padding-box,
+            linear-gradient(135deg, var(--story-accent-border), rgba(255,255,255,0.02)) border-box;
+          border: 1px solid transparent;
         }
         .narrative-mini-top { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
         .narrative-mini-icon {
           width: 28px; height: 28px; border-radius: 8px;
           display: flex; align-items: center; justify-content: center;
           background: var(--story-accent-weak); color: var(--story-accent);
-          font-size: 13px; box-shadow: inset 0 0 0 1px var(--story-accent-weak);
+          font-size: 13px; box-shadow: inset 0 0 0 1px var(--story-accent-border);
         }
         .narrative-mini-kicker {
           font-size: 10px; text-transform: uppercase; letter-spacing: 0.16em;
-          color: var(--text-tertiary);
+          color: var(--text-tertiary); font-weight: 600;
         }
-        .narrative-mini-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+        .narrative-mini-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; letter-spacing: -0.01em; color: var(--text-primary); }
         .narrative-mini-body { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
         .narrative-mini-visual { display: flex; align-items: flex-end; gap: 6px; height: 34px; margin-top: 10px; }
         .narrative-mini-bar {
           width: 7px; border-radius: 6px;
-          background: linear-gradient(180deg, var(--story-accent), rgba(0,0,0,0));
+          background: linear-gradient(180deg, var(--story-accent), rgba(255,255,255,0));
           opacity: 0.9;
         }
         .narrative-orbit { display: flex; align-items: center; gap: 6px; margin-top: 10px; }
         .narrative-orbit-dot {
           width: 6px; height: 6px; border-radius: 50%;
-          background: var(--story-accent); box-shadow: 0 0 8px var(--story-accent);
+          background: var(--story-accent);
         }
         .narrative-orbit-line {
           height: 1px; flex: 1; background: linear-gradient(90deg, var(--story-accent), transparent);
         }
         .narrative-stat-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
         .narrative-stat {
-          padding: 6px 8px; border-radius: 8px; background: #141420;
+          padding: 6px 8px; border-radius: 8px;
+          background: rgba(18,18,18,0.85);
           border: 1px solid var(--border-subtle); font-size: 11px; color: var(--text-secondary);
         }
         .narrative-callout {
           display: flex; align-items: flex-start; gap: 10px;
           padding: 14px; border-radius: 12px;
-          background: linear-gradient(135deg, var(--story-accent-weak), rgba(16,16,28,0.65));
-          border: 1px solid var(--border-medium);
+          background: linear-gradient(180deg, var(--glass-bg-strong), var(--glass-bg)) padding-box,
+            var(--glass-border-soft) border-box;
+          border: 1px solid transparent;
           color: var(--text-secondary); font-size: 12.5px; line-height: 1.5;
           position: relative; overflow: hidden;
         }
@@ -886,7 +1148,7 @@ export default function AgentPlaystore() {
           position: absolute;
           inset: -60% -20% 40% 30%;
           background: radial-gradient(circle, var(--story-accent-weak), transparent 60%);
-          opacity: 0.9;
+          opacity: 0.5;
         }
         .narrative-callout > * { position: relative; z-index: 1; }
         .narrative-callout-icon {
@@ -901,39 +1163,49 @@ export default function AgentPlaystore() {
         .narrative-step-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--story-accent); flex-shrink: 0; }
         .narrative-kicker {
           font-size: 10px; text-transform: uppercase; letter-spacing: 0.18em;
-          color: var(--text-tertiary);
+          color: var(--text-tertiary); font-weight: 600;
         }
         .narrative-title {
           font-family: var(--font-display);
-          font-size: 26px;
-          line-height: 1.14;
-          letter-spacing: -0.01em;
+          font-size: 28px;
+          line-height: 1.12;
+          letter-spacing: -0.02em;
+          font-weight: 600;
+          text-shadow: 0 0 12px rgba(255,255,255,0.12);
         }
         .narrative-body {
-          font-size: 13px;
+          font-size: 13.5px;
           color: var(--text-secondary);
-          line-height: 1.6;
+          line-height: 1.65;
           max-width: 520px;
         }
         .narrative-pills { display: flex; flex-wrap: wrap; gap: 8px; }
         .narrative-pill {
           font-size: 11px; color: var(--text-secondary);
-          background: var(--bg-card); border: 1px solid var(--border-medium);
-          border-radius: 999px; padding: 4px 10px;
+          background: rgba(18,18,18,0.85); border: 1px solid var(--border-subtle);
+          border-radius: 8px; padding: 4px 10px; letter-spacing: 0.03em;
         }
         .narrative-timeline {
           display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
           gap: 8px; margin-top: 4px;
         }
         .narrative-chip {
-          background: var(--bg-card); border: 1px solid var(--border-medium);
-          border-radius: 10px; padding: 8px 10px;
+          background: rgba(18,18,18,0.85); border: 1px solid var(--border-subtle);
+          border-radius: 8px; padding: 8px 10px;
           font-size: 11px; color: var(--text-secondary); line-height: 1.4;
         }
         .narrative-chip strong { color: var(--text-primary); font-weight: 600; }
         .narrative-list { display: flex; flex-direction: column; gap: 6px; }
         .narrative-list-item { font-size: 12px; color: var(--text-secondary); display: flex; gap: 8px; align-items: center; }
         .narrative-list-item::before { content: ">"; color: var(--accent-primary); }
+        .text-banner {
+          display: flex; align-items: center; justify-content: center;
+          padding: 10px 14px; border-radius: 12px;
+          background: linear-gradient(180deg, var(--glass-bg-strong), var(--glass-bg)) padding-box,
+            var(--glass-border-soft) border-box;
+          border: 1px solid transparent;
+          font-size: 12px; color: var(--text-primary); letter-spacing: 0.02em; text-align: center;
+        }
 
         /* ===== SHELF ===== */
         .shelf-wrapper { overflow: hidden; margin: 0 -4px; }
@@ -951,29 +1223,48 @@ export default function AgentPlaystore() {
         /* ===== COMPACT CARD ===== */
         .compact-card {
           display: flex; align-items: center; gap: 11px; padding: 11px 13px;
-          background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 11px;
-          cursor: pointer; transition: background 0.15s, border-color 0.2s, transform 0.15s; position: relative;
+          background: linear-gradient(180deg, var(--glass-bg-strong), var(--glass-bg)) padding-box,
+            var(--glass-border) border-box;
+          border: 1px solid transparent; border-radius: 14px;
+          cursor: pointer; transition: background 0.15s, border-color 0.2s, transform 0.15s, box-shadow 0.2s; position: relative;
+          box-shadow: inset 0 1px 0 var(--glass-highlight), 0 20px 40px rgba(0,0,0,0.4);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
         }
-        .compact-card:hover { background: var(--bg-card-hover); border-color: var(--accent); transform: translateY(-1px); }
+        .compact-card:hover {
+          background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04)) padding-box,
+            var(--glass-border) border-box;
+          transform: translateY(-2px);
+          box-shadow: inset 0 1px 0 var(--glass-highlight), 0 26px 50px rgba(0,0,0,0.5);
+        }
         .compact-card-icon {
           width: 38px; height: 38px; border-radius: 9px; display: flex; align-items: center;
           justify-content: center; font-size: 17px; flex-shrink: 0; border: 1px solid;
         }
         .compact-card-info { min-width: 0; flex: 1; }
         .compact-card-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .compact-card-tagline { font-size: 11px; color: var(--text-tertiary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+        .compact-card-tagline { font-size: 11px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
         .compact-card-meta { display: flex; gap: 7px; margin-top: 3px; font-size: 10.5px; }
-        .compact-card-rating { color: #FDCB6E; }
+        .compact-card-rating { color: var(--accent-warm); }
         .compact-card-users { color: var(--text-tertiary); }
         .compact-card-price { font-weight: 600; }
 
         /* ===== MEDIUM CARD ===== */
         .medium-card {
-          padding: 16px; background: var(--bg-card); border: 1px solid var(--border-subtle);
-          border-radius: 12px; cursor: pointer; transition: background 0.15s, border-color 0.2s, transform 0.15s;
+          padding: 16px; background: linear-gradient(180deg, var(--glass-bg-strong), var(--glass-bg)) padding-box,
+            var(--glass-border) border-box;
+          border: 1px solid transparent; border-radius: 16px; cursor: pointer; transition: background 0.15s, border-color 0.2s, transform 0.15s, box-shadow 0.2s;
           display: flex; flex-direction: column; gap: 5px; min-width: 210px; scroll-snap-align: start;
+          box-shadow: inset 0 1px 0 var(--glass-highlight), 0 24px 50px rgba(0,0,0,0.4);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
         }
-        .medium-card:hover { background: var(--bg-card-hover); border-color: var(--accent); transform: translateY(-2px); }
+        .medium-card:hover {
+          background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04)) padding-box,
+            var(--glass-border) border-box;
+          transform: translateY(-3px);
+          box-shadow: inset 0 1px 0 var(--glass-highlight), 0 28px 60px rgba(0,0,0,0.5);
+        }
         .medium-card-header { display: flex; justify-content: space-between; align-items: flex-start; }
         .medium-card-icon {
           width: 44px; height: 44px; border-radius: 11px; display: flex; align-items: center;
@@ -981,28 +1272,38 @@ export default function AgentPlaystore() {
         }
         .medium-card-badges { display: flex; gap: 4px; }
         .medium-card-name { font-size: 14.5px; font-weight: 600; margin-top: 3px; }
-        .medium-card-tagline { font-size: 12px; color: var(--text-tertiary); line-height: 1.35; }
+        .medium-card-tagline { font-size: 12px; color: var(--text-secondary); line-height: 1.35; }
         .medium-card-capabilities { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
         .capability-dot {
-          font-size: 10px; padding: 2px 7px; border-radius: 4px; white-space: nowrap;
+          font-size: 10px; padding: 3px 8px; border-radius: 4px; white-space: nowrap;
+          font-family: var(--font-body); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;
         }
         .medium-card-footer { display: flex; align-items: center; gap: 7px; margin-top: auto; padding-top: 5px; }
         .medium-card-category {
           font-size: 10px; padding: 2px 7px; border-radius: 5px; font-weight: 600;
           text-transform: uppercase; letter-spacing: 0.04em;
         }
-        .medium-card-rating { font-size: 11px; color: #FDCB6E; }
+        .medium-card-rating { font-size: 11px; color: var(--accent-warm); }
         .medium-card-price { font-size: 11px; font-weight: 600; margin-left: auto; }
         .medium-card-author { font-size: 10.5px; color: var(--text-tertiary); }
 
         /* ===== LARGE CARD ===== */
         .large-card {
-          position: relative; padding: 24px; background: var(--bg-card); border: 1px solid var(--border-subtle);
-          border-radius: 14px; cursor: pointer; transition: background 0.15s, border-color 0.2s, transform 0.15s;
+          position: relative; padding: 24px; background: linear-gradient(180deg, var(--glass-bg-strong), var(--glass-bg)) padding-box,
+            var(--glass-border) border-box;
+          border: 1px solid transparent; border-radius: 18px; cursor: pointer; transition: background 0.15s, border-color 0.2s, transform 0.15s, box-shadow 0.2s;
           overflow: hidden; min-width: 340px; scroll-snap-align: start;
+          box-shadow: inset 0 1px 0 var(--glass-highlight), 0 30px 70px rgba(0,0,0,0.45);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
         }
-        .large-card:hover { background: var(--bg-card-hover); border-color: var(--accent); transform: translateY(-2px); }
-        .large-card-glow { position: absolute; inset: 0; pointer-events: none; }
+        .large-card:hover {
+          background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04)) padding-box,
+            var(--glass-border) border-box;
+          transform: translateY(-3px);
+          box-shadow: inset 0 1px 0 var(--glass-highlight), 0 34px 80px rgba(0,0,0,0.55);
+        }
+        .large-card-glow { position: absolute; inset: 0; pointer-events: none; opacity: 0.08; }
         .large-card-content { position: relative; display: flex; flex-direction: column; gap: 6px; }
         .large-card-top { display: flex; justify-content: space-between; align-items: flex-start; }
         .large-card-icon {
@@ -1010,36 +1311,47 @@ export default function AgentPlaystore() {
           justify-content: center; font-size: 24px;
         }
         .large-card-badges { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; }
-        .large-card-name { font-family: var(--font-display); font-size: 21px; margin-top: 3px; }
+        .large-card-name { font-family: var(--font-display); font-size: 21px; margin-top: 3px; font-weight: 600; letter-spacing: -0.02em; }
         .large-card-tagline { font-size: 13px; color: var(--text-secondary); line-height: 1.4; }
-        .large-card-solves { font-size: 12px; color: var(--text-tertiary); line-height: 1.45; margin-top: 2px; }
+        .large-card-solves { font-size: 12px; color: var(--text-secondary); line-height: 1.45; margin-top: 2px; }
         .large-card-capabilities { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
         .capability-chip {
-          font-size: 10.5px; padding: 3px 9px; border-radius: 5px; border: 1px solid; white-space: nowrap;
+          font-size: 10px; padding: 4px 10px; border-radius: 4px; border: 1px solid; white-space: nowrap;
+          font-family: var(--font-body); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;
         }
         .large-card-meta { display: flex; align-items: center; gap: 9px; margin-top: 4px; flex-wrap: wrap; }
         .large-card-category {
           font-size: 10.5px; padding: 3px 9px; border-radius: 5px; font-weight: 600;
           text-transform: uppercase; letter-spacing: 0.04em; border: 1px solid;
         }
-        .large-card-rating { font-size: 12px; color: #FDCB6E; }
+        .large-card-rating { font-size: 12px; color: var(--accent-warm); }
         .large-card-users { font-size: 11.5px; color: var(--text-tertiary); }
         .large-card-price { font-size: 12.5px; font-weight: 700; }
         .large-card-author { font-size: 11.5px; color: var(--text-tertiary); }
         .large-card-btn {
-          margin-top: 6px; padding: 8px 18px; border-radius: 9px; border: none;
-          color: white; font-size: 12.5px; font-weight: 600; font-family: var(--font-body);
+          margin-top: 6px; padding: 8px 18px; border-radius: 6px; border: 1px solid var(--border-subtle);
+          color: white; font-size: 12px; font-weight: 600; font-family: var(--font-body);
           cursor: pointer; align-self: flex-start; transition: opacity 0.15s, transform 0.1s;
+          letter-spacing: 0.01em; box-shadow: none;
         }
         .large-card-btn:hover { opacity: 0.85; transform: translateY(-1px); }
 
         /* ===== STACK CARD ===== */
         .stack-card {
-          padding: 16px; background: var(--bg-card); border: 1px solid var(--border-subtle);
-          border-radius: 12px; cursor: pointer; transition: background 0.15s, border-color 0.2s, transform 0.15s;
+          padding: 16px; background: linear-gradient(180deg, var(--glass-bg-strong), var(--glass-bg)) padding-box,
+            var(--glass-border) border-box;
+          border: 1px solid transparent; border-radius: 16px; cursor: pointer; transition: background 0.15s, border-color 0.2s, transform 0.15s, box-shadow 0.2s;
           display: flex; flex-direction: column; gap: 6px; min-width: 280px; scroll-snap-align: start;
+          box-shadow: inset 0 1px 0 var(--glass-highlight), 0 24px 50px rgba(0,0,0,0.4);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
         }
-        .stack-card:hover { background: var(--bg-card-hover); border-color: var(--accent); transform: translateY(-2px); }
+        .stack-card:hover {
+          background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04)) padding-box,
+            var(--glass-border) border-box;
+          transform: translateY(-3px);
+          box-shadow: inset 0 1px 0 var(--glass-highlight), 0 28px 60px rgba(0,0,0,0.5);
+        }
         .stack-card-header { display: flex; justify-content: space-between; align-items: center; }
         .stack-card-icon {
           width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center;
@@ -1047,8 +1359,8 @@ export default function AgentPlaystore() {
         }
         .stack-card-count { font-size: 10.5px; color: var(--text-tertiary); background: var(--bg-elevated); padding: 2px 7px; border-radius: 5px; }
         .stack-card-name { font-size: 15px; font-weight: 600; }
-        .stack-card-desc { font-size: 11.5px; color: var(--text-tertiary); line-height: 1.35; }
-        .stack-card-solves { font-size: 11.5px; color: var(--text-secondary); line-height: 1.4; margin-top: 2px; font-style: italic; }
+        .stack-card-desc { font-size: 11.5px; color: var(--text-secondary); line-height: 1.35; }
+        .stack-card-solves { font-size: 11.5px; color: var(--text-secondary); line-height: 1.4; margin-top: 2px; font-style: normal; }
         .stack-card-agents { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
         .stack-agent-pill { font-size: 10.5px; padding: 2px 7px; border-radius: 5px; border: 1px solid; white-space: nowrap; }
         .stack-card-usecases { display: flex; flex-direction: column; gap: 2px; margin-top: 4px; }
@@ -1058,26 +1370,44 @@ export default function AgentPlaystore() {
 
         /* ===== COLLECTION CARD ===== */
         .collection-card {
-          overflow: hidden; background: var(--bg-card); border: 1px solid var(--border-subtle);
-          border-radius: 12px; cursor: pointer; transition: background 0.15s, border-color 0.2s, transform 0.15s;
+          overflow: hidden; background: linear-gradient(180deg, var(--glass-bg-strong), var(--glass-bg)) padding-box,
+            var(--glass-border) border-box;
+          border: 1px solid transparent; border-radius: 16px; cursor: pointer; transition: background 0.15s, border-color 0.2s, transform 0.15s, box-shadow 0.2s;
           min-width: 230px; scroll-snap-align: start;
+          box-shadow: inset 0 1px 0 var(--glass-highlight), 0 22px 46px rgba(0,0,0,0.4);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
         }
-        .collection-card:hover { background: var(--bg-card-hover); border-color: var(--accent); transform: translateY(-2px); }
+        .collection-card:hover {
+          background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04)) padding-box,
+            var(--glass-border) border-box;
+          transform: translateY(-3px);
+          box-shadow: inset 0 1px 0 var(--glass-highlight), 0 26px 54px rgba(0,0,0,0.5);
+        }
         .collection-card-stripe { height: 5px; }
         .collection-card-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 4px; }
         .collection-card-name { font-size: 14px; font-weight: 600; }
-        .collection-card-desc { font-size: 12px; color: var(--text-tertiary); }
+        .collection-card-desc { font-size: 12px; color: var(--text-secondary); }
         .collection-card-meta { display: flex; justify-content: space-between; margin-top: 5px; font-size: 10.5px; color: var(--text-tertiary); }
-        .collection-card-curator { font-style: italic; }
+        .collection-card-curator { font-style: normal; font-weight: 500; }
 
         /* ===== INTEGRATION CARD ===== */
         .integration-card {
           display: flex; flex-direction: column; align-items: center; gap: 7px;
-          padding: 16px 10px; background: var(--bg-card); border: 1px solid var(--border-subtle);
-          border-radius: 12px; cursor: pointer; transition: background 0.15s, border-color 0.2s, transform 0.15s;
+          padding: 16px 10px; background: linear-gradient(180deg, var(--glass-bg-strong), var(--glass-bg)) padding-box,
+            var(--glass-border) border-box;
+          border: 1px solid transparent; border-radius: 14px; cursor: pointer; transition: background 0.15s, border-color 0.2s, transform 0.15s, box-shadow 0.2s;
           text-align: center; min-width: 115px; scroll-snap-align: start;
+          box-shadow: inset 0 1px 0 var(--glass-highlight), 0 20px 40px rgba(0,0,0,0.4);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
         }
-        .integration-card:hover { background: var(--bg-card-hover); border-color: var(--accent); transform: translateY(-2px); }
+        .integration-card:hover {
+          background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04)) padding-box,
+            var(--glass-border) border-box;
+          transform: translateY(-3px);
+          box-shadow: inset 0 1px 0 var(--glass-highlight), 0 24px 48px rgba(0,0,0,0.5);
+        }
         .integration-card-icon {
           width: 42px; height: 42px; border-radius: 11px; display: flex; align-items: center;
           justify-content: center; font-size: 19px; border: 1px solid;
@@ -1087,81 +1417,110 @@ export default function AgentPlaystore() {
 
         /* ===== PAIRING CARD ===== */
         .pairing-card {
-          padding: 14px 16px; background: var(--bg-card); border: 1px solid var(--border-subtle);
-          border-radius: 12px; cursor: pointer; transition: background 0.15s, border-color 0.2s, transform 0.15s;
+          padding: 14px 16px; background: linear-gradient(180deg, var(--glass-bg-strong), var(--glass-bg)) padding-box,
+            var(--glass-border) border-box;
+          border: 1px solid transparent; border-radius: 14px; cursor: pointer; transition: background 0.15s, border-color 0.2s, transform 0.15s, box-shadow 0.2s;
           min-width: 260px; scroll-snap-align: start;
+          box-shadow: inset 0 1px 0 var(--glass-highlight), 0 22px 46px rgba(0,0,0,0.4);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
         }
-        .pairing-card:hover { background: var(--bg-card-hover); border-color: var(--accent-primary); transform: translateY(-1px); }
+        .pairing-card:hover {
+          background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04)) padding-box,
+            var(--glass-border) border-box;
+          transform: translateY(-2px);
+          box-shadow: inset 0 1px 0 var(--glass-highlight), 0 26px 54px rgba(0,0,0,0.5);
+        }
         .pairing-agents { display: flex; align-items: center; gap: 10px; }
         .pairing-agent { display: flex; align-items: center; gap: 6px; }
         .pairing-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; }
         .pairing-name { font-size: 12.5px; font-weight: 600; white-space: nowrap; }
         .pairing-plus { font-size: 16px; color: var(--text-tertiary); font-weight: 300; }
-        .pairing-why { font-size: 11px; color: var(--text-tertiary); margin-top: 8px; line-height: 1.35; }
+        .pairing-why { font-size: 11px; color: var(--text-secondary); margin-top: 8px; line-height: 1.35; }
 
         /* ===== BADGES ===== */
-        .badge-new { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; background: #1DD1A1; color: #000; letter-spacing: 0.04em; }
+        .badge-new { font-size: 9px; font-weight: 600; padding: 2px 6px; border-radius: 6px; background: rgba(18,18,18,0.85); color: var(--accent-primary); border: 1px solid rgba(255,255,255,0.4); letter-spacing: 0.04em; text-transform: uppercase; }
         .badge-trending { font-size: 11px; }
-        .badge-trending-lg { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; background: #FF6B6B1A; color: #FF6B6B; letter-spacing: 0.04em; }
-        .badge-featured { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; background: #FDCB6E1A; color: #FDCB6E; letter-spacing: 0.04em; }
+        .badge-trending-lg { font-size: 9px; font-weight: 600; padding: 2px 6px; border-radius: 6px; background: rgba(18,18,18,0.85); color: var(--accent-cool); border: 1px solid rgba(255,255,255,0.4); letter-spacing: 0.04em; text-transform: uppercase; }
+        .badge-featured { font-size: 9px; font-weight: 600; padding: 2px 6px; border-radius: 6px; background: rgba(18,18,18,0.85); color: var(--accent-warm); border: 1px solid rgba(255,255,255,0.4); letter-spacing: 0.04em; text-transform: uppercase; }
 
         /* ===== FEATURED MIXED ===== */
         .featured-mixed { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap: 12px; }
         .featured-mixed > :first-child { grid-row: 1 / 3; }
 
         /* ===== DIVIDER ===== */
-        .section-divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border-subtle), transparent); margin: 4px 0; }
+        .section-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); margin: 4px 0; }
 
         /* ===== CATEGORY PILLS ===== */
         .category-pills { display: flex; gap: 7px; flex-wrap: wrap; }
         .category-pill {
-          padding: 5px 13px; border-radius: 18px; background: var(--bg-card);
+          padding: 6px 14px; border-radius: 10px; background: rgba(18,18,18,0.78);
           border: 1px solid var(--border-subtle); font-size: 12px; color: var(--text-secondary);
-          cursor: pointer; transition: all 0.15s; white-space: nowrap;
+          cursor: pointer; transition: all 0.15s; white-space: nowrap; letter-spacing: -0.01em;
         }
-        .category-pill:hover { border-color: var(--accent-primary); color: var(--text-primary); background: #7C6CFF0A; }
+        .category-pill:hover { border-color: var(--border-medium); color: var(--text-primary); background: rgba(24,24,24,0.9); box-shadow: none; }
 
         /* ===== CATEGORY CARDS ===== */
         .category-card {
-          padding: 14px; border-radius: 12px;
-          background: var(--bg-card); border: 1px solid var(--border-subtle);
+          padding: 14px; border-radius: 14px;
+          background: linear-gradient(180deg, var(--glass-bg-strong), var(--glass-bg)) padding-box,
+            var(--glass-border) border-box;
+          border: 1px solid transparent;
           display: flex; flex-direction: column; gap: 8px;
-          cursor: pointer; transition: background 0.15s, border-color 0.2s, transform 0.15s;
+          cursor: pointer; transition: background 0.15s, border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+          box-shadow: inset 0 1px 0 var(--glass-highlight), 0 22px 46px rgba(0,0,0,0.4);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
         }
-        .category-card:hover { background: var(--bg-card-hover); border-color: var(--accent-primary); transform: translateY(-2px); }
+        .category-card:hover {
+          background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04)) padding-box,
+            var(--glass-border) border-box;
+          transform: translateY(-3px);
+          box-shadow: inset 0 1px 0 var(--glass-highlight), 0 26px 54px rgba(0,0,0,0.5);
+        }
         .category-card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
         .category-card-icon {
           width: 34px; height: 34px; border-radius: 10px;
           display: flex; align-items: center; justify-content: center; font-size: 16px;
         }
         .category-card-count { font-size: 11px; color: var(--text-tertiary); }
-        .category-card-title { font-size: 14px; font-weight: 600; }
+        .category-card-title { font-size: 14px; font-weight: 600; color: var(--text-primary); }
         .category-card-desc { font-size: 11.5px; color: var(--text-secondary); line-height: 1.45; }
-        .category-card-cta { font-size: 11px; font-weight: 600; color: var(--accent-primary); margin-top: 2px; }
+        .category-card-cta { font-size: 11px; font-weight: 600; color: var(--accent-primary); margin-top: 2px; letter-spacing: 0.02em; }
 
         /* ===== HIGHLIGHT BANNER ===== */
         .highlight-banner {
           display: flex; align-items: center; gap: 16px; padding: 18px 22px;
-          background: linear-gradient(135deg, #1A1A2E, #16213E); border: 1px solid var(--border-subtle);
-          border-radius: 12px; cursor: pointer; transition: border-color 0.2s;
+          background: linear-gradient(180deg, var(--glass-bg-strong), var(--glass-bg)) padding-box,
+            var(--glass-border) border-box !important;
+          border: 1px solid transparent;
+          border-radius: 16px; cursor: pointer; transition: border-color 0.2s; position: relative; overflow: hidden;
+          box-shadow: inset 0 1px 0 var(--glass-highlight), 0 24px 50px rgba(0,0,0,0.45);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
         }
+        .highlight-banner > * { position: relative; z-index: 1; }
         .highlight-banner:hover { border-color: var(--accent-primary); }
         .highlight-banner-icon { font-size: 28px; flex-shrink: 0; }
         .highlight-banner-text { flex: 1; }
-        .highlight-banner-title { font-family: var(--font-display); font-size: 17px; font-style: italic; color: var(--accent-primary); }
+        .highlight-banner-title { font-family: var(--font-display); font-size: 18px; color: var(--text-primary); letter-spacing: -0.02em; font-weight: 600; }
         .highlight-banner-desc { font-size: 12.5px; color: var(--text-secondary); margin-top: 2px; }
         .highlight-banner-cta {
-          padding: 7px 16px; border-radius: 8px; background: var(--accent-primary);
-          color: white; font-size: 12px; font-weight: 600; border: none; cursor: pointer; white-space: nowrap;
+          padding: 7px 16px; border-radius: 6px; background: linear-gradient(135deg, var(--accent-primary), var(--accent-cool)) !important;
+          color: #050505 !important; font-size: 12px; font-weight: 600; border: none; cursor: pointer; white-space: nowrap;
+          box-shadow: 0 8px 20px rgba(255, 255, 255, 0.18);
         }
 
         /* ===== HOVER DETAIL PANEL ===== */
         .hover-detail {
           position: fixed; z-index: 1000; width: 320px;
-          background: var(--bg-elevated); border: 1px solid var(--border-medium);
-          border-radius: 14px; padding: 18px; box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(124,108,255,0.08);
+          background: linear-gradient(180deg, var(--glass-bg-strong), var(--glass-bg)) padding-box,
+            var(--glass-border) border-box;
+          border: 1px solid transparent;
+          border-radius: 14px; padding: 18px; box-shadow: inset 0 1px 0 var(--glass-highlight), 0 24px 50px rgba(0,0,0,0.45);
           pointer-events: none; transition: opacity 0.2s ease;
-          backdrop-filter: blur(12px);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
         }
         .hover-detail-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
         .hover-detail-icon { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
@@ -1177,72 +1536,71 @@ export default function AgentPlaystore() {
         .hover-detail-pairs { display: flex; flex-wrap: wrap; gap: 5px; }
         .hover-detail-pair {
           font-size: 10.5px; padding: 2px 8px; border-radius: 4px;
-          background: var(--accent-primary)12; color: var(--accent-primary); border: 1px solid var(--accent-glow);
+          background: rgba(255, 255, 255, 0.12); color: var(--accent-primary); border: 1px solid rgba(255, 255, 255, 0.25);
         }
 
         /* ===== RESPONSIVE ===== */
         /* ALL-ACCESS TOPBAR — PROMINENT */
-        .aa-topbar { display: flex; align-items: center; gap: 7px; padding: 6px 16px; border-radius: 20px; background: linear-gradient(135deg, rgba(124,108,255,0.1), rgba(184,154,92,0.12)); border: 1px solid var(--aa-border); cursor: pointer; transition: all 0.25s; white-space: nowrap; box-shadow: 0 0 12px rgba(124,108,255,0.12), inset 0 0 12px rgba(184,154,92,0.08); }
-        .aa-topbar:hover { border-color: var(--aa); background: linear-gradient(135deg, rgba(124,108,255,0.16), rgba(184,154,92,0.18)); box-shadow: 0 0 18px rgba(124,108,255,0.18), inset 0 0 12px rgba(184,154,92,0.12); }
-        .aa-topbar-diamond { color: var(--aa); font-size: 12px; filter: drop-shadow(0 0 4px var(--aa-dim)); }
-        .aa-topbar-label { font-size: 12.5px; font-weight: 700; color: var(--aa); letter-spacing: .02em; }
+        .aa-topbar { display: flex; align-items: center; gap: 7px; padding: 6px 16px; border-radius: 10px; background: rgba(18,18,18,0.85); border: 1px solid var(--aa-border); cursor: pointer; transition: all 0.25s; white-space: nowrap; box-shadow: inset 0 1px 0 rgba(255,255,255,0.08); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .aa-topbar:hover { border-color: rgba(255,255,255,0.35); background: rgba(24,24,24,0.9); }
+        .aa-topbar-diamond { color: var(--aa); font-size: 12px; }
+        .aa-topbar-label { font-size: 12px; font-weight: 600; color: var(--aa); letter-spacing: 0.02em; }
         .aa-topbar-sep { color: var(--aa-border); font-size: 12px; }
         .aa-topbar-sub { font-size: 11px; color: var(--aa-dim); font-weight: 500; }
-        .aa-topbar-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--aa); flex-shrink: 0; animation: aaPulse 2s ease infinite; box-shadow: 0 0 6px var(--aa); }
-        @keyframes aaPulse { 0%,100% { opacity:.5; box-shadow: 0 0 4px var(--aa); } 50% { opacity:1; box-shadow: 0 0 10px var(--aa); } }
+        .aa-topbar-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--aa); flex-shrink: 0; opacity: 0.6; }
 
         /* HERO ALL-ACCESS CARD */
-        .hero-content-wrap { display: flex; gap: 24px; align-items: stretch; position: relative; }
+        .hero-content-wrap { display: flex; gap: 24px; align-items: stretch; position: relative; z-index: 1; }
         .hero-left { flex: 1; }
-        .hero-aa-glow { position: absolute; top: -30px; right: 40px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(184,154,92,0.12), transparent 70%); pointer-events: none; }
-        .hero-aa-card { position: relative; width: 240px; min-width: 240px; padding: 22px 20px; border-radius: 14px; background: linear-gradient(150deg, #161626 0%, #131322 55%, #10101C 100%); border: 1px solid var(--aa-border); cursor: pointer; transition: all 0.3s; overflow: hidden; display: flex; flex-direction: column; gap: 6px; }
-        .hero-aa-card:hover { border-color: var(--aa); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,108,255,0.12), 0 0 20px rgba(184,154,92,0.12); }
-        .hero-aa-card-glow { position: absolute; top: -30px; left: -30px; width: 120px; height: 120px; background: radial-gradient(circle, rgba(124,108,255,0.12), transparent 70%); pointer-events: none; }
-        .hero-aa-icon { color: var(--aa); font-size: 22px; filter: drop-shadow(0 0 8px var(--aa-dim)); position: relative; }
-        .hero-aa-label { font-family: var(--font-display); font-size: 20px; color: var(--aa); position: relative; letter-spacing: -.01em; }
+        .hero-aa-glow { position: absolute; top: -30px; right: 20px; width: 220px; height: 220px; background: radial-gradient(circle, rgba(255,255,255,0.12), transparent 70%); pointer-events: none; }
+        .hero-aa-card { position: relative; width: 240px; min-width: 240px; padding: 22px 20px; border-radius: 14px; background: linear-gradient(180deg, var(--glass-bg-strong), var(--glass-bg)) padding-box, var(--glass-border) border-box; border: 1px solid transparent; cursor: pointer; transition: all 0.3s; overflow: hidden; display: flex; flex-direction: column; gap: 6px; box-shadow: inset 0 1px 0 var(--glass-highlight), 0 24px 50px rgba(0,0,0,0.45); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+        .hero-aa-card:hover { transform: translateY(-2px); box-shadow: inset 0 1px 0 var(--glass-highlight), 0 28px 60px rgba(0,0,0,0.55); }
+        .hero-aa-card-glow { position: absolute; top: -30px; left: -30px; width: 120px; height: 120px; background: radial-gradient(circle, rgba(255,255,255,0.12), transparent 70%); pointer-events: none; }
+        .hero-aa-icon { color: var(--aa); font-size: 22px; position: relative; }
+        .hero-aa-label { font-family: var(--font-display); font-size: 20px; color: var(--text-primary); position: relative; letter-spacing: -0.02em; font-weight: 600; }
         .hero-aa-desc { font-size: 11.5px; color: var(--text-secondary); line-height: 1.45; position: relative; flex: 1; }
         .hero-aa-price { font-size: 18px; font-weight: 700; color: var(--text-primary); position: relative; margin-top: 4px; font-variant-numeric: tabular-nums; }
-        .hero-aa-cta { padding: 8px 0; border-radius: 8px; background: var(--aa); color: #0A0A0F; font-size: 12px; font-weight: 700; text-align: center; position: relative; transition: opacity .15s; letter-spacing: .01em; margin-top: 4px; }
+        .hero-aa-cta { padding: 8px 0; border-radius: 10px; background: rgba(18,18,18,0.85); color: #fff; font-size: 12px; font-weight: 600; text-align: center; position: relative; transition: opacity .15s; letter-spacing: 0.02em; margin-top: 4px; border: 1px solid rgba(255,255,255,0.2); }
         .hero-aa-card:hover .hero-aa-cta { opacity: .9; }
 
         /* STICKY ALL-ACCESS BAR */
         .aa-sticky-bar { position: sticky; top: 0; z-index: 40; opacity: 0; transform: translateY(-100%); transition: all 0.35s cubic-bezier(.4,0,.2,1); pointer-events: none; }
         .aa-sticky-bar-show { opacity: 1; transform: translateY(0); pointer-events: all; }
-        .aa-sticky-inner { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 9px 20px; background: linear-gradient(135deg, rgba(20,20,32,0.96), rgba(16,16,28,0.96)); border-bottom: 1px solid var(--aa-border); backdrop-filter: blur(16px); cursor: pointer; transition: background .2s; }
-        .aa-sticky-inner:hover { background: linear-gradient(135deg, rgba(26,26,40,0.96), rgba(20,20,34,0.96)); }
-        .aa-sticky-diamond { color: var(--aa); font-size: 12px; filter: drop-shadow(0 0 6px var(--aa-dim)); }
+        .aa-sticky-inner { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 9px 20px; background: rgba(12,12,12,0.9); border-bottom: 1px solid var(--border-subtle); backdrop-filter: blur(12px); cursor: pointer; transition: background .2s; box-shadow: none; }
+        .aa-sticky-inner:hover { background: rgba(20,20,20,0.92); }
+        .aa-sticky-diamond { color: var(--aa); font-size: 12px; }
         .aa-sticky-text { font-size: 12.5px; color: var(--text-secondary); }
-        .aa-sticky-text strong { color: var(--aa); font-weight: 700; }
+        .aa-sticky-text strong { color: var(--text-primary); font-weight: 700; }
         .aa-sticky-price { font-size: 12.5px; font-weight: 700; color: var(--text-primary); margin-left: 4px; }
-        .aa-sticky-cta { padding: 4px 14px; border-radius: 6px; background: var(--aa); color: #0A0A0F; font-size: 11px; font-weight: 700; margin-left: 8px; transition: opacity .15s; }
+        .aa-sticky-cta { padding: 4px 14px; border-radius: 10px; background: linear-gradient(135deg, var(--accent-primary), var(--accent-cool)); color: #050505; font-size: 11px; font-weight: 600; margin-left: 8px; transition: opacity .15s; letter-spacing: 0.02em; box-shadow: 0 6px 16px rgba(255,255,255,0.18); }
         .aa-sticky-inner:hover .aa-sticky-cta { opacity: .9; }
         /* AA CARD BADGE */
-        .aa-badge { font-size: 9.5px; font-weight: 600; padding: 2px 7px; border-radius: 4px; background: var(--aa-bg); color: var(--aa); border: 1px solid var(--aa-border); letter-spacing: .02em; white-space: nowrap; }
+        .aa-badge { font-size: 9.5px; font-weight: 600; padding: 2px 7px; border-radius: 6px; background: rgba(18,18,18,0.85); color: var(--text-primary); border: 1px solid rgba(255,255,255,0.2); letter-spacing: 0.04em; white-space: nowrap; text-transform: uppercase; }
         /* AA STACK RUN BUTTON */
-        .aa-run { display: flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 7px; background: var(--aa-bg); border: 1px solid var(--aa-border); color: var(--aa); font-size: 11px; font-weight: 600; font-family: var(--font-body); cursor: pointer; transition: all .15s; white-space: nowrap; }
-        .aa-run:hover { background: #B89A5C24; border-color: var(--aa); }
-        .aa-run-active { background: var(--aa); color: #0A0A0F; border-color: var(--aa); }
+        .aa-run { display: flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 8px; background: rgba(18,18,18,0.85); border: 1px solid rgba(255,255,255,0.2); color: var(--text-primary); font-size: 10.5px; font-weight: 600; font-family: var(--font-body); cursor: pointer; transition: all .15s; white-space: nowrap; letter-spacing: 0.02em; }
+        .aa-run:hover { background: rgba(24,24,24,0.9); border-color: rgba(255,255,255,0.35); }
+        .aa-run-active { background: var(--accent-primary); color: #050505; border-color: var(--accent-primary); box-shadow: 0 6px 14px rgba(255,255,255,0.2); }
         .aa-run-active:hover { opacity: .9; }
         .aa-run-diamond { font-size: 8px; }
         /* AA PANEL */
-        .aa-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 2000; backdrop-filter: blur(4px); animation: aaFade .2s ease; }
-        .aa-panel { position: fixed; top: 0; right: 0; width: 420px; height: 100vh; background: var(--bg-secondary); border-left: 1px solid var(--border-subtle); z-index: 2001; animation: aaSlide .25s ease; overflow-y: auto; }
-        .aa-panel::-webkit-scrollbar { width: 4px; } .aa-panel::-webkit-scrollbar-thumb { background: var(--border-medium); border-radius: 2px; }
+        .aa-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 2000; backdrop-filter: blur(6px); animation: aaFade .2s ease; }
+        .aa-panel { position: fixed; top: 0; right: 0; width: 420px; height: 100vh; background: rgba(10,10,10,0.9); border-left: 1px solid var(--border-subtle); z-index: 2001; animation: aaSlide .25s ease; overflow-y: auto; box-shadow: -20px 0 50px rgba(0,0,0,0.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+        .aa-panel::-webkit-scrollbar { width: 4px; } .aa-panel::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 2px; }
         @keyframes aaFade { from { opacity:0; } to { opacity:1; } }
         @keyframes aaSlide { from { transform: translateX(100%); } to { transform: translateX(0); } }
         .aa-panel-inner { padding: 28px 24px 40px; }
         .aa-panel-hdr { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
         .aa-panel-hdr-l { display: flex; align-items: center; gap: 12px; }
-        .aa-panel-icn { width: 42px; height: 42px; border-radius: 10px; background: var(--aa-bg); border: 1px solid var(--aa-border); display: flex; align-items: center; justify-content: center; color: var(--aa); font-size: 18px; }
-        .aa-panel-ttl { font-family: var(--font-display); font-size: 22px; color: var(--text-primary); }
+        .aa-panel-icn { width: 42px; height: 42px; border-radius: 10px; background: rgba(18,18,18,0.85); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; color: var(--text-primary); font-size: 18px; }
+        .aa-panel-ttl { font-family: var(--font-display); font-size: 20px; color: var(--text-primary); letter-spacing: -0.02em; font-weight: 600; }
         .aa-panel-sts { margin-top: 2px; display: flex; align-items: center; gap: 6px; font-size: 12px; }
         .aa-sts-on { color: var(--aa); } .aa-sts-off { color: var(--text-tertiary); }
         .aa-dot { width: 6px; height: 6px; border-radius: 50%; }
-        .aa-dot-on { background: var(--aa); box-shadow: 0 0 8px var(--aa-dim); }
+        .aa-dot-on { background: var(--aa); }
         .aa-dot-off { background: var(--text-tertiary); }
         .aa-close { background: none; border: none; color: var(--text-tertiary); font-size: 16px; cursor: pointer; padding: 4px; }
         .aa-close:hover { color: var(--text-primary); }
-        .aa-ctx { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--aa-bg); border: 1px solid var(--aa-border); border-radius: 10px; margin-bottom: 20px; font-size: 12.5px; color: var(--aa); line-height: 1.4; }
+        .aa-ctx { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: rgba(18,18,18,0.85); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; margin-bottom: 20px; font-size: 12.5px; color: var(--text-primary); line-height: 1.4; }
         .aa-ctx-icn { font-size: 18px; flex-shrink: 0; }
         .aa-sec { margin-bottom: 24px; }
         .aa-sec-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-tertiary); margin-bottom: 12px; }
@@ -1252,15 +1610,15 @@ export default function AgentPlaystore() {
         .aa-cap-t { font-size: 13px; font-weight: 600; color: var(--text-primary); }
         .aa-cap-d { font-size: 12px; color: var(--text-tertiary); line-height: 1.4; margin-top: 1px; }
         .aa-cost { padding: 20px 0; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); margin-bottom: 24px; display: flex; align-items: baseline; gap: 4px; flex-wrap: wrap; }
-        .aa-cost-amt { font-family: var(--font-display); font-size: 36px; color: var(--text-primary); letter-spacing: -.02em; }
-        .aa-cost-per { font-size: 15px; color: var(--text-tertiary); }
-        .aa-cost-note { width: 100%; font-size: 12px; color: var(--text-tertiary); margin-top: 6px; }
+        .aa-cost-amt { font-family: var(--font-display); font-size: 36px; color: var(--text-primary); letter-spacing: -0.02em; }
+        .aa-cost-per { font-size: 15px; color: var(--text-secondary); }
+        .aa-cost-note { width: 100%; font-size: 12px; color: var(--text-secondary); margin-top: 6px; }
         .aa-acts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
-        .aa-pri-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px; border-radius: 10px; background: var(--aa); color: #0A0A0F; font-size: 14px; font-weight: 700; font-family: var(--font-body); border: none; cursor: pointer; transition: opacity .15s; }
+        .aa-pri-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px; border-radius: 10px; background: linear-gradient(135deg, var(--accent-primary), var(--accent-cool)); color: #050505; font-size: 13px; font-weight: 600; font-family: var(--font-body); border: none; cursor: pointer; transition: opacity .15s; letter-spacing: 0.02em; box-shadow: 0 10px 24px rgba(255,255,255,0.18); }
         .aa-pri-btn:hover { opacity: .9; }
-        .aa-sec-btn { width: 100%; padding: 10px; border-radius: 10px; background: transparent; border: 1px solid var(--border-medium); color: var(--text-secondary); font-size: 13px; font-family: var(--font-body); cursor: pointer; transition: all .15s; }
-        .aa-sec-btn:hover { border-color: var(--text-tertiary); color: var(--text-primary); }
-        .aa-en-state { text-align: center; padding: 16px; background: var(--aa-bg); border: 1px solid var(--aa-border); border-radius: 10px; }
+        .aa-sec-btn { width: 100%; padding: 10px; border-radius: 10px; background: rgba(18,18,18,0.85); border: 1px solid rgba(255,255,255,0.2); color: var(--text-secondary); font-size: 12.5px; font-family: var(--font-body); cursor: pointer; transition: all .15s; letter-spacing: 0.02em; }
+        .aa-sec-btn:hover { border-color: rgba(255,255,255,0.35); color: var(--text-primary); }
+        .aa-en-state { text-align: center; padding: 16px; background: rgba(18,18,18,0.85); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; }
         .aa-en-badge { font-size: 14px; font-weight: 700; color: var(--aa); margin-bottom: 6px; }
         .aa-en-msg { font-size: 12px; color: var(--text-tertiary); line-height: 1.4; }
         .aa-panel-ft { display: flex; justify-content: space-between; padding-top: 20px; border-top: 1px solid var(--border-subtle); }
@@ -1282,8 +1640,11 @@ export default function AgentPlaystore() {
           .aa-panel { width: 100%; }
           .hero-content-wrap { flex-direction: column; }
           .hero-aa-card { width: 100%; min-width: unset; }
-          .story-section { padding: 14px; border-radius: 14px; }
-          .shelf-container { padding: 14px; border-radius: 14px; }
+          .closing-content { flex-direction: column; align-items: flex-start; }
+          .closing-right { width: 100%; }
+          .closing-btn { width: 100%; }
+          .story-section { padding: 14px; border-radius: 8px; }
+          .shelf-container { padding: 14px; border-radius: 8px; }
           .narrative-grid-2, .narrative-grid-3 { grid-template-columns: 1fr; }
           .narrative-timeline { grid-template-columns: 1fr; }
           .topbar-pill { display: none; }
@@ -1341,9 +1702,9 @@ export default function AgentPlaystore() {
               <div className={`aa-sticky-bar ${scrolled ? "aa-sticky-bar-show" : ""}`} onClick={() => openAA()}>
                 <div className="aa-sticky-inner">
                   <span className="aa-sticky-diamond">◆</span>
-                  <span className="aa-sticky-text"><strong>All-Access</strong> — Execute any stack instantly. Parallel agents, default integrations, zero setup.</span>
+                  <span className="aa-sticky-text"><strong>All-Access</strong> — Immediate access to every agent. Learn by deploying, not guessing.</span>
                   <span className="aa-sticky-price">$1,000/mo</span>
-                  <span className="aa-sticky-cta">Unlock →</span>
+                  <span className="aa-sticky-cta">Start All-Access →</span>
                 </div>
               </div>
             )}
@@ -1355,10 +1716,14 @@ export default function AgentPlaystore() {
                 <div className="hero-aa-glow" />
                 <div className="hero-content-wrap">
                   <div className="hero-left">
-                    <div className="hero-title">Speedrun integration of agents into your organization.</div>
-                    <div className="hero-subtitle">Browse hundreds of agents, stacks, and integrations used in real workflows</div>
+                    <div className="hero-title">Speedrun Your AI Transformation.</div>
+                    <div className="hero-subtitle">We are enterprise integration consultants who believe the best way to plan is to deploy.</div>
+                    <div className="hero-narrative">
+                      Most enterprises spend months in discovery phases trying to predict their needs. We skip the speculation. We converge your existing organizational capabilities with agentic possibilities immediately.
+                    </div>
                     <div className="hero-actions">
-                      <button className="hero-cta" onClick={() => openAA()}>Unlock All-Access</button>
+                      <button className="hero-cta" onClick={() => openAA()}>Start All-Access ($1,000/mo)</button>
+                      <button className="hero-cta hero-cta-secondary">Book a Briefing</button>
                     </div>
                     <div className="hero-stats">
                       <div className="hero-stat"><div className="hero-stat-value">284</div><div className="hero-stat-label">Agents</div></div>
@@ -1371,9 +1736,9 @@ export default function AgentPlaystore() {
                     <div className="hero-aa-card-glow" />
                     <div className="hero-aa-icon">◆</div>
                     <div className="hero-aa-label">All-Access</div>
-                    <div className="hero-aa-desc">{aaEnabled ? "Execution permissions active across all stacks and agents." : "Run any stack with stabilized permissions. Parallel agents. Default integrations. No setup."}</div>
+                    <div className="hero-aa-desc">{aaEnabled ? "All-Access is active across the full library and reference stacks." : "Immediate access to the entire library. Start using now, learn what fits, then decide what to harden."}</div>
                     <div className="hero-aa-price">{aaEnabled ? "Active" : "$1,000 /mo"}</div>
-                    <div className="hero-aa-cta">{aaEnabled ? "◆ Enabled" : "Enable run access →"}</div>
+                    <div className="hero-aa-cta">{aaEnabled ? "◆ Enabled" : "Enable All-Access →"}</div>
                   </div>
                 </div>
               </div>
@@ -1390,16 +1755,15 @@ export default function AgentPlaystore() {
                   <div className="story-grid">
                     <div className="story-narrative">
                       <div className="shelf-container narrative-block">
-                        <div className="narrative-kicker">Phase 0 - Start in production</div>
-                        <div className="narrative-title">Start imperfect. Stabilize later.</div>
+                        <div className="narrative-kicker">Access Over Abstraction</div>
+                        <div className="narrative-title">Deployment Is Discovery.</div>
                         <div className="narrative-body">
-                          Deploy a starter stack into live workflows immediately. Real usage reveals constraints,
-                          readiness, and where automation creates value.
+                          You cannot articulate your requirements in a meeting room. You find them in production. That is why we don't start with a roadmap; we start with access. We give you the keys to the entire library immediately so you can see what actually fits.
                         </div>
                         <div className="narrative-pills">
-                          <span className="narrative-pill">Starter stack subscription</span>
-                          <span className="narrative-pill">Live usage first</span>
-                          <span className="narrative-pill">Reality over plans</span>
+                          <span className="narrative-pill">Keys to the library</span>
+                          <span className="narrative-pill">Production first</span>
+                          <span className="narrative-pill">Access over abstraction</span>
                         </div>
                       </div>
                     </div>
@@ -1414,74 +1778,74 @@ export default function AgentPlaystore() {
                                   <span>🚀</span>
                                 </div>
                                 <div className="large-card-badges">
-                                  <span className="badge-featured">PHASE 0</span>
-                                  <span className="badge-trending-lg">LIVE</span>
-                                  <span className="badge-new">RUN-FIRST</span>
+                                  <span className="badge-featured">FEATURED</span>
+                                  <span className="badge-trending-lg">TRENDING</span>
+                                  <span className="badge-new">IN USE</span>
                                 </div>
                               </div>
-                              <div className="large-card-name">Starter stack in production.</div>
-                              <div className="large-card-tagline">Deploy a baseline into live workflows immediately.</div>
-                              <div className="large-card-solves">Imperfect by design: real usage shows where automation creates value.</div>
+                              <div className="large-card-name">Featured & Trending.</div>
+                              <div className="large-card-tagline">The most popular agents currently in use.</div>
+                              <div className="large-card-solves">Proof of adoption when access is immediate and teams discover what actually fits.</div>
                               <div className="large-card-capabilities">
-                                <span className="capability-chip" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>Live workflows</span>
-                                <span className="capability-chip" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>Default permissions</span>
-                                <span className="capability-chip" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>Telemetry on</span>
+                                <span className="capability-chip" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>Highest installs</span>
+                                <span className="capability-chip" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>Most reused</span>
+                                <span className="capability-chip" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>Proven outcomes</span>
                               </div>
                               <div className="large-card-meta">
-                                <span className="large-card-category" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>START</span>
-                                <span className="large-card-rating">Week 1</span>
-                                <span className="large-card-users">Telemetry on</span>
-                                <span className="large-card-price" style={{ color: "var(--story-accent)" }}>Run-first</span>
+                                <span className="large-card-category" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>TOP PICKS</span>
+                                <span className="large-card-rating">High adoption</span>
+                                <span className="large-card-users">Live usage</span>
+                                <span className="large-card-price" style={{ color: "var(--story-accent)" }}>Active</span>
                               </div>
-                              <div className="large-card-author">by Syn Playbooks</div>
-                              <button className="large-card-btn" style={{ background: "var(--story-accent)" }}>Deploy baseline →</button>
+                              <div className="large-card-author">by adoption signals</div>
+                              <button className="large-card-btn" style={{ background: "var(--story-accent)" }}>Browse top picks →</button>
                             </div>
                           </div>
                           <div className="medium-card">
                             <div className="medium-card-header">
                               <div className="medium-card-icon" style={{ background: "linear-gradient(135deg, var(--story-accent-weak), transparent)", borderColor: "var(--story-accent-border)" }}>
-                                <span>🔌</span>
+                                <span>🧾</span>
                               </div>
                               <div className="medium-card-badges">
-                                <span className="badge-new">DAY 1</span>
+                                <span className="badge-new">OPS</span>
                               </div>
                             </div>
-                            <div className="medium-card-name">Wired to real workflows.</div>
-                            <div className="medium-card-tagline">Default integrations and permissions aligned for immediate runs.</div>
+                            <div className="medium-card-name">Operations Stack.</div>
+                            <div className="medium-card-tagline">Invoice Parser, Logistics Coordinator, Shift Scheduler.</div>
                             <div className="medium-card-capabilities">
-                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Integrations</span>
-                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Permissions</span>
-                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Run logs</span>
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Finance</span>
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Logistics</span>
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Scheduling</span>
                             </div>
                             <div className="medium-card-footer">
-                              <span className="medium-card-category" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>DEPLOY</span>
-                              <span className="medium-card-rating">★ Baseline</span>
-                              <span className="medium-card-price" style={{ color: "var(--story-accent)" }}>Ready</span>
-                            </div>
-                            <div className="medium-card-author">by platform ops</div>
-                          </div>
-                          <div className="medium-card">
-                            <div className="medium-card-header">
-                              <div className="medium-card-icon" style={{ background: "linear-gradient(135deg, var(--story-accent-weak), transparent)", borderColor: "var(--story-accent-border)" }}>
-                                <span>📊</span>
-                              </div>
-                              <div className="medium-card-badges">
-                                <span className="badge-trending">📈</span>
-                              </div>
-                            </div>
-                            <div className="medium-card-name">Telemetry baseline.</div>
-                            <div className="medium-card-tagline">Usage, handoffs, and recovery captured from week one.</div>
-                            <div className="medium-card-capabilities">
-                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Frequency</span>
-                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Handoff</span>
-                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Recovery</span>
-                            </div>
-                            <div className="medium-card-footer">
-                              <span className="medium-card-category" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>SIGNALS</span>
-                              <span className="medium-card-rating">★ Week 1</span>
+                              <span className="medium-card-category" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>OPERATIONS</span>
+                              <span className="medium-card-rating">★ In use</span>
                               <span className="medium-card-price" style={{ color: "var(--story-accent)" }}>Active</span>
                             </div>
-                            <div className="medium-card-author">by usage logs</div>
+                            <div className="medium-card-author">by ops teams</div>
+                          </div>
+                          <div className="medium-card">
+                            <div className="medium-card-header">
+                              <div className="medium-card-icon" style={{ background: "linear-gradient(135deg, var(--story-accent-weak), transparent)", borderColor: "var(--story-accent-border)" }}>
+                                <span>🎨</span>
+                              </div>
+                              <div className="medium-card-badges">
+                                <span className="badge-trending">◆</span>
+                              </div>
+                            </div>
+                            <div className="medium-card-name">Creative Suite.</div>
+                            <div className="medium-card-tagline">Asset Generator, Brand Voice Tuner, Layout Assistant.</div>
+                            <div className="medium-card-capabilities">
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Assets</span>
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Brand voice</span>
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Layouts</span>
+                            </div>
+                            <div className="medium-card-footer">
+                              <span className="medium-card-category" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>CREATIVE</span>
+                              <span className="medium-card-rating">★ In use</span>
+                              <span className="medium-card-price" style={{ color: "var(--story-accent)" }}>Active</span>
+                            </div>
+                            <div className="medium-card-author">by creative teams</div>
                           </div>
                         </div>
                         <div className="grid-3">
@@ -1490,12 +1854,12 @@ export default function AgentPlaystore() {
                               <span>🧰</span>
                             </div>
                             <div className="compact-card-info">
-                              <div className="compact-card-name">Week 1 pack</div>
-                              <div className="compact-card-tagline">Starter agents + integrations</div>
+                              <div className="compact-card-name">Library access</div>
+                              <div className="compact-card-tagline">Every agent available day one</div>
                               <div className="compact-card-meta">
-                                <span className="compact-card-rating">★ Live</span>
-                                <span className="compact-card-users">Baseline</span>
-                                <span className="compact-card-price" style={{ color: "var(--story-accent)" }}>Ready</span>
+                                <span className="compact-card-rating">★ Immediate</span>
+                                <span className="compact-card-users">Full catalog</span>
+                                <span className="compact-card-price" style={{ color: "var(--story-accent)" }}>Unlocked</span>
                               </div>
                             </div>
                           </div>
@@ -1504,12 +1868,12 @@ export default function AgentPlaystore() {
                               <span>🔐</span>
                             </div>
                             <div className="compact-card-info">
-                              <div className="compact-card-name">Permissions baseline</div>
-                              <div className="compact-card-tagline">Roles + scopes prewired</div>
+                              <div className="compact-card-name">Default access</div>
+                              <div className="compact-card-tagline">Roles and scopes prewired</div>
                               <div className="compact-card-meta">
                                 <span className="compact-card-rating">★ Safe</span>
                                 <span className="compact-card-users">Scoped</span>
-                                <span className="compact-card-price" style={{ color: "var(--story-accent)" }}>Default</span>
+                                <span className="compact-card-price" style={{ color: "var(--story-accent)" }}>Ready</span>
                               </div>
                             </div>
                           </div>
@@ -1518,44 +1882,45 @@ export default function AgentPlaystore() {
                               <span>🧾</span>
                             </div>
                             <div className="compact-card-info">
-                              <div className="compact-card-name">Run logs</div>
-                              <div className="compact-card-tagline">Every action captured</div>
+                              <div className="compact-card-name">Usage trace</div>
+                              <div className="compact-card-tagline">Every action is visible</div>
                               <div className="compact-card-meta">
                                 <span className="compact-card-rating">★ Trace</span>
-                                <span className="compact-card-users">Audit</span>
-                                <span className="compact-card-price" style={{ color: "var(--story-accent)" }}>Export</span>
+                                <span className="compact-card-users">Signals</span>
+                                <span className="compact-card-price" style={{ color: "var(--story-accent)" }}>Live</span>
                               </div>
                             </div>
                           </div>
                         </div>
+                        <div className="text-banner">100+ agents available on Day 1.</div>
                         <div className="grid-4">
                           <div className="integration-card">
                             <div className="integration-card-icon" style={{ background: "var(--story-accent-weak)", borderColor: "var(--story-accent-border)" }}>
                               <span>📈</span>
                             </div>
-                            <div className="integration-card-name">Usage signals</div>
-                            <div className="integration-card-count">Live telemetry</div>
+                            <div className="integration-card-name">Finance ops</div>
+                            <div className="integration-card-count">Invoice flows</div>
                           </div>
                           <div className="integration-card">
                             <div className="integration-card-icon" style={{ background: "var(--story-accent-weak)", borderColor: "var(--story-accent-border)" }}>
                               <span>🔁</span>
                             </div>
-                            <div className="integration-card-name">Fallbacks</div>
-                            <div className="integration-card-count">Retries tracked</div>
+                            <div className="integration-card-name">Logistics</div>
+                            <div className="integration-card-count">Routing & handoff</div>
                           </div>
                           <div className="integration-card">
                             <div className="integration-card-icon" style={{ background: "var(--story-accent-weak)", borderColor: "var(--story-accent-border)" }}>
                               <span>⏱️</span>
                             </div>
-                            <div className="integration-card-name">Latency watch</div>
-                            <div className="integration-card-count">QoS alerts</div>
+                            <div className="integration-card-name">Scheduling</div>
+                            <div className="integration-card-count">Shift coverage</div>
                           </div>
                           <div className="integration-card">
                             <div className="integration-card-icon" style={{ background: "var(--story-accent-weak)", borderColor: "var(--story-accent-border)" }}>
                               <span>🧩</span>
                             </div>
-                            <div className="integration-card-name">Workflow hooks</div>
-                            <div className="integration-card-count">Triggers wired</div>
+                            <div className="integration-card-name">Creative ops</div>
+                            <div className="integration-card-count">Asset pipelines</div>
                           </div>
                         </div>
                       </div>
@@ -1599,16 +1964,20 @@ export default function AgentPlaystore() {
                   <div className="story-grid">
                     <div className="story-narrative">
                       <div className="shelf-container narrative-block">
-                        <div className="narrative-kicker">Weeks 1-4 - Learning window</div>
-                        <div className="narrative-title">Usage teaches you what to build next.</div>
+                        <div className="narrative-kicker">Friction as Signal</div>
+                        <div className="narrative-title">Start Imperfect. Stabilize Later.</div>
                         <div className="narrative-body">
-                          Teams use the system daily. Friction and opportunity surface fast, and you get a real readiness map.
+                          We provide 100+ agents because we expect you to ignore most of them. The friction you feel is data. The agents your team doesn't use tell us as much as the ones they do.
+                        </div>
+                        <div className="narrative-callout">
+                          <div className="narrative-callout-icon">◆</div>
+                          <div>While your team explores, our Usage Sensemaking layer tracks adoption patterns. We identify the winning workflows that no one could have guessed beforehand.</div>
                         </div>
                         <div className="narrative-timeline">
-                          <div className="narrative-chip"><strong>Week 1</strong> Adoption signals</div>
-                          <div className="narrative-chip"><strong>Week 2</strong> Workflow friction</div>
-                          <div className="narrative-chip"><strong>Week 3</strong> Automation value</div>
-                          <div className="narrative-chip"><strong>Week 4</strong> Readiness map</div>
+                          <div className="narrative-chip"><strong>Heatmap</strong> Adoption vs abandonment</div>
+                          <div className="narrative-chip"><strong>Signals</strong> Friction and intent</div>
+                          <div className="narrative-chip"><strong>Winners</strong> Repeatable workflows</div>
+                          <div className="narrative-chip"><strong>Readiness</strong> What to harden next</div>
                         </div>
                       </div>
                     </div>
@@ -1621,82 +1990,83 @@ export default function AgentPlaystore() {
                                 <span>📡</span>
                               </div>
                               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                <span className="stack-card-count">3 signals</span>
+                                <span className="stack-card-count">Sensemaking</span>
                               </div>
                             </div>
-                            <div className="stack-card-name">Signal stack</div>
-                            <div className="stack-card-desc">Adoption, friction, and outcome value tracked across teams.</div>
-                            <div className="stack-card-solves">Usage reveals what to stabilize next.</div>
+                            <div className="stack-card-name">Sensemaking Dashboard</div>
+                            <div className="stack-card-desc">Heatmap of agent activity across teams and workflows.</div>
+                            <div className="stack-card-solves">High adoption vs. abandonment at a glance.</div>
                             <div className="stack-card-agents">
                               <span className="stack-agent-pill" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>Adoption heatmap</span>
-                              <span className="stack-agent-pill" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>Friction index</span>
-                              <span className="stack-agent-pill" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>Outcome lift</span>
+                              <span className="stack-agent-pill" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>Abandonment signal</span>
+                              <span className="stack-agent-pill" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>Workflow winners</span>
                             </div>
                             <div className="stack-card-usecases">
-                              <span className="stack-usecase">→ Week 1 adoption</span>
-                              <span className="stack-usecase">→ Week 2 friction</span>
-                              <span className="stack-usecase">→ Week 3 value</span>
+                              <span className="stack-usecase">→ High adoption</span>
+                              <span className="stack-usecase">→ Abandonment risk</span>
+                              <span className="stack-usecase">→ Winning flows</span>
                             </div>
                             <div className="stack-card-footer">
-                              <span className="stack-card-users">Readiness map in 30 days</span>
+                              <span className="stack-card-users">Live usage insights</span>
                             </div>
                           </div>
                           <div className="collection-card">
                             <div className="collection-card-stripe" style={{ background: "linear-gradient(135deg, var(--story-accent), var(--story-accent-weak))" }} />
                             <div className="collection-card-body">
-                              <div className="collection-card-name">Readiness map</div>
-                              <div className="collection-card-desc">Decision-ready view of what to harden next.</div>
+                              <div className="collection-card-name">Usage Heatmap</div>
+                              <div className="collection-card-desc">Visual map of agent activity by team and workflow.</div>
                               <div className="collection-card-meta">
-                                <span>Week 4 report</span>
-                                <span className="collection-card-curator">Signals team</span>
+                                <span>Live view</span>
+                                <span className="collection-card-curator">Usage layer</span>
                               </div>
                             </div>
                           </div>
                         </div>
+                        <div className="text-banner">Stop guessing. Watch what they use.</div>
                         <div className="grid-3">
                           <div className="medium-card">
                             <div className="medium-card-header">
                               <div className="medium-card-icon" style={{ background: "linear-gradient(135deg, var(--story-accent-weak), transparent)", borderColor: "var(--story-accent-border)" }}>
-                                <span>🧭</span>
+                                <span>★</span>
                               </div>
                               <div className="medium-card-badges">
-                                <span className="badge-trending">◎</span>
+                                <span className="badge-trending">★</span>
                               </div>
                             </div>
-                            <div className="medium-card-name">Decision triggers.</div>
-                            <div className="medium-card-tagline">Stabilize when adoption is consistent and errors trend down.</div>
+                            <div className="medium-card-name">Community Favorites.</div>
+                            <div className="medium-card-tagline">Agents with the highest engagement and repeat use.</div>
                             <div className="medium-card-capabilities">
-                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Consistency</span>
-                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Error decline</span>
-                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Repeatable savings</span>
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Engagement</span>
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Retention</span>
+                              <span className="capability-dot" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>Outcomes</span>
                             </div>
                             <div className="medium-card-footer">
-                              <span className="medium-card-category" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>DECIDE</span>
-                              <span className="medium-card-rating">★ Week 4</span>
-                              <span className="medium-card-price" style={{ color: "var(--story-accent)" }}>Ready</span>
+                              <span className="medium-card-category" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)" }}>FAVORITES</span>
+                              <span className="medium-card-rating">★ High</span>
+                              <span className="medium-card-price" style={{ color: "var(--story-accent)" }}>Active</span>
                             </div>
-                            <div className="medium-card-author">by signal review</div>
+                            <div className="medium-card-author">by community signals</div>
                           </div>
                           <div className="compact-card">
                             <div className="compact-card-icon" style={{ background: "var(--story-accent-weak)", borderColor: "var(--story-accent-border)" }}>
-                              <span>🧱</span>
+                              <span>🧪</span>
                             </div>
                             <div className="compact-card-info">
-                              <div className="compact-card-name">Friction map</div>
-                              <div className="compact-card-tagline">Bottlenecks + handoffs</div>
+                              <div className="compact-card-name">Experimental shelf</div>
+                              <div className="compact-card-tagline">Beta agents testing new workflows</div>
                               <div className="compact-card-meta">
-                                <span className="compact-card-rating">★ Week 2</span>
-                                <span className="compact-card-users">Ops pain</span>
-                                <span className="compact-card-price" style={{ color: "var(--story-accent)" }}>Hotspots</span>
+                                <span className="compact-card-rating">★ Beta</span>
+                                <span className="compact-card-users">In trials</span>
+                                <span className="compact-card-price" style={{ color: "var(--story-accent)" }}>Exploring</span>
                               </div>
                             </div>
                           </div>
                           <div className="integration-card">
                             <div className="integration-card-icon" style={{ background: "var(--story-accent-weak)", borderColor: "var(--story-accent-border)" }}>
-                              <span>📈</span>
+                              <span>📊</span>
                             </div>
-                            <div className="integration-card-name">Outcome lift</div>
-                            <div className="integration-card-count">Value signals</div>
+                            <div className="integration-card-name">Adoption signals</div>
+                            <div className="integration-card-count">Engagement score</div>
                           </div>
                         </div>
                         <div className="grid-2">
@@ -1704,16 +2074,16 @@ export default function AgentPlaystore() {
                             <div className="pairing-agents">
                               <div className="pairing-agent">
                                 <span className="pairing-icon" style={{ background: "var(--story-accent-weak)" }}>🧑‍💼</span>
-                                <span className="pairing-name">Ops Lead</span>
+                                <span className="pairing-name">Team Lead</span>
                               </div>
                               <span className="pairing-plus">+</span>
                               <div className="pairing-agent">
-                                <span className="pairing-icon" style={{ background: "var(--story-accent-weak)" }}>🤖</span>
-                                <span className="pairing-name">Automation</span>
+                                <span className="pairing-icon" style={{ background: "var(--story-accent-weak)" }}>📈</span>
+                                <span className="pairing-name">Usage Signals</span>
                               </div>
                             </div>
                             <div className="pairing-why">
-                              Ops defines quality; automation shows repeatable savings.
+                              People show intent; signals reveal what to harden next.
                             </div>
                           </div>
                           <div className="compact-card">
@@ -1724,7 +2094,7 @@ export default function AgentPlaystore() {
                               <div className="compact-card-name">Adoption heatmap</div>
                               <div className="compact-card-tagline">Daily usage by team</div>
                               <div className="compact-card-meta">
-                                <span className="compact-card-rating">★ Week 1</span>
+                                <span className="compact-card-rating">★ Live</span>
                                 <span className="compact-card-users">Signals</span>
                                 <span className="compact-card-price" style={{ color: "var(--story-accent)" }}>Live</span>
                               </div>
@@ -1754,20 +2124,32 @@ export default function AgentPlaystore() {
                   <div className="story-grid">
                     <div className="story-narrative">
                       <div className="shelf-container narrative-block">
-                        <div className="narrative-kicker">Stabilize + adapt</div>
-                        <div className="narrative-title">Evolve what works, retire what does not.</div>
+                        <div className="narrative-kicker">From Experiments to Infrastructure</div>
+                        <div className="narrative-title">Stabilize and Adapt.</div>
                         <div className="narrative-body">
-                          We modify agents, extend open-source components, and deepen integrations based on observed reality.
+                          Once the real needs emerge from usage, we step in. We take the workflows that stuck and harden them into bespoke, enterprise-grade systems.
                         </div>
                         <div className="narrative-list">
-                          <div className="narrative-list-item">Modify and tune existing agents</div>
-                          <div className="narrative-list-item">Extend open-source tooling</div>
-                          <div className="narrative-list-item">Deepen internal integrations</div>
+                          <div className="narrative-list-item">All-Access ($1k/mo): The learning window</div>
+                          <div className="narrative-list-item">Custom Development: The optional hardening phase</div>
+                          <div className="narrative-list-item">Data decides what becomes infrastructure</div>
                         </div>
                       </div>
                     </div>
                     <div className="story-shelves">
                       <div className="narrative-shelf-stack" style={{ "--accent": "var(--story-accent)" }}>
+                        <div className="narrative-mini emphasis">
+                          <div className="narrative-mini-top">
+                            <div className="narrative-mini-icon">◆</div>
+                            <div className="narrative-mini-kicker">Comparison</div>
+                          </div>
+                          <div className="narrative-mini-title">Phase 1: Broad Access vs Phase 2: Deep Integration</div>
+                          <div className="narrative-mini-body">The first phase is the learning window. The second phase is optional hardening for proven use cases.</div>
+                          <div className="narrative-stat-row">
+                            <span className="narrative-stat"><strong>Phase 1</strong> Broad Access</span>
+                            <span className="narrative-stat"><strong>Phase 2</strong> Deep Integration</span>
+                          </div>
+                        </div>
                         <div className="grid-3">
                           <div className="medium-card">
                             <div className="medium-card-header">
@@ -1878,6 +2260,7 @@ export default function AgentPlaystore() {
                             </div>
                           </div>
                         </div>
+                        <div className="text-banner">You don't build custom agents until the data says you must.</div>
                         <div className="grid-3">
                           <div className="compact-card">
                             <div className="compact-card-icon" style={{ background: "var(--story-accent-weak)", borderColor: "var(--story-accent-border)" }}>
@@ -1924,10 +2307,10 @@ export default function AgentPlaystore() {
                           </div>
                         </Section>
 
-                        <Section sectionKey="teamStacks">
-                          <div className="grid-3">
-                            {STACKS.map(s => <StackCard key={s.id} stack={s} aaEnabled={aaEnabled} onAAClick={handleStackAA} />)}
-                          </div>
+                        <Section sectionKey="integrations">
+                          <HorizontalShelf>
+                            {INTEGRATIONS.map(i => <IntegrationCard key={i.id} integration={i} />)}
+                          </HorizontalShelf>
                         </Section>
 
                         <Section sectionKey="data">
@@ -1944,15 +2327,15 @@ export default function AgentPlaystore() {
                   <div className="story-grid">
                     <div className="story-narrative">
                       <div className="shelf-container narrative-block">
-                        <div className="narrative-kicker">Bespoke systems</div>
-                        <div className="narrative-title">Custom agents built around how you operate.</div>
+                        <div className="narrative-kicker">Organic Integration</div>
+                        <div className="narrative-title">Build Capability, Not Dependency.</div>
                         <div className="narrative-body">
-                          Once usage is stable, we design bespoke workflows and agents tailored to your organization.
+                          This is what organic integration looks like. No top-down mandates—just a network of teams using the tools that actually fit their work style. We help you build in-house competence, not permanent reliance on us.
                         </div>
                         <div className="narrative-pills">
-                          <span className="narrative-pill">Custom workflows</span>
-                          <span className="narrative-pill">Production-grade</span>
-                          <span className="narrative-pill">Built on your stack</span>
+                          <span className="narrative-pill">Organic adoption</span>
+                          <span className="narrative-pill">In-house competence</span>
+                          <span className="narrative-pill">No dependency</span>
                         </div>
                       </div>
                     </div>
@@ -1964,29 +2347,29 @@ export default function AgentPlaystore() {
                             <div className="large-card-content">
                               <div className="large-card-top">
                                 <div className="large-card-icon" style={{ background: "linear-gradient(135deg, var(--story-accent), var(--story-accent-weak))" }}>
-                                  <span>🧱</span>
+                                  <span>⦿</span>
                                 </div>
                                 <div className="large-card-badges">
-                                  <span className="badge-featured">BESPOKE</span>
-                                  <span className="badge-trending-lg">CUSTOM</span>
+                                  <span className="badge-featured">VISION</span>
+                                  <span className="badge-trending-lg">NETWORK</span>
                                 </div>
                               </div>
-                              <div className="large-card-name">Bespoke system outputs.</div>
-                              <div className="large-card-tagline">New agents and orchestration aligned to your operating model.</div>
-                              <div className="large-card-solves">Once usage is stable, we build what only you need.</div>
+                              <div className="large-card-name">The Node Graph.</div>
+                              <div className="large-card-tagline">The Integrated Enterprise: Real people connected to proven tools.</div>
+                              <div className="large-card-solves">Organic adoption creates a network of teams and agents that grows with real usage.</div>
                               <div className="large-card-capabilities">
-                                <span className="capability-chip" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>Custom workflows</span>
-                                <span className="capability-chip" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>Org-specific tooling</span>
-                                <span className="capability-chip" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>Production-grade</span>
+                                <span className="capability-chip" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>People nodes</span>
+                                <span className="capability-chip" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>Agent nodes</span>
+                                <span className="capability-chip" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>Workflow edges</span>
                               </div>
                               <div className="large-card-meta">
-                                <span className="large-card-category" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>PHASE 3</span>
-                                <span className="large-card-rating">Bespoke</span>
-                                <span className="large-card-users">Your stack</span>
-                                <span className="large-card-price" style={{ color: "var(--story-accent)" }}>Custom</span>
+                                <span className="large-card-category" style={{ background: "var(--story-accent-weak)", color: "var(--story-accent)", borderColor: "var(--story-accent-border)" }}>INTEGRATED</span>
+                                <span className="large-card-rating">Networked</span>
+                                <span className="large-card-users">Real teams</span>
+                                <span className="large-card-price" style={{ color: "var(--story-accent)" }}>Live</span>
                               </div>
-                              <div className="large-card-author">by Syn Labs</div>
-                              <button className="large-card-btn" style={{ background: "var(--story-accent)" }}>Build bespoke →</button>
+                              <div className="large-card-author">by adoption map</div>
+                              <button className="large-card-btn" style={{ background: "var(--story-accent)" }}>See the network →</button>
                             </div>
                           </div>
                           <div className="medium-card">
@@ -2036,6 +2419,7 @@ export default function AgentPlaystore() {
                             <div className="medium-card-author">by enablement</div>
                           </div>
                         </div>
+                        <div className="text-banner">Marketing found the Copy Agent. HR found the Policy Agent. We just provided the platform.</div>
                         <div className="grid-2">
                           <div className="collection-card">
                             <div className="collection-card-stripe" style={{ background: "linear-gradient(135deg, var(--story-accent), var(--story-accent-weak))" }} />
@@ -2111,15 +2495,20 @@ export default function AgentPlaystore() {
                         </div>
                       </div>
 
-                      <div className="highlight-banner" style={{ background: "linear-gradient(135deg, #0A1A2E, #0A2E1A)" }}>
-                        <div className="highlight-banner-icon">🔌</div>
-                        <div className="highlight-banner-text">
-                          <div className="highlight-banner-title" style={{ color: "#1DD1A1" }}>Publish your own agent</div>
-                          <div className="highlight-banner-desc">List your agent on the Playstore. Reach 128k+ users actively building with AI.</div>
-                        </div>
-                        <button className="highlight-banner-cta" style={{ background: "#1DD1A1", color: "#000" }}>Get Started →</button>
-                      </div>
                     </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="closing-section">
+                <div className="closing-content">
+                  <div className="closing-left">
+                    <div className="closing-title">Ready to Speedrun?</div>
+                    <div className="closing-subtitle">Stop guessing. Start using.</div>
+                  </div>
+                  <div className="closing-right">
+                    <button className="closing-btn" onClick={() => openAA()}>Get All-Access ($1,000/mo)</button>
+                    <button className="closing-btn closing-btn-secondary">Contact Us</button>
                   </div>
                 </div>
               </div>
