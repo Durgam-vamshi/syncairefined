@@ -1,15 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120" fill="none">
   <defs>
-    <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0a0a0a"/>
-      <stop offset="100%" stop-color="#1a1a1a"/>
+    <linearGradient id="g1" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#7CFFC9" stop-opacity="0.7"/>
     </linearGradient>
   </defs>
-  <rect width="100" height="100" fill="url(#g1)"/>
-  <rect x="14" y="14" width="30" height="30" fill="none" stroke="#e6e6e6" stroke-width="2"/>
-  <rect x="56" y="14" width="30" height="30" fill="none" stroke="#ff4400" stroke-width="2"/>
-  <rect x="14" y="56" width="30" height="30" fill="none" stroke="#e6e6e6" stroke-width="2"/>
-  <rect x="56" y="56" width="30" height="30" fill="none" stroke="#e6e6e6" stroke-width="2"/>
-  <line x1="14" y1="50" x2="86" y2="50" stroke="#2a2a2a" stroke-width="1"/>
-  <line x1="50" y1="14" x2="50" y2="86" stroke="#2a2a2a" stroke-width="1"/>
+  <rect x="8" y="8" width="104" height="104" stroke="url(#g1)" stroke-width="1"/>
+  <path d="M20 30H100M20 60H100M20 90H100" stroke="#FFFFFF" stroke-opacity="0.18"/>
+  <path d="M30 20V100M60 20V100M90 20V100" stroke="#FFFFFF" stroke-opacity="0.18"/>
+  <path d="M22 22L98 98" stroke="#7CFFC9" stroke-opacity="0.25"/>
+  <circle cx="30" cy="30" r="3" stroke="#FFFFFF" stroke-opacity="0.7"/>
+  <circle cx="60" cy="60" r="4" stroke="#7CFFC9" stroke-opacity="0.8"/>
+  <circle cx="90" cy="90" r="3" stroke="#FFFFFF" stroke-opacity="0.7"/>
+  <circle cx="90" cy="30" r="2.5" stroke="#7CFFC9" stroke-opacity="0.6"/>
+  <circle cx="30" cy="90" r="2.5" stroke="#7CFFC9" stroke-opacity="0.6"/>
 </svg>

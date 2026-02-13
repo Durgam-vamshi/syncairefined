@@ -1,13 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120" fill="none">
   <defs>
-    <linearGradient id="g6" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0b0b0b"/>
-      <stop offset="100%" stop-color="#1d1d1d"/>
+    <linearGradient id="g6" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#7CFFC9" stop-opacity="0.7"/>
     </linearGradient>
   </defs>
-  <rect width="100" height="100" fill="url(#g6)"/>
-  <path d="M38 30 L20 50 L38 70" fill="none" stroke="#e6e6e6" stroke-width="3"/>
-  <path d="M62 30 L80 50 L62 70" fill="none" stroke="#e6e6e6" stroke-width="3"/>
-  <line x1="44" y1="76" x2="56" y2="24" stroke="#ff4400" stroke-width="2"/>
-  <rect x="18" y="18" width="64" height="64" fill="none" stroke="#222222" stroke-width="1"/>
+  <rect x="12" y="12" width="96" height="96" stroke="url(#g6)" stroke-width="1"/>
+  <path d="M20 74C30 52 42 52 52 74C62 96 74 96 84 74C94 52 104 52 112 74" stroke="#7CFFC9" stroke-opacity="0.6"/>
+  <path d="M20 52H100" stroke="#FFFFFF" stroke-opacity="0.2"/>
+  <path d="M20 88H100" stroke="#FFFFFF" stroke-opacity="0.2"/>
+  <circle cx="52" cy="74" r="3" stroke="#FFFFFF" stroke-opacity="0.7"/>
+  <circle cx="84" cy="74" r="3" stroke="#7CFFC9" stroke-opacity="0.8"/>
+  <circle cx="36" cy="60" r="2.5" stroke="#FFFFFF" stroke-opacity="0.6"/>
+  <circle cx="68" cy="60" r="2.5" stroke="#FFFFFF" stroke-opacity="0.6"/>
 </svg>
