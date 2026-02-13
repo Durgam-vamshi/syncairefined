@@ -1384,6 +1384,17 @@ h1, h2, h3 { color: #ffffff; font-family: var(--font-display); letter-spacing: -
   gap: 0;
 }
 .story-grid > * { min-width: 0; }
+.story-section.z-layout .story-grid { grid-template-columns: 1.5fr 1fr; }
+.story-section.z-layout .story-narrative {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+  border-right: none;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+.story-section.z-layout .story-shelves {
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+}
 .story-narrative {
   position: sticky;
   top: 12px;
@@ -1857,6 +1868,11 @@ button.stack-tab:hover { background: #ffffff; color: #000000; }
     border-right: none;
     border-bottom: 1px solid var(--border-subtle);
   }
+  .story-section.z-layout .story-narrative {
+    grid-column: auto;
+    border-left: none;
+  }
+  .story-section.z-layout .story-shelves { grid-column: auto; }
   .story-shelves { padding: 18px; }
 }
 

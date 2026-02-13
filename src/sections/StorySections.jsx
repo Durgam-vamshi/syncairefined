@@ -160,7 +160,7 @@ export function StorySections({ onEnter, onLeave, aaEnabled, onStackAA, storySec
         </div>
       </div>
 
-      <div className="story-section story-learn" ref={el => (storySectionRefs.current[1] = el)}>
+      <div className="story-section story-learn z-layout" ref={el => (storySectionRefs.current[1] = el)}>
         <div className="story-grid">
           <div className="story-narrative">
             <div className="shelf-container narrative-block">
@@ -322,7 +322,7 @@ export function StorySections({ onEnter, onLeave, aaEnabled, onStackAA, storySec
         </div>
       </div>
 
-      <div className="story-section story-knowledge" ref={el => (storySectionRefs.current[3] = el)}>
+      <div className="story-section story-knowledge z-layout" ref={el => (storySectionRefs.current[3] = el)}>
         <div className="story-grid">
           <div className="story-narrative">
             <div className="shelf-container narrative-block">
