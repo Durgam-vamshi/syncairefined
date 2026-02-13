@@ -87,7 +87,7 @@ export function StorySections({ onEnter, onLeave, aaEnabled, onStackAA, storySec
           <div className="story-narrative">
             <div className="shelf-container narrative-block">
               <div className="narrative-kicker">Access Over Abstraction</div>
-              <div className="narrative-title">We start with access, not a roadmap.</div>
+              <div className="narrative-title">Get the complete toolkit on Day 1, not a roadmap.</div>
               <div className="narrative-body">
                 You cannot articulate your requirements in a meeting room. You find them in production. That is why we don't start with a roadmap; we start with access. We give you the keys to the entire library immediately so you can see what actually fits.
               </div>
