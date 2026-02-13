@@ -322,14 +322,112 @@ export function StorySections({ onEnter, onLeave, aaEnabled, onStackAA, storySec
         </div>
       </div>
 
-      <div className="story-section story-bespoke" ref={el => (storySectionRefs.current[3] = el)}>
+      <div className="story-section story-knowledge" ref={el => (storySectionRefs.current[3] = el)}>
+        <div className="story-grid">
+          <div className="story-narrative">
+            <div className="shelf-container narrative-block">
+              <div className="narrative-kicker">The Knowledge Transfer Protocol</div>
+              <div className="narrative-title">Knowledge is the Asset.</div>
+              <div className="narrative-body">
+                Hardware is cheap; intuition is expensive. Education, training, and capability transfer are core deliverables. We don't leave behind black boxes. Our integration includes deep-dive modules and executive sessions to ensure your team owns the logic, not just the output.
+              </div>
+              <div className="narrative-list">
+                <div className="narrative-list-item">Education modules mapped to your workflows</div>
+                <div className="narrative-list-item">Training labs plus executive sessions</div>
+                <div className="narrative-list-item">Capability transfer documented and retained</div>
+              </div>
+            </div>
+          </div>
+          <div className="story-shelves">
+            <div className="narrative-shelf-stack">
+              <div className="grid-2 knowledge-grid">
+                <div className="syllabus-card">
+                  <div className="syllabus-title">[ACTIVE_SYLLABUS]</div>
+                  <div className="syllabus-table">
+                    <div className="syllabus-row">
+                      <span className="syllabus-code">01_GOVERNANCE</span>
+                      <span className="syllabus-desc">// Executive AI Guardrails</span>
+                    </div>
+                    <div className="syllabus-row">
+                      <span className="syllabus-code">02_PROMPTING</span>
+                      <span className="syllabus-desc">// Domain-Specific Logic Transfer</span>
+                    </div>
+                    <div className="syllabus-row">
+                      <span className="syllabus-code">03_ARCHITECTURE</span>
+                      <span className="syllabus-desc">// Maintaining In-House Agentic Stacks</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="speaker-dossier">
+                  <div className="speaker-photo" />
+                  <div className="speaker-body">
+                    <div className="speaker-title">[PRINCIPAL_LECTURER: <span>NAME</span>]</div>
+                    <div className="speaker-meta">
+                      <div className="speaker-meta-item">[KEYNOTE] Enterprise AI Summits</div>
+                      <div className="speaker-meta-item">[WORKSHOP] Executive AI Leadership Series</div>
+                      <div className="speaker-meta-item">[ADVISORY] Fortune 500 AI Council</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="education-notes">
+                <div className="education-note">
+                  <div className="education-note-title">[EXEC_SESSION]</div>
+                  <div className="education-note-body">Board-level governance, risk posture, and AI leadership alignment.</div>
+                </div>
+                <div className="education-note">
+                  <div className="education-note-title">[TEAM_LABS]</div>
+                  <div className="education-note-body">Hands-on prompts, evaluation drills, and workflow instrumentation.</div>
+                </div>
+              </div>
+              <div className="education-shelf">
+                <div className="education-shelf-title">[TRAINING_LABS]</div>
+                <div className="education-shelf-grid">
+                  <div className="education-card">
+                    <div className="education-card-kicker">LAB_01</div>
+                    <div className="education-card-name">Agent Ops Workshop</div>
+                    <div className="education-card-meta">Deployment drills + failure modes.</div>
+                  </div>
+                  <div className="education-card">
+                    <div className="education-card-kicker">LAB_02</div>
+                    <div className="education-card-name">Prompt Reliability Clinic</div>
+                    <div className="education-card-meta">Evaluation harness + scoring playbook.</div>
+                  </div>
+                  <div className="education-card">
+                    <div className="education-card-kicker">LAB_03</div>
+                    <div className="education-card-name">Stack Ownership Lab</div>
+                    <div className="education-card-meta">Infra handoff + internal runbooks.</div>
+                  </div>
+                </div>
+              </div>
+              <div className="education-ledger">
+                <div className="education-ledger-title">[CAPABILITY_TRANSFER_LEDGER]</div>
+                <div className="education-ledger-row">
+                  <span className="education-ledger-key">Ownership</span>
+                  <span className="education-ledger-value">Core prompts + evaluation suite</span>
+                </div>
+                <div className="education-ledger-row">
+                  <span className="education-ledger-key">Governance</span>
+                  <span className="education-ledger-value">Risk guardrails + escalation paths</span>
+                </div>
+                <div className="education-ledger-row">
+                  <span className="education-ledger-key">Enablement</span>
+                  <span className="education-ledger-value">Trainer notes + internal certification</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="story-section story-bespoke" ref={el => (storySectionRefs.current[4] = el)}>
         <div className="story-grid">
           <div className="story-narrative">
             <div className="shelf-container narrative-block">
               <div className="narrative-kicker">Organic Integration</div>
               <div className="narrative-title">Build Capability, Not Dependency.</div>
               <div className="narrative-body">
-                This is what organic integration looks like. No top-down mandates—just a network of teams using the tools that actually fit their work style. We help you build in-house competence, not permanent reliance on us.
+                This is what organic integration looks like. No top-down mandates--just a network of teams using the tools that actually fit their work style. We help you build in-house competence, not permanent reliance on us.
               </div>
               <div className="narrative-pills">
                 <span className="narrative-pill">Organic adoption</span>
