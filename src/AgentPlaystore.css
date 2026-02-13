@@ -134,7 +134,31 @@ h1, h2, h3 { color: #ffffff; font-family: var(--font-display); letter-spacing: -
 .topbar-search input::placeholder { color: var(--text-tertiary); }
 .topbar-search input:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 3px var(--accent-glow); background: rgba(24,24,24,0.92); }
 .topbar-search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-tertiary); font-size: 13px; }
-.topbar-right { display: flex; align-items: center; gap: 10px; }
+.topbar-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+.topbar-link {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(8, 8, 8, 0.7);
+  color: var(--text-secondary);
+  font-size: 11.5px;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 7px 14px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+.topbar-link:hover { border-color: #ffffff; color: #ffffff; background: rgba(24,24,24,0.9); }
+.topbar-link-primary {
+  border-color: rgba(255, 255, 255, 0.28);
+  color: #ffffff;
+  background: rgba(12, 12, 12, 0.9);
+}
+.topbar-link-contact {
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #050505;
+  background: #ffffff;
+}
+.topbar-link-contact:hover { background: #ffffff; color: #050505; }
 .topbar-pill {
   display: flex; align-items: center; gap: 5px; padding: 5px 12px;
   border-radius: 10px; background: rgba(18,18,18,0.78); border: 1px solid var(--border-subtle);
@@ -1094,13 +1118,58 @@ h1, h2, h3 { color: #ffffff; font-family: var(--font-display); letter-spacing: -
 
 /* ===== RESPONSIVE ===== */
 /* ALL-ACCESS TOPBAR -- PROMINENT */
-.aa-topbar { display: flex; align-items: center; gap: 7px; padding: 6px 16px; border-radius: 10px; background: rgba(18,18,18,0.85); border: 1px solid var(--aa-border); cursor: pointer; transition: all 0.25s; white-space: nowrap; box-shadow: inset 0 1px 0 rgba(255,255,255,0.08); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
-.aa-topbar:hover { border-color: rgba(255,255,255,0.35); background: rgba(24,24,24,0.9); }
-.aa-topbar-diamond { color: var(--aa); font-size: 12px; }
-.aa-topbar-label { font-size: 12px; font-weight: 600; color: var(--aa); letter-spacing: 0.02em; }
-.aa-topbar-sep { color: var(--aa-border); font-size: 12px; }
-.aa-topbar-sub { font-size: 11px; color: var(--aa-dim); font-weight: 500; }
+.aa-topbar {
+  display: flex; align-items: center; gap: 8px; padding: 7px 14px;
+  border-radius: 10px; cursor: pointer; white-space: nowrap;
+  position: relative; overflow: hidden;
+  background: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 14px 24px rgba(0, 0, 0, 0.4), 0 0 26px rgba(120, 255, 210, 0.3);
+  backdrop-filter: blur(12px) saturate(120%);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.aa-topbar::before {
+  content: "";
+  position: absolute;
+  inset: -35%;
+  background-image: url("./assets/hyprland-bg.png");
+  background-size: cover;
+  background-position: center;
+  filter: blur(12px) saturate(140%);
+  opacity: 0.45;
+  z-index: 0;
+}
+.aa-topbar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(165, 255, 225, 0.65));
+  opacity: 0.85;
+  z-index: 0;
+}
+.aa-topbar > * { position: relative; z-index: 1; }
+.aa-topbar:hover {
+  border-color: rgba(255, 255, 255, 0.98);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 16px 28px rgba(0, 0, 0, 0.45), 0 0 32px rgba(140, 255, 220, 0.4);
+  transform: translateY(-1px);
+}
+.aa-topbar-star {
+  font-size: 12px;
+  color: #050505;
+  filter: drop-shadow(0 0 6px rgba(90, 255, 210, 0.55));
+  animation: starPulse 1.8s ease-in-out infinite;
+}
+.aa-topbar-label { font-size: 11.5px; font-weight: 700; color: #050505; letter-spacing: 0.12em; text-transform: uppercase; }
+.aa-topbar-sep { color: rgba(5, 5, 5, 0.55); font-size: 12px; }
+.aa-topbar-sub { font-size: 11.5px; color: #050505; font-weight: 700; letter-spacing: 0.08em; }
 .aa-topbar-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--aa); flex-shrink: 0; opacity: 0.6; }
+
+@keyframes starPulse {
+  0%, 100% { transform: translateY(0) scale(1); filter: drop-shadow(0 0 4px rgba(70, 210, 170, 0.45)); }
+  40% { transform: translateY(-1px) scale(1.08); filter: drop-shadow(0 0 8px rgba(90, 255, 210, 0.75)); }
+  70% { transform: translateY(0.5px) scale(0.98); filter: drop-shadow(0 0 6px rgba(80, 235, 190, 0.6)); }
+}
 
 /* HERO ALL-ACCESS CARD */
 .hero-content-wrap { display: flex; gap: 24px; align-items: stretch; position: relative; z-index: 1; }
@@ -1253,7 +1322,6 @@ h1, h2, h3 { color: #ffffff; font-family: var(--font-display); letter-spacing: -
 .topbar-search input,
 .topbar-avatar,
 .category-pill,
-.aa-topbar,
 .aa-run,
 .aa-sec-btn,
 .aa-badge {
@@ -1268,7 +1336,6 @@ h1, h2, h3 { color: #ffffff; font-family: var(--font-display); letter-spacing: -
 .topbar-nav-item:hover,
 .topbar-pill:hover,
 .category-pill:hover,
-.aa-topbar:hover,
 .aa-run:hover,
 .aa-sec-btn:hover {
   background: #ffffff;

@@ -5,7 +5,6 @@ import { useCardHover } from "./hooks/useCardHover";
 import { CategoryPills, ClosingSection, HeroSection, StorySections } from "./sections";
 // --- Main App ---
 export default function AgentPlaystore() {
-  const [searchQuery, setSearchQuery] = useState("");
   const [aaPanel, setAAPanel] = useState({ open: false, stack: null });
   const [aaEnabled, setAAEnabled] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -76,28 +75,17 @@ export default function AgentPlaystore() {
                   <span className="topbar-logo-icon">◈</span>
                   <span className="topbar-logo-text">SyncAI Technologies</span>
                 </div>
-                <div className="topbar-nav">
-                  <button className="topbar-nav-item topbar-nav-primary">Browse Agents</button>
-                  <button className="topbar-nav-item">Stacks</button>
-                  <button className="topbar-nav-item">Integrations</button>
-                </div>
-              </div>
-              <div className="topbar-search">
-                <span className="topbar-search-icon">🔍</span>
-                <input type="text" placeholder="Search agents, stacks, integrations..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
               </div>
               <div className="topbar-right">
                 <div className="aa-topbar" onClick={() => openAA()}>
-                  <span className="aa-topbar-diamond">◆</span>
+                  <span className="aa-topbar-star" aria-hidden="true">✶</span>
                   <span className="aa-topbar-label">All-Access</span>
                   <span className="aa-topbar-sep">·</span>
-                  <span className="aa-topbar-sub">{aaEnabled ? "Enabled" : "$1,000/mo"}</span>
-                  {aaEnabled && <span className="aa-topbar-dot" />}
+                  <span className="aa-topbar-sub">$1,000/mo</span>
                 </div>
-                <div className="topbar-pill">🏷️ Categories</div>
-                <div className="topbar-pill">🔄 Compare</div>
-                <div className="topbar-pill">📦 My Stacks</div>
-                <div className="topbar-avatar">👤</div>
+                <button className="topbar-link topbar-link-primary">Enterprise Integration</button>
+                <button className="topbar-link">AI Workshops/Training</button>
+                <button className="topbar-link topbar-link-contact">Contact</button>
               </div>
             </div>
           </div>
