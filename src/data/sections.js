@@ -14,7 +14,7 @@ export const SECTION_META = {
   popular: { headline: "Community Favorites", rationale: "Agents with high engagement scores." },
   teamStacks: { headline: "Stacks for Teams", rationale: "Multi-agent setups designed for collaborative, cross-functional workflows." },
   recentlyUpdated: { headline: "Recently Updated", rationale: "Fresh releases shipped this week — new features, fixes, and improvements." },
-  communityPicks: { headline: "Community Picks", rationale: "Top-voted by Playstore users. The crowd's favorites, not ours." },
+  communityPicks: { headline: "Community Picks", rationale: "Top-voted by SyncAI users. The crowd's favorites, not ours." },
   security: { headline: "Security & Compliance", rationale: "Enterprise-grade agents for teams where trust, auditability, and uptime matter." },
   explore: { headline: "Keep Exploring", rationale: "The catalog doesn't end here. More agents, more stacks, more possibilities." },
   pairsWell: { headline: "Pairs Well Together", rationale: "Agents that get better when used alongside each other." },

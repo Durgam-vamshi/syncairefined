@@ -74,7 +74,7 @@ export default function AgentPlaystore() {
               <div className="topbar-left">
                 <div className="topbar-logo">
                   <span className="topbar-logo-icon">◈</span>
-                  <span className="topbar-logo-text">Agent Playstore</span>
+                  <span className="topbar-logo-text">SyncAI Technologies</span>
                 </div>
                 <div className="topbar-nav">
                   <button className="topbar-nav-item topbar-nav-primary">Browse Agents</button>
@@ -120,6 +120,15 @@ export default function AgentPlaystore() {
               <CategoryPills />
               <StorySections onEnter={onEnter} onLeave={onLeave} aaEnabled={aaEnabled} onStackAA={handleStackAA} storySectionRefs={storySectionRefs} />
               <ClosingSection onOpenAA={openAA} />
+              <footer className="site-footer">
+                <div className="site-footer-brand">SyncAI Technologies</div>
+                <div className="site-footer-details">
+                  <div className="site-footer-line">📍 Address: 2nd Floor, SBR CV Towers, 203, Madhapur, Hyderabad, Telangana 500081, India 📍</div>
+                  <div className="site-footer-line">email: <a href="mailto:contact@syncai.company">contact@syncai.company</a></div>
+                  <div className="site-footer-line">phone: 8309832821</div>
+                  <div className="site-footer-line">website: <a href="https://syncai.company">https://syncai.company</a></div>
+                </div>
+              </footer>
 
             </div>
           </div>
