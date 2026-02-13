@@ -87,7 +87,7 @@ export function StorySections({ onEnter, onLeave, aaEnabled, onStackAA, storySec
           <div className="story-narrative">
             <div className="shelf-container narrative-block">
               <div className="narrative-kicker">Access Over Abstraction</div>
-              <div className="narrative-title">Deployment Is Discovery.</div>
+              <div className="narrative-title">We start with access, not a roadmap.</div>
               <div className="narrative-body">
                 You cannot articulate your requirements in a meeting room. You find them in production. That is why we don't start with a roadmap; we start with access. We give you the keys to the entire library immediately so you can see what actually fits.
               </div>
@@ -260,7 +260,7 @@ export function StorySections({ onEnter, onLeave, aaEnabled, onStackAA, storySec
           <div className="story-narrative">
             <div className="shelf-container narrative-block">
               <div className="narrative-kicker">From Experiments to Infrastructure</div>
-              <div className="narrative-title">Stabilize and Adapt.</div>
+              <div className="narrative-title">Don't build a custom fortress, before knowing what you need.</div>
               <div className="narrative-body">
                 Once the real needs emerge from usage, we step in. We take the workflows that stuck and harden them into bespoke, enterprise-grade systems.
               </div>
@@ -327,9 +327,9 @@ export function StorySections({ onEnter, onLeave, aaEnabled, onStackAA, storySec
           <div className="story-narrative">
             <div className="shelf-container narrative-block">
               <div className="narrative-kicker">The Knowledge Transfer Protocol</div>
-              <div className="narrative-title">Knowledge is the Asset.</div>
+              <div className="narrative-title">Active Education and Training in Enterprise AI.</div>
               <div className="narrative-body">
-                Hardware is cheap; intuition is expensive. Education, training, and capability transfer are core deliverables. We don't leave behind black boxes. Our integration includes deep-dive modules and executive sessions to ensure your team owns the logic, not just the output.
+                Hardware is cheap; intuition is expensive. We do not leave behind black boxes. Deep-dive modules and executive sessions are core deliverables so your team owns the logic, not just the output.
               </div>
               <div className="narrative-list">
                 <div className="narrative-list-item">Education modules mapped to your workflows</div>
@@ -425,7 +425,7 @@ export function StorySections({ onEnter, onLeave, aaEnabled, onStackAA, storySec
           <div className="story-narrative">
             <div className="shelf-container narrative-block">
               <div className="narrative-kicker">Organic Integration</div>
-              <div className="narrative-title">Build Capability, Not Dependency.</div>
+              <div className="narrative-title">Build in-house competence instead of permanent reliance.</div>
               <div className="narrative-body">
                 This is what organic integration looks like. No top-down mandates--just a network of teams using the tools that actually fit their work style. We help you build in-house competence, not permanent reliance on us.
               </div>
