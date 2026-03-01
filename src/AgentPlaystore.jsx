@@ -3,9 +3,11 @@ import "./AgentPlaystore.css";
 import { AllAccessPanel, HoverDetail } from "./components";
 import { useCardHover } from "./hooks/useCardHover";
 import { CategoryPills, ClosingSection, HeroSection, StorySections } from "./sections";
+import ContactPopup from "./components/ContactPopup";
 // --- Main App ---
 export default function AgentPlaystore() {
   const [aaPanel, setAAPanel] = useState({ open: false, stack: null });
+  const [showContactPopup, setShowContactPopup] = useState(false);
   const [aaEnabled, setAAEnabled] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const mainRef = useRef(null);
@@ -85,7 +87,14 @@ export default function AgentPlaystore() {
                 </div>
                 <button className="topbar-link topbar-link-primary">Enterprise Integration</button>
                 <button className="topbar-link">AI Workshops/Training</button>
-                <button className="topbar-link topbar-link-contact">Contact</button>
+                {/* <button className="topbar-link topbar-link-contact">Contact</button> */}
+
+                <button
+                  className="topbar-link topbar-link-contact"
+                  onClick={() => setShowContactPopup(true)}
+                >
+                  Contact
+                </button>
               </div>
             </div>
           </div>
@@ -108,6 +117,7 @@ export default function AgentPlaystore() {
               <CategoryPills />
               <StorySections onEnter={onEnter} onLeave={onLeave} aaEnabled={aaEnabled} onStackAA={handleStackAA} storySectionRefs={storySectionRefs} />
               <ClosingSection onOpenAA={openAA} />
+
               <footer className="site-footer">
                 <div className="site-footer-brand">SyncAI Technologies</div>
                 <div className="site-footer-details">
@@ -127,6 +137,12 @@ export default function AgentPlaystore() {
 
         {/* GLOBAL HOVER DETAIL */}
         <HoverDetail agent={hoverData.agent} position={hoverData.position} visible={hoverData.visible} />
+
+        {showContactPopup && (
+          <ContactPopup onClose={() => setShowContactPopup(false)} />
+        )}
+
+
       </div>
     </>
   );

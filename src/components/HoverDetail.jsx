@@ -16,9 +16,11 @@ export function HoverDetail({ agent, position, visible }) {
       <div className="hover-detail-section">
         <div className="hover-detail-label">Capabilities</div>
         <div className="hover-detail-pills">
+
           {agent.capabilities.map(c => (
             <span key={c} className="hover-detail-pill">{c}</span>
           ))}
+          
         </div>
       </div>
       <div className="hover-detail-section">

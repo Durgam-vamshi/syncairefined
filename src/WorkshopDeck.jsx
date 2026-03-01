@@ -532,14 +532,17 @@ export default function WorkshopDeck() {
                 <h2 className="deck-title">{slide.title}</h2>
                 {slide.subtitle && <div className="deck-subtitle">{slide.subtitle}</div>}
                 {slide.meta && <div className="deck-meta">{slide.meta}</div>}
-                {slide.body && <p className="deck-body">{slide.body}</p>}
                 {slide.points && (
                   <div className="deck-points">
-                    {slide.points.map((point) => (
-                      <div key={point} className="deck-point">{point}</div>
+                    {slide.points.map((point, index) => (
+                      <div key={point} className="deck-point">
+                        <span className="deck-point-index">{String(index + 1).padStart(2, "0")}</span>
+                        <span className="deck-point-text">{point}</span>
+                      </div>
                     ))}
                   </div>
                 )}
+                {slide.body && <p className="deck-body">{slide.body}</p>}
                 {slide.sideNote && (
                   <div className="deck-panel">
                     <div className="deck-panel-title">{slide.sideNote.title}</div>

@@ -211,6 +211,7 @@ const SECTION_META = {
 };
 
 // --- ALL-ACCESS PANEL ---
+
 function AllAccessPanel({ open, onClose, contextStack, enabled, onEnable }) {
   if (!open) return null;
   return (

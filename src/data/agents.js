@@ -4,76 +4,99 @@ export const AGENTS = [
     capabilities: ["Web crawling", "Source synthesis", "Citation generation", "Fact verification", "Trend detection"],
     useCases: ["Market research analysts", "Academic researchers", "Journalists on deadline", "Due diligence teams"],
     pairsWith: ["TranslatePro", "DocParser", "ChartForge"] },
+
   { id: 2, name: "CodeWeaver", tagline: "Full-stack code generation & refactoring", category: "Development", rating: 4.8, users: "31.2k", icon: "⚡", color: "#00B894", featured: true, new: false, trending: true, price: "$12/mo", author: "Synthex",
     solves: "Turns rough specs into production code. Refactors legacy systems without breaking existing tests.",
     capabilities: ["Code generation", "Refactoring", "Migration", "Documentation", "Code review"],
     useCases: ["Solo developers shipping fast", "Teams modernizing legacy code", "Startups building MVPs"],
     pairsWith: ["TestPilot", "Debugger X", "APIForge"] },
+
   { id: 3, name: "DataForge", tagline: "Transform messy data into structured insights", category: "Data", rating: 4.7, users: "8.9k", icon: "📊", color: "#E17055", featured: false, new: true, trending: false, price: "Free", author: "Parsec AI",
     solves: "Takes chaotic CSVs, JSONs, and spreadsheets and normalizes them into clean, queryable datasets.",
     capabilities: ["Schema detection", "Data cleaning", "Format conversion", "Anomaly flagging", "Batch processing"],
     useCases: ["Data engineers with messy imports", "Analysts unifying data sources", "Ops teams fixing pipeline breaks"],
     pairsWith: ["QueryMaster", "ChartForge", "DocParser"] },
+
   { id: 4, name: "PixelMind", tagline: "Generate & edit production-ready visuals", category: "Creative", rating: 4.6, users: "22.1k", icon: "🎨", color: "#FD79A8", featured: true, new: false, trending: true, price: "$8/mo", author: "ArtStack",
     solves: "Bridges the gap between idea and visual asset. Generates, edits, and iterates on images without needing a designer.",
     capabilities: ["Image generation", "Style transfer", "Background removal", "Batch resizing", "Brand consistency"],
     useCases: ["Marketing teams needing assets fast", "Indie devs creating game art", "Content creators on tight schedules"],
     pairsWith: ["ContentEngine", "DesignSystem AI", "MailCraft"] },
+
   { id: 5, name: "LegalEagle", tagline: "Contract review & legal document drafting", category: "Legal", rating: 4.5, users: "5.3k", icon: "⚖️", color: "#636E72", featured: false, new: false, trending: false, price: "$20/mo", author: "JurisAI",
     solves: "Catches risky clauses, flags missing terms, and drafts standard agreements in minutes instead of billable hours.",
     capabilities: ["Clause extraction", "Risk scoring", "Template drafting", "Compliance checks", "Redline comparison"],
     useCases: ["Startup founders reviewing contracts", "Legal ops teams scaling reviews", "Procurement departments"],
     pairsWith: ["DocParser", "MailCraft", "MeetingMind"] },
+
   { id: 6, name: "MailCraft", tagline: "Smart email composition & inbox triage", category: "Productivity", rating: 4.4, users: "45.6k", icon: "✉️", color: "#0984E3", featured: false, new: false, trending: true, price: "Free", author: "FlowState",
     solves: "Writes contextual replies, prioritizes your inbox by urgency, and drafts outreach that actually gets opened.",
     capabilities: ["Smart replies", "Priority sorting", "Template generation", "Tone adjustment", "Follow-up scheduling"],
     useCases: ["Executives drowning in email", "Sales reps doing outreach", "Support teams triaging tickets"],
     pairsWith: ["SalesOracle", "MeetingMind", "SlackPilot"] },
+
+
   { id: 7, name: "VoiceClone Studio", tagline: "Real-time voice synthesis & adaptation", category: "Audio", rating: 4.8, users: "9.7k", icon: "🎙️", color: "#A29BFE", featured: true, new: true, trending: true, price: "$15/mo", author: "SonicAI",
     solves: "Creates natural-sounding voiceovers and audio content without recording sessions or professional studios.",
     capabilities: ["Voice cloning", "Real-time synthesis", "Multi-language dub", "Emotion control", "Audio post-processing"],
     useCases: ["Podcasters scaling content", "E-learning creators", "Game developers needing character voices"],
     pairsWith: ["ContentEngine", "TranslatePro", "TutorBot"] },
+
+
   { id: 8, name: "QueryMaster", tagline: "Natural language to SQL with schema awareness", category: "Data", rating: 4.3, users: "14.8k", icon: "🗄️", color: "#00CEC9", featured: false, new: false, trending: false, price: "Free", author: "TableTech",
     solves: "Lets anyone ask questions of a database in plain English. Understands your schema and writes optimized queries.",
     capabilities: ["NL-to-SQL", "Schema mapping", "Query optimization", "Result explanation", "Join suggestion"],
     useCases: ["Product managers pulling metrics", "Analysts without SQL skills", "Data teams reducing ticket load"],
     pairsWith: ["DataForge", "ChartForge", "DocParser"] },
+    
   { id: 9, name: "MeetingMind", tagline: "Live transcription, summaries & action items", category: "Productivity", rating: 4.7, users: "28.3k", icon: "📋", color: "#FDCB6E", featured: false, new: false, trending: true, price: "$6/mo", author: "Clarity AI",
     solves: "Turns meetings from time sinks into searchable records with clear owners and next steps.",
     capabilities: ["Live transcription", "Summary generation", "Action extraction", "Decision logging", "Speaker tagging"],
     useCases: ["PMs running standups", "Execs in back-to-back calls", "Remote teams needing async recaps"],
     pairsWith: ["SlackPilot", "MailCraft", "Scheduler AI"] },
+
   { id: 10, name: "SecuritySentinel", tagline: "Continuous vulnerability scanning & patching", category: "Security", rating: 4.9, users: "6.1k", icon: "🛡️", color: "#D63031", featured: true, new: false, trending: false, price: "$25/mo", author: "FortressAI",
     solves: "Monitors your infrastructure 24/7 for vulnerabilities and generates patch recommendations before exploits happen.",
     capabilities: ["Vuln scanning", "Patch generation", "Threat modeling", "Compliance mapping", "Incident alerting"],
     useCases: ["Security teams with large surface areas", "DevOps managing cloud infra", "CTOs needing compliance proof"],
     pairsWith: ["InfraWatch", "TestPilot", "APIForge"] },
+
+
   { id: 11, name: "TranslatePro", tagline: "Context-aware translation across 95 languages", category: "Language", rating: 4.6, users: "19.4k", icon: "🌐", color: "#74B9FF", featured: false, new: false, trending: false, price: "Free", author: "LinguaNet",
     solves: "Goes beyond word-for-word translation — preserves idiom, tone, and cultural nuance across languages.",
     capabilities: ["Context translation", "Tone preservation", "Glossary enforcement", "Batch translation", "Quality scoring"],
     useCases: ["Localization teams", "Global customer support", "Researchers reading foreign papers"],
     pairsWith: ["ResearchBot Pro", "ContentEngine", "VoiceClone Studio"] },
+
+
   { id: 12, name: "DesignSystem AI", tagline: "Auto-generate consistent component libraries", category: "Design", rating: 4.5, users: "7.8k", icon: "🧩", color: "#E84393", featured: false, new: true, trending: false, price: "$10/mo", author: "ComponentLab",
     solves: "Generates and maintains a living design system — tokens, components, and documentation that stays in sync.",
     capabilities: ["Token generation", "Component creation", "Doc generation", "Consistency auditing", "Figma sync"],
     useCases: ["Design teams scaling systems", "Startups building from scratch", "Agencies managing multiple brands"],
     pairsWith: ["PixelMind", "CodeWeaver", "APIForge"] },
+
+
   { id: 13, name: "FinanceBot", tagline: "Portfolio analysis & market signal detection", category: "Finance", rating: 4.4, users: "11.2k", icon: "💹", color: "#2ED573", featured: false, new: false, trending: true, price: "$18/mo", author: "AlphaStack",
     solves: "Surfaces actionable market signals from noise. Analyzes holdings, detects patterns, and flags risk exposure.",
     capabilities: ["Portfolio analysis", "Signal detection", "Risk scoring", "Sector mapping", "Alert generation"],
     useCases: ["Individual investors tracking portfolios", "Analysts monitoring sectors", "Finance teams doing reporting"],
     pairsWith: ["DataForge", "ChartForge", "ResearchBot Pro"] },
+
+
   { id: 14, name: "DocParser", tagline: "Extract structured data from any document", category: "Data", rating: 4.7, users: "16.5k", icon: "📄", color: "#FF6348", featured: false, new: false, trending: false, price: "Free", author: "Parsec AI",
     solves: "Reads PDFs, scans, images, and forms — extracts tables, fields, and entities into structured output.",
     capabilities: ["OCR extraction", "Table detection", "Entity recognition", "Form parsing", "Batch processing"],
     useCases: ["Ops teams digitizing paperwork", "Legal teams processing filings", "Finance teams handling invoices"],
     pairsWith: ["DataForge", "LegalEagle", "QueryMaster"] },
+
+
   { id: 15, name: "TestPilot", tagline: "Auto-generate test suites from codebases", category: "Development", rating: 4.3, users: "4.2k", allAccess: true, icon: "🧪", color: "#7BED9F", featured: false, new: true, trending: false, price: "$9/mo", author: "QualityForge",
     solves: "Reads your codebase and generates comprehensive test suites — unit, integration, and edge cases you'd miss.",
     capabilities: ["Test generation", "Coverage analysis", "Edge case detection", "Regression testing", "CI integration"],
     useCases: ["Teams with low test coverage", "Developers shipping faster", "QA engineers automating suites"],
     pairsWith: ["CodeWeaver", "Debugger X", "SecuritySentinel"] },
+
+    
   { id: 16, name: "ContentEngine", tagline: "Blog posts, social copy & content calendars", category: "Marketing", rating: 4.6, users: "33.7k", icon: "✍️", color: "#FF9FF3", featured: true, new: false, trending: true, price: "Free", author: "NarrativeAI",
     solves: "Turns ideas into publish-ready content. Maintains brand voice across channels and formats.",
     capabilities: ["Long-form writing", "Social copy", "Calendar planning", "SEO optimization", "Voice matching"],
