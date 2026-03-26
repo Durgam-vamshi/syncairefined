@@ -1,0 +1,203 @@
+/* =========================
+   FULL WIDTH STORY FIX
+========================= */
+
+.story-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* FULL WIDTH */
+  gap: 0;
+}
+
+.story-shelves {
+  display: none; /* remove right side */
+}
+
+.story-narrative {
+    
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* =========================
+   PREMIUM CARD STYLE
+========================= */
+
+.narrative-block {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+
+  padding: 48px 56px;
+  border-radius: 20px;
+
+  background: linear-gradient(135deg, #0f2f1f, #0c2418);
+  border: 1px solid rgba(0, 255, 150, 0.08);
+
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.4),
+    inset 0 0 0 1px rgba(0, 255, 150, 0.03);
+
+  transition: all 0.3s ease;
+}
+
+/* Hover effect */
+.narrative-block:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 1px rgba(0, 255, 150, 0.06);
+}
+
+/* =========================
+   TYPOGRAPHY
+========================= */
+
+.narrative-kicker {
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #4ade80;
+  margin-bottom: 16px;
+  opacity: 0.9;
+}
+
+.narrative-title {
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #ffffff;
+  margin-bottom: 18px;
+}
+
+.narrative-body {
+  font-size: 16px;
+  line-height: 1.7;
+  color: #a7f3d0;
+  max-width: 800px;
+}
+
+/* =========================
+   PILLS
+========================= */
+
+.narrative-pills {
+  margin-top: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.narrative-pill {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+
+  color: #86efac;
+}
+
+/* =========================
+   LISTS
+========================= */
+
+.narrative-list {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.narrative-list-item {
+  color: #bbf7d0;
+  font-size: 15px;
+}
+
+/* =========================
+   CALLOUT
+========================= */
+
+.narrative-callout {
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 12px;
+
+  background: rgba(0, 255, 150, 0.05);
+  border: 1px solid rgba(0, 255, 150, 0.1);
+
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.narrative-callout-icon {
+  color: #4ade80;
+  font-size: 18px;
+}
+
+/* =========================
+   TIMELINE / CHIPS
+========================= */
+
+.narrative-timeline {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.narrative-chip {
+  padding: 8px 12px;
+  border-radius: 8px;
+
+  background: rgba(16, 185, 129, 0.1);
+  color: #6ee7b7;
+
+  font-size: 13px;
+}
+
+/* =========================
+   SECTION SPACING
+========================= */
+
+.story-section {
+   min-height: auto;    /* 👈 FIX */
+  height: auto;   
+    padding: 80px 20px;     /* keep spacing */
+
+}
+
+
+
+.story-narrative {
+  height: auto;
+}
+
+.narrative-block {
+  height: auto;
+}
+
+
+/* FORCE FIX FOR 2nd & 4th SECTIONS */
+
+.story-learn .story-grid,
+.story-knowledge .story-grid {
+  grid-template-columns: 1fr !important;
+}
+
+.story-learn .story-shelves,
+.story-knowledge .story-shelves {
+  display: none !important;
+}
+
+/* kill internal grids causing split */
+.story-knowledge .knowledge-grid {
+  display: block !important;
+}
+
+.story-learn .narrative-shelf-stack,
+.story-knowledge .narrative-shelf-stack {
+  display: none !important;
+}

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AGENTS, STACKS } from "../data";
 import { CompactCard, StackCard } from "../components/cards";
+import "../../main.css"
 
 export function StorySections({ onEnter, onLeave, aaEnabled, onStackAA, storySectionRefs }) {
   const stackExample = STACKS.find(s => s.name === "Full-Stack Dev Kit") || STACKS[0];
@@ -99,73 +100,25 @@ export function StorySections({ onEnter, onLeave, aaEnabled, onStackAA, storySec
             </div>
           </div>
           <div className="story-shelves">
-            <div className="narrative-shelf-stack">
-              <div className="grid-2 elevated-visuals">
-                <div className="medium-card">
-                  <div className="medium-card-header">
-                    <div className="medium-card-icon">
-                      <span>◆</span>
-                    </div>
-                    <div className="medium-card-badges">
-                      <span className="badge-featured">ALL-ACCESS</span>
-                    </div>
-                  </div>
-                  <div className="medium-card-name">All-Access Pass.</div>
-                  <div className="medium-card-tagline">Your key to the full agent library from day one.</div>
-                  <div className="medium-card-capabilities">
-                    <span className="capability-dot">Full catalog</span>
-                    <span className="capability-dot">Immediate use</span>
-                    <span className="capability-dot">Usage window</span>
-                  </div>
-                  <div className="medium-card-footer">
-                    <span className="medium-card-category">ACCESS</span>
-                    <span className="medium-card-rating">◆ Key</span>
-                    <span className="medium-card-price">$1,000/mo</span>
-                  </div>
-                  <div className="medium-card-author">enterprise subscription</div>
-                </div>
-                {stackExample && (
-                  <StackCard stack={stackExample} aaEnabled={aaEnabled} onAAClick={onStackAA} />
-                )}
-              </div>
-              <div className="live-ticker" aria-label="Live usage ticker">
-                <div className="live-ticker-track">
-                  {liveUsageEvents.concat(liveUsageEvents).map((event, index) => (
-                    <span key={`${event}-${index}`} className="live-ticker-item">{event}</span>
-                  ))}
-                </div>
-              </div>
-              <div className="text-banner">Warehouse crate: drag to browse new arrivals.</div>
-              <div
-                className="crate-scroll"
-                ref={crateRef}
-                onPointerDown={handleCratePointerDown}
-                onPointerMove={handleCratePointerMove}
-                onPointerUp={handleCratePointerEnd}
-                onPointerLeave={handleCratePointerEnd}
-                onPointerCancel={handleCratePointerEnd}
-              >
-                <div className="crate-grid">
-                  {crateAgents.map(agent => (
-                    <div key={agent.id} className="crate-card">
-                      <div className="crate-card-kicker">[AGNT-{String(agent.id).padStart(3, "0")}]</div>
-                      <div className="crate-card-name">{agent.name}</div>
-                      <div className="crate-card-meta">{agent.category} | {agent.price}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
 
-      <div className="story-section story-learn z-layout" ref={el => (storySectionRefs.current[1] = el)}>
+      <div className=
+      
+      "story-section story-learn"
+      
+      
+      ref={el => (storySectionRefs.current[1] = el)}>
         <div className="story-grid">
           <div className="story-narrative">
             <div className="shelf-container narrative-block">
               <div className="narrative-kicker">Friction as Signal</div>
               <div className="narrative-title">Start Imperfect. Optimize Later.</div>
+
+
+
+              
               <div className="narrative-body">
                 We provide 100+ agents because we expect you to ignore most of them. The friction you feel is data. The agents your team doesn't use tell us as much as the ones they do.
               </div>
@@ -181,79 +134,19 @@ export function StorySections({ onEnter, onLeave, aaEnabled, onStackAA, storySec
               </div>
             </div>
           </div>
-          <div className="story-shelves">
-            <div className="narrative-shelf-stack">
-              <div className="text-banner">Experimental shelf: beta tools in the wild.</div>
-              <div className="grid-3 elevated-shelf">
-                {experimentalAgents.map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
-              </div>
-              <div className="text-banner">Stack viewer: cycle through ops, dev, creative, sales.</div>
-              <div className="stack-tabs" role="tablist" aria-label="Stack tabs">
-                {stackTabs.map((tab, index) => (
-                  <button
-                    key={tab.key}
-                    type="button"
-                    className={`stack-tab ${index === activeStackTab ? "is-active" : ""}`}
-                    onClick={() => setActiveStackTab(index)}
-                    role="tab"
-                    aria-selected={index === activeStackTab}
-                  >
-                    {tab.label}
-                  </button>
-                ))}
-              </div>
-              <div className="stack-tab-panel">
-                {activeStack && (
-                  <StackCard stack={activeStack} aaEnabled={aaEnabled} onAAClick={onStackAA} />
-                )}
-              </div>
-              <div className="grid-2 elevated-shelf elevated-visuals">
-                <div className="stack-card">
-                  <div className="stack-card-header">
-                    <div className="stack-card-icon">
-                      <span>📡</span>
-                    </div>
-                    <div className="stack-card-meta">
-                      <span className="stack-card-count">Sensemaking</span>
-                    </div>
-                  </div>
-                  <div className="stack-card-name">Sensemaking Dashboard</div>
-                  <div className="stack-card-desc">Heatmap of agent activity across teams and workflows.</div>
-                  <div className="stack-card-solves">High adoption vs. abandonment at a glance.</div>
-                  <div className="stack-card-agents">
-                    <span className="stack-agent-pill">Adoption heatmap</span>
-                    <span className="stack-agent-pill">Abandonment signal</span>
-                    <span className="stack-agent-pill">Workflow winners</span>
-                  </div>
-                  <div className="stack-card-usecases">
-                    <span className="stack-usecase">→ High adoption</span>
-                    <span className="stack-usecase">→ Abandonment risk</span>
-                    <span className="stack-usecase">→ Winning flows</span>
-                  </div>
-                  <div className="stack-card-footer">
-                    <span className="stack-card-users">Live usage insights</span>
-                  </div>
-                </div>
-                <div className="collection-card">
-                  <div className="collection-card-stripe" />
-                  <div className="collection-card-body">
-                    <div className="collection-card-name">Usage Heatmap</div>
-                    <div className="collection-card-desc">Visual map of agent activity by team and workflow.</div>
-                    <div className="collection-card-meta">
-                      <span>Live view</span>
-                      <span className="collection-card-curator">Usage layer</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="text-banner">We watched 500 deployments. These 3 agents survived.</div>
-              <div className="grid-3">
-                {mostPopular.map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
-              </div>
-            </div>
-          </div>
+
+
+       
+
+
+
+
         </div>
+
       </div>
+
+
+
 
       <div className="story-section story-stabilize" ref={el => (storySectionRefs.current[2] = el)}>
         <div className="story-grid">
@@ -273,56 +166,14 @@ export function StorySections({ onEnter, onLeave, aaEnabled, onStackAA, storySec
           </div>
           <div className="story-shelves">
             <div className="narrative-shelf-stack">
-              <div className="grid-2">
-                <div className="medium-card">
-                  <div className="medium-card-header">
-                    <div className="medium-card-icon">
-                      <span>🛠️</span>
-                    </div>
-                    <div className="medium-card-badges">
-                      <span className="badge-new">LOCKED</span>
-                    </div>
-                  </div>
-                  <div className="medium-card-name">Tune and harden.</div>
-                  <div className="medium-card-tagline">Prompt reliability, output formats, and guardrails locked.</div>
-                  <div className="medium-card-capabilities">
-                    <span className="capability-dot">QA gates</span>
-                    <span className="capability-dot">Output schema</span>
-                    <span className="capability-dot">Guardrails</span>
-                  </div>
-                  <div className="medium-card-footer">
-                    <span className="medium-card-category">STABILIZE</span>
-                    <span className="medium-card-rating">★ Phase 2</span>
-                    <span className="medium-card-price">Locked</span>
-                  </div>
-                  <div className="medium-card-author">by reliability ops</div>
-                </div>
-                <div className="collection-card">
-                  <div className="collection-card-stripe" />
-                  <div className="collection-card-body">
-                    <div className="collection-card-name">Guardrails pack</div>
-                    <div className="collection-card-desc">Prompt QA, monitoring, and rollback ready.</div>
-                    <div className="collection-card-meta">
-                      <span>Phase 2 kit</span>
-                      <span className="collection-card-curator">Platform team</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="text-banner">Only what survives guardrails graduates.</div>
-              <div className="grid-3">
-                {enterpriseReadyAgents.map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
-              </div>
-              <div className="text-banner">Stabilization shelf: hardened candidates in queue.</div>
-              <div className="grid-3 elevated-shelf">
-                {stabilizeAgents.map(a => <CompactCard key={a.id} agent={a} onHoverEnter={onEnter} onHoverLeave={onLeave} />)}
-              </div>
+          
+          
             </div>
           </div>
         </div>
       </div>
 
-      <div className="story-section story-knowledge z-layout" ref={el => (storySectionRefs.current[3] = el)}>
+      <div className="story-section story-knowledge " ref={el => (storySectionRefs.current[3] = el)}>
         <div className="story-grid">
           <div className="story-narrative">
             <div className="shelf-container narrative-block">
@@ -341,80 +192,23 @@ export function StorySections({ onEnter, onLeave, aaEnabled, onStackAA, storySec
           <div className="story-shelves">
             <div className="narrative-shelf-stack">
               <div className="grid-2 knowledge-grid">
-                <div className="syllabus-card">
-                  <div className="syllabus-title">[ACTIVE_SYLLABUS]</div>
-                  <div className="syllabus-table">
-                    <div className="syllabus-row">
-                      <span className="syllabus-code">01_GOVERNANCE</span>
-                      <span className="syllabus-desc">// Executive AI Guardrails</span>
-                    </div>
-                    <div className="syllabus-row">
-                      <span className="syllabus-code">02_PROMPTING</span>
-                      <span className="syllabus-desc">// Domain-Specific Logic Transfer</span>
-                    </div>
-                    <div className="syllabus-row">
-                      <span className="syllabus-code">03_ARCHITECTURE</span>
-                      <span className="syllabus-desc">// Maintaining In-House Agentic Stacks</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="speaker-dossier">
-                  <div className="speaker-photo" />
-                  <div className="speaker-body">
-                    <div className="speaker-title">[PRINCIPAL_LECTURER: <span>NAME</span>]</div>
-                    <div className="speaker-meta">
-                      <div className="speaker-meta-item">[KEYNOTE] Enterprise AI Summits</div>
-                      <div className="speaker-meta-item">[WORKSHOP] Executive AI Leadership Series</div>
-                      <div className="speaker-meta-item">[ADVISORY] Fortune 500 AI Council</div>
-                    </div>
-                  </div>
-                </div>
+
+          
+
+
               </div>
               <div className="education-notes">
-                <div className="education-note">
-                  <div className="education-note-title">[EXEC_SESSION]</div>
-                  <div className="education-note-body">Board-level governance, risk posture, and AI leadership alignment.</div>
-                </div>
-                <div className="education-note">
-                  <div className="education-note-title">[TEAM_LABS]</div>
-                  <div className="education-note-body">Hands-on prompts, evaluation drills, and workflow instrumentation.</div>
-                </div>
+              
+              
               </div>
-              <div className="education-shelf">
-                <div className="education-shelf-title">[TRAINING_LABS]</div>
-                <div className="education-shelf-grid">
-                  <div className="education-card">
-                    <div className="education-card-kicker">LAB_01</div>
-                    <div className="education-card-name">Agent Ops Workshop</div>
-                    <div className="education-card-meta">Deployment drills + failure modes.</div>
-                  </div>
-                  <div className="education-card">
-                    <div className="education-card-kicker">LAB_02</div>
-                    <div className="education-card-name">Prompt Reliability Clinic</div>
-                    <div className="education-card-meta">Evaluation harness + scoring playbook.</div>
-                  </div>
-                  <div className="education-card">
-                    <div className="education-card-kicker">LAB_03</div>
-                    <div className="education-card-name">Stack Ownership Lab</div>
-                    <div className="education-card-meta">Infra handoff + internal runbooks.</div>
-                  </div>
-                </div>
-              </div>
-              <div className="education-ledger">
-                <div className="education-ledger-title">[CAPABILITY_TRANSFER_LEDGER]</div>
-                <div className="education-ledger-row">
-                  <span className="education-ledger-key">Ownership</span>
-                  <span className="education-ledger-value">Core prompts + evaluation suite</span>
-                </div>
-                <div className="education-ledger-row">
-                  <span className="education-ledger-key">Governance</span>
-                  <span className="education-ledger-value">Risk guardrails + escalation paths</span>
-                </div>
-                <div className="education-ledger-row">
-                  <span className="education-ledger-key">Enablement</span>
-                  <span className="education-ledger-value">Trainer notes + internal certification</span>
-                </div>
-              </div>
+           
+
+
+
+
+
+
+
             </div>
           </div>
         </div>
@@ -439,82 +233,18 @@ export function StorySections({ onEnter, onLeave, aaEnabled, onStackAA, storySec
           <div className="story-shelves">
             <div className="narrative-shelf-stack">
               <div className="featured-mixed">
-                <div className="large-card">
-                  <div className="large-card-glow" />
-                  <div className="large-card-content">
-                    <div className="large-card-top">
-                      <div className="large-card-icon">
-                        <span>⦿</span>
-                      </div>
-                      <div className="large-card-badges">
-                        <span className="badge-featured">VISION</span>
-                        <span className="badge-trending-lg">NETWORK</span>
-                      </div>
-                    </div>
-                    <div className="large-card-name">The Node Graph.</div>
-                    <div className="large-card-tagline">The Integrated Enterprise: Real people connected to proven tools.</div>
-                    <div className="large-card-solves">Organic adoption creates a network of teams and agents that grows with real usage.</div>
-                    <div className="large-card-capabilities">
-                      <span className="capability-chip">People nodes</span>
-                      <span className="capability-chip">Agent nodes</span>
-                      <span className="capability-chip">Workflow edges</span>
-                    </div>
-                    <div className="large-card-meta">
-                      <span className="large-card-category">INTEGRATED</span>
-                      <span className="large-card-rating">Networked</span>
-                      <span className="large-card-users">Real teams</span>
-                      <span className="large-card-price">Live</span>
-                    </div>
-                    <div className="large-card-author">by adoption map</div>
-                    <button className="large-card-btn">See the network →</button>
-                  </div>
-                </div>
-                <div className="medium-card">
-                  <div className="medium-card-header">
-                    <div className="medium-card-icon">
-                      <span>🏗️</span>
-                    </div>
-                    <div className="medium-card-badges">
-                      <span className="badge-new">OWNED</span>
-                    </div>
-                  </div>
-                  <div className="medium-card-name">Ownership transfer.</div>
-                  <div className="medium-card-tagline">Systems live in your infra with docs and handoff.</div>
-                  <div className="medium-card-capabilities">
-                    <span className="capability-dot">Your code</span>
-                    <span className="capability-dot">Your models</span>
-                    <span className="capability-dot">Your infra</span>
-                  </div>
-                  <div className="medium-card-footer">
-                    <span className="medium-card-category">OWNERSHIP</span>
-                    <span className="medium-card-rating">★ Handoff</span>
-                    <span className="medium-card-price">Yours</span>
-                  </div>
-                  <div className="medium-card-author">by platform team</div>
-                </div>
-                <div className="medium-card">
-                  <div className="medium-card-header">
-                    <div className="medium-card-icon">
-                      <span>◆</span>
-                    </div>
-                    <div className="medium-card-badges">
-                      <span className="badge-trending">◆</span>
-                    </div>
-                  </div>
-                  <div className="medium-card-name">Internal capability.</div>
-                  <div className="medium-card-tagline">A platform your teams extend without us.</div>
-                  <div className="medium-card-capabilities">
-                    <span className="capability-dot">Internal builders</span>
-                    <span className="capability-dot">Playbooks</span>
-                    <span className="capability-dot">Long-term</span>
-                  </div>
-                  <div className="medium-card-footer">
-                    <span className="medium-card-category">OUTCOME</span>
-                    <span className="medium-card-rating">★ Durable</span>
-                    <span className="medium-card-price">Owned</span>
-                  </div>
-                  <div className="medium-card-author">by your teams</div>
-                </div>
+
+
+               
+
+
+            
+
+
+             
+
+
+
               </div>
             </div>
           </div>
